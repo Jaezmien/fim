@@ -16,7 +16,7 @@ const (
 
 	TokenType_String
 	TokenType_Character
-	Tokentype_Number
+	TokenType_Number
 	TokenType_Boolean
 
 	TokenType_Null
