@@ -103,6 +103,11 @@ func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		processMultiTokenType(oldTokens, parsers.IsFunctionParameter, token.TokenType_FunctionParameter)
 		processMultiTokenType(oldTokens, parsers.IsFunctionReturn, token.TokenType_FunctionReturn)
 
+		processMultiTokenType(oldTokens, parsers.IsPrintMethod, token.TokenType_Print)
+		processMultiTokenType(oldTokens, parsers.IsPrintNewlineMethod, token.TokenType_PrintNewline)
+		processMultiTokenType(oldTokens, parsers.IsReadMethod, token.TokenType_Prompt)
+		processMultiTokenType(oldTokens, parsers.IsFunctionCallMethod, token.TokenType_FunctionCall)
+
 		tokens.Queue(oldTokens.Dequeue().Value)
 	}
 
