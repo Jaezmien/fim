@@ -94,8 +94,8 @@ func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	tokens := queue.New[*token.Token]()
 
 	for oldTokens.Len() > 0 {
-		processMultiTokenType(oldTokens, parsers.MergeReportHeader, token.TokenType_ReportHeader)
-		processMultiTokenType(oldTokens, parsers.MergeReportFooter, token.TokenType_ReportFooter)
+		processMultiTokenType(oldTokens, parsers.IsReportHeader, token.TokenType_ReportHeader)
+		processMultiTokenType(oldTokens, parsers.IsReportFooter, token.TokenType_ReportFooter)
 
 		tokens.Queue(oldTokens.Dequeue().Value)
 	}
