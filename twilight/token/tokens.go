@@ -23,6 +23,67 @@ const (
 
 	TokenType_ReportHeader
 	TokenType_ReportFooter
+
+	TokenType_FunctionHeader
+	TokenType_FunctionMain
+	TokenType_FunctionFooter
+
+	TokenType_FunctionReturn
+	TokenType_FunctionParameter
+
+	TokenType_Print
+	TokenType_PrintInline
+	TokenType_Prompt
+	TokenType_FunctionCall
+
+	TokenType_Declaration
+	TokenType_Modify
+
+	TokenType_TypeString
+	TokenType_TypeChar
+	TokenType_TypeNumber
+	TokenType_TypeBoolean
+
+	TokenType_TypeStringArray
+	TokenType_TypeNumberArray
+	TokenType_TypeBooleanArray
+
+	TokenType_OperatorEq
+	TokenType_OperatorNeq
+	TokenType_OperatorGt
+	TokenType_OperatorGte
+	TokenType_OperatorLt
+	TokenType_OperatorLte
+
+	TokenType_UnaryNot
+
+	TokenType_OperatorAddInfix
+	TokenType_OperatorAddPrefix
+	TokenType_UnaryIncrement
+
+	TokenType_OperatorSubInfix
+	TokenType_OperatorSubPrefix
+	TokenType_UnaryDecrement
+
+	TokenType_OperatorMulInfix
+	TokenType_OperatorMulPrefix
+
+	TokenType_OperatorDivInfix
+	TokenType_OperatorDivPrefix
+
+	TokenType_KeywordOr
+	TokenType_KeywordAnd
+	TokenType_KeywordConst
+	TokenType_KeywordOf
+	TokenType_KeywordThen
+	TokenType_KeywordStatementEnd
+	TokenType_KeywordReturn
+
+	TokenType_IfClause
+	TokenType_ElseClause
+	TokenType_IfEndClause
+
+	TokenType_WhileClause	
 )
 
 type Token struct {
