@@ -23,10 +23,10 @@ func TestTokenizer(t *testing.T) {
 		tokens := Parse(source)
 
 		AssertToken(t, tokens.Dequeue().Value, token.TokenType_ReportHeader, "Dear Princess Celestia:", "header")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Literal, "Hello World", "literal")
+		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Identifier, "Hello World", "literal")
 		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Punctuation, "!", "punctuation")
 		AssertToken(t, tokens.Dequeue().Value, token.TokenType_ReportFooter, "Your faithful student,", "footer")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Literal, "Twilight Sparkle", "literal")
+		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Identifier, "Twilight Sparkle", "literal")
 		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Punctuation, ".", "punctuation")
 		AssertToken(t, tokens.Dequeue().Value, token.TokenType_EndOfFile, "", "end_of_file")
 		assert.Equal(t, tokens.Len(), 0, "Tokens should be empty")

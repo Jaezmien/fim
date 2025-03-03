@@ -20,7 +20,7 @@ func isRunePunctuation(r rune) bool {
 var booleanStrings = [...]string{"yes", "true", "right", "correct", "no", "false", "wrong", "incorrect"}
 
 func processTokenType(t *token.Token, condition bool, resultType token.TokenType) {
-	if t.Type != token.TokenType_Literal {
+	if t.Type != token.TokenType_Identifier {
 		return
 	}
 
@@ -36,7 +36,7 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 
 	for partialTokens.Len() > 0 {
 		t := partialTokens.Dequeue().Value
-		t.Type = token.TokenType_Literal
+		t.Type = token.TokenType_Identifier
 
 		processTokenType(t, t.Length == 1 && isRunePunctuation(rune(t.Value[0])), token.TokenType_Punctuation)
 		processTokenType(t, t.Length == 1 && t.Value == "\n", token.TokenType_NewLine)
@@ -51,7 +51,7 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		processTokenType(t, t.Length > 1 && slices.Contains(booleanStrings[:], t.Value), token.TokenType_Character)
 		processTokenType(t, t.Value == "nothing", token.TokenType_Null)
 
-		if t.Length == 0 && t.Type == token.TokenType_Literal {
+		if t.Length == 0 && t.Type == token.TokenType_Identifier {
 			continue
 		}
 
@@ -75,7 +75,7 @@ func processMultiTokenType(tokens *queue.Queue[*token.Token], condition processM
 		return
 	}
 
-	if tokens.First().Value.Type != token.TokenType_Literal {
+	if tokens.First().Value.Type != token.TokenType_Identifier {
 		return
 	}
 
@@ -121,11 +121,11 @@ func mergeLiterals(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Tok
 	for oldTokens.Len() > 0 {
 		t := oldTokens.Dequeue().Value
 
-		if t.Type != token.TokenType_Literal {
+		if t.Type != token.TokenType_Identifier {
 			if literalToken != nil &&
 				t.Type == token.TokenType_Whitespace &&
 				oldTokens.Len() >= 1 &&
-				oldTokens.First().Value.Type == token.TokenType_Literal {
+				oldTokens.First().Value.Type == token.TokenType_Identifier {
 				literalToken.Append(t)
 				continue
 			}

@@ -7,7 +7,7 @@ const (
 	TokenType_Unknown TokenType = iota
 
 	// 1
-	TokenType_Literal
+	TokenType_Identifier
 	TokenType_Punctuation
 	TokenType_NewLine
 	TokenType_Whitespace
@@ -111,7 +111,7 @@ var tokenTypeFriendlyName = map[TokenType]string {
 	TokenType_Unknown: "UNKNOWN",
 
 	// 1
-	TokenType_Literal: "LITERAL",
+	TokenType_Identifier: "IDENTIFIER",
 	TokenType_Punctuation: "PUNCTUATION",
 	TokenType_NewLine: "NEWLINE",
 	TokenType_Whitespace: "WHITESPACE",
