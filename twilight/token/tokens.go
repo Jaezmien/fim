@@ -107,6 +107,114 @@ const (
 	TokenType_WhileClause	
 )
 
+var tokenTypeFriendlyName = map[TokenType]string {
+	TokenType_Unknown: "UNKNOWN",
+
+	// 1
+	TokenType_Literal: "LITERAL",
+	TokenType_Punctuation: "PUNCTUATION",
+	TokenType_NewLine: "NEWLINE",
+	TokenType_Whitespace: "WHITESPACE",
+	TokenType_EndOfFile: "EOF",
+
+	// 6
+	TokenType_CommentParen: "COMMENT",
+	TokenType_CommentPostScript: "COMMENT",
+
+	// 8
+	TokenType_String: "LITERAL(STRING)",
+	TokenType_Character: "LITERAL(CHARACTER)",
+	TokenType_Number: "LITERAL(NUMBER)",
+	TokenType_Boolean: "LITERAL(BOOL)",
+
+	// 12
+	TokenType_Null: "NULL",
+
+	// 13
+	TokenType_ReportHeader: "REPORT(HEADER)",
+	TokenType_ReportFooter: "REPORT(FOOTER)",
+
+	// 15
+	TokenType_FunctionHeader: "FUNCTION(HEADER)",
+	TokenType_FunctionMain: "FUNCTION(MAIN)",
+	TokenType_FunctionFooter: "FUNCTION(FOOTER)",
+
+	// 18
+	TokenType_FunctionReturn: "FUNCTION(RETURN)",
+	TokenType_FunctionParameter: "FUNCTION(PARAMETER)",
+
+	// 20
+	TokenType_Print: "PRINT",
+	TokenType_PrintNewline: "PRINT(NEWLINE)",
+	TokenType_Prompt: "PROMPT",
+	TokenType_FunctionCall: "FUNCTION(CALL)",
+
+	// 24
+	TokenType_Declaration: "VARIABLE(DECLARATION)",
+	TokenType_Modify: "VARIABLE(MODIFY)",
+
+	// 26
+	TokenType_TypeString: "TYPE(STRING)",
+	TokenType_TypeChar: "TYPE(CHARACTER)",
+	TokenType_TypeNumber: "TYPE(NUMBER)",
+	TokenType_TypeBoolean: "TYPE(BOOLEAN)",
+
+	// 30
+	TokenType_TypeStringArray: "TYPE(STRING_ARRAY)",
+	TokenType_TypeNumberArray: "TYPE(NUMBER_ARRAY)",
+	TokenType_TypeBooleanArray: "TYPE(BOOLEAN_ARRAY)",
+
+	// 33
+	TokenType_OperatorEq: "OPERATOR(EQ)",
+	TokenType_OperatorNeq: "OPERATOR(NEQ)",
+	TokenType_OperatorGt: "OPERATOR(GT)",
+	TokenType_OperatorGte: "OPERATOR(GTE)",
+	TokenType_OperatorLt: "OPERATOR(LT)",
+	TokenType_OperatorLte: "OPERATOR(LTE)",
+
+	// 39
+	TokenType_UnaryNot: "UNARY(NOT)",
+
+	// 40
+	TokenType_OperatorAddInfix: "OPERATOR(ADD_INFIX)",
+	TokenType_OperatorAddPrefix: "OPERATOR(ADD_PREFIX)",
+	TokenType_UnaryIncrement: "UNARY(INCREMENT)",
+
+	// 43
+	TokenType_OperatorSubInfix: "OPERATOR(SUB_INFIX)",
+	TokenType_OperatorSubPrefix: "OPERATOR(SUB_PREFIX)",
+	TokenType_UnaryDecrement: "UNARY(DECREMENT)",
+
+	// 46
+	TokenType_OperatorMulInfix: "OPERATOR(MUL_INFIX)",
+	TokenType_OperatorMulPrefix: "OPEREATOR(MUL_PREFIX)",
+
+	// 48
+	TokenType_OperatorDivInfix: "OPERATOR(DIV_INFIX)",
+	TokenType_OperatorDivPrefix: "OPERATOR(DIV_PREFIX)",
+
+	// 50
+	TokenType_KeywordOr: "OR",
+	TokenType_KeywordAnd: "AND",
+	TokenType_KeywordConst: "CONST",
+	TokenType_KeywordOf: "OF",
+	TokenType_KeywordThen: "THEN",
+	TokenType_KeywordStatementEnd: "STATEMENT(END)",
+	TokenType_KeywordReturn: "RETURN",
+
+	// 57
+	TokenType_IfClause: "IF",
+	TokenType_ElseClause: "ELSE",
+	TokenType_IfEndClause: "IF(END)",
+
+	// 60
+	TokenType_WhileClause: "WHILE",
+}
+
+func (t TokenType) String() string {
+	return tokenTypeFriendlyName[t]
+}
+
 type Token struct {
 	Start  int
 	Length int

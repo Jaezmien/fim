@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"text/tabwriter"
 
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 )
@@ -16,7 +18,10 @@ func main() {
 	`
 
 	tokens := twilight.Parse(source)
+	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
 	for tokens.Len() > 0 {
-		fmt.Printf("%+v\n", tokens.Dequeue().Value)
+		token := tokens.Dequeue().Value
+		fmt.Fprintf(w, "%s\t\t%s\n", token.Type.String(), token.Value)
 	}
+	w.Flush()
 }
