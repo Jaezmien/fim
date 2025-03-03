@@ -97,6 +97,12 @@ func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		processMultiTokenType(oldTokens, parsers.IsReportHeader, token.TokenType_ReportHeader)
 		processMultiTokenType(oldTokens, parsers.IsReportFooter, token.TokenType_ReportFooter)
 
+		processMultiTokenType(oldTokens, parsers.IsFunctionHeaderMain, token.TokenType_FunctionMain)
+		processMultiTokenType(oldTokens, parsers.IsFunctionHeader, token.TokenType_FunctionHeader)
+		processMultiTokenType(oldTokens, parsers.IsFunctionFooter, token.TokenType_FunctionFooter)
+		processMultiTokenType(oldTokens, parsers.IsFunctionParameter, token.TokenType_FunctionParameter)
+		processMultiTokenType(oldTokens, parsers.IsFunctionReturn, token.TokenType_FunctionReturn)
+
 		tokens.Queue(oldTokens.Dequeue().Value)
 	}
 
@@ -115,7 +121,7 @@ func mergeLiterals(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Tok
 				t.Type == token.TokenType_Whitespace &&
 				oldTokens.Len() >= 1 &&
 				oldTokens.First().Value.Type == token.TokenType_Literal {
-				literalToken.Append(t)	
+				literalToken.Append(t)
 				continue
 			}
 
