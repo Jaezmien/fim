@@ -1,5 +1,7 @@
 package token
 
+import "fmt"
+
 type TokenType uint
 
 const (
@@ -213,6 +215,9 @@ var tokenTypeFriendlyName = map[TokenType]string {
 
 func (t TokenType) String() string {
 	return tokenTypeFriendlyName[t]
+}
+func (t TokenType) Message(format string) string {
+	return fmt.Sprintf(format, t.String())
 }
 
 type Token struct {
