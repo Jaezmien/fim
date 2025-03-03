@@ -10,7 +10,7 @@ type ReportNode struct {
 	Name string
 	Author string
 
-	Body []*token.Token
+	Body []*Node
 }
 
 func ParseReportNode(ast *spike.AST) (*ReportNode, error) {
