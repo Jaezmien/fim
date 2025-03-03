@@ -5,6 +5,8 @@ import (
 	"os"
 	"text/tabwriter"
 
+	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 )
 
@@ -18,10 +20,19 @@ func main() {
 	`
 
 	tokens := twilight.Parse(source)
+
 	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
-	for tokens.Len() > 0 {
-		token := tokens.Dequeue().Value
+
+	for idx := range tokens.Len() {
+		token := tokens.Peek(idx).Value
 		fmt.Fprintf(w, "%s\t\t%s\n", token.Type.String(), token.Value)
 	}
 	w.Flush()
+
+	ast := spike.NewAST(tokens.Flatten(), source)
+	report, err := nodes.ParseReportNode(ast)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%+v\n", report)
 }

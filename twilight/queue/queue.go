@@ -106,6 +106,19 @@ func (q *Queue[T]) QueueFront(value T) {
 	q.front = item
 }
 
+func (q *Queue[T]) Flatten() []T {
+	s := make([]T, 0, q.Len())
+
+	idx := 0
+	for q.Len() > 0 {
+		el := q.Dequeue()
+		s = append(s, el.Value)
+		idx += 1
+	}
+
+	return s
+}
+
 func New[T any]() *Queue[T] {
 	return &Queue[T]{}
 }

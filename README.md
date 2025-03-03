@@ -25,7 +25,7 @@
 | Folder | Description |
 | :--- | ---: |
 | [twilight](./twilight) | Tokenizer |
-| spike | AST Builder |
+| [spike](./spike) | AST Builder |
 | celestia | Interpreter |
 
 # 📚 External Resources
