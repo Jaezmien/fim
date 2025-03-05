@@ -1,0 +1,126 @@
+package main
+
+import (
+	"bytes"
+	"io"
+	"testing"
+
+	"git.jaezmien.com/Jaezmien/fim/celestia"
+	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
+	"git.jaezmien.com/Jaezmien/fim/twilight"
+	"github.com/stretchr/testify/assert"
+)
+
+func ExecuteBasicReport(t *testing.T, source string, expected string) {
+	tokens := twilight.Parse(source)
+	ast := spike.NewAST(tokens.Flatten(), source)
+	report, err := nodes.ParseReportNode(ast)
+	if !assert.NoError(t, err) {
+		return
+	}
+	interpreter, err := celestia.NewInterpreter(report, source)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	buffer := &bytes.Buffer{}
+	interpreter.Writer = buffer
+
+	var mainParagraph *celestia.Paragraph
+	for _, paragraph := range interpreter.Paragraphs {
+		if paragraph.Main {
+			mainParagraph = paragraph
+			break
+		}
+	}
+	if !assert.NotNil(t, mainParagraph) {
+		return
+	}
+
+	mainParagraph.Execute()
+	data, err := io.ReadAll(buffer)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	if !assert.Equal(t, expected, string(data)) {
+		return
+	}
+}
+
+func TestIO(t *testing.T) {
+	t.Run("should print", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said 1!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1")
+	})
+
+	t.Run("should print newline", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I quickly said 1!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1\n")
+	})
+}
+
+func TestBasicReports(t *testing.T) {
+	t.Run("should print string", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said "Hello World"!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Hello World")
+	})
+
+	t.Run("should print character", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said 'a'!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "a")
+	})
+
+	t.Run("should print boolean", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said correct!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "true")
+	})
+
+	t.Run("should print number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said 1!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1")
+	})
+}
