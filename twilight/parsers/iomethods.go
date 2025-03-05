@@ -26,7 +26,7 @@ func IsPrintNewlineMethod(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Peek(3).Value.Value != " " { return 0 }
 
 	expectedTokens := []string{ "said", "sang", "wrote" }
-	if slices.Contains((expectedTokens), tokens.Peek(4).Value.Value) { return 3 }
+	if slices.Contains((expectedTokens), tokens.Peek(4).Value.Value) { return 5 }
 
 	return 0
 }
