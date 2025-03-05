@@ -43,12 +43,12 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		processTokenType(t, t.Length == 1 && t.Value == " ", token.TokenType_Whitespace)
 		processTokenType(t, t.Length == 1 && strings.HasPrefix(t.Value, "(") && strings.HasSuffix(t.Value, ")"), token.TokenType_CommentParen)
 
-		processTokenType(t, t.Length > 1 && strings.HasPrefix(t.Value, "\"") && strings.HasSuffix(t.Value, "\""), token.TokenType_String)
-		processTokenType(t, t.Length > 1 && strings.HasPrefix(t.Value, "'") && strings.HasSuffix(t.Value, "'"), token.TokenType_Character)
+		processTokenType(t, t.Length >= 1 && strings.HasPrefix(t.Value, "\"") && strings.HasSuffix(t.Value, "\""), token.TokenType_String)
+		processTokenType(t, t.Length >= 1 && strings.HasPrefix(t.Value, "'") && strings.HasSuffix(t.Value, "'"), token.TokenType_Character)
 		if _, err := strconv.ParseFloat(t.Value, 64); err == nil {
-			processTokenType(t, t.Length > 1, token.TokenType_Number)
+			processTokenType(t, t.Length >= 1, token.TokenType_Number)
 		}
-		processTokenType(t, t.Length > 1 && slices.Contains(booleanStrings[:], t.Value), token.TokenType_Character)
+		processTokenType(t, t.Length >= 1 && slices.Contains(booleanStrings[:], t.Value), token.TokenType_Boolean)
 		processTokenType(t, t.Value == "nothing", token.TokenType_Null)
 
 		if t.Length == 0 && t.Type == token.TokenType_Identifier {
