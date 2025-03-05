@@ -3,7 +3,7 @@ package nodes
 import (
 	"fmt"
 
-	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -26,7 +26,7 @@ func (f *FunctionNode) ToNode() Node {
 	}
 }
 
-func ParseFunctionNode(ast *spike.AST) (*FunctionNode, error) {
+func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 	function := &FunctionNode{
 		Main: false,
 	}

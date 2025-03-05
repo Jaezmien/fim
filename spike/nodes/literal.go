@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/spike/utilities"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
@@ -76,7 +76,7 @@ func (l *LiteralNode) GetValueNumber() float64 {
 	return value
 }
 
-func ParseLiteralNode(ast *spike.AST, expectedEndType ...token.TokenType) (*LiteralNode, error) {
+func ParseLiteralNode(ast *ast.AST, expectedEndType ...token.TokenType) (*LiteralNode, error) {
 	node := &LiteralNode{}
 
 	return node, nil

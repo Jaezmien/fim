@@ -1,7 +1,7 @@
 package nodes
 
 import (
-	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -16,7 +16,7 @@ func (p *PrintNode) Type() NodeType {
 	return TYPE_PRINT
 }
 
-func ParsePrintNode(ast *spike.AST) (*PrintNode, error) {
+func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 	printNode := &PrintNode{}
 
 	startToken := ast.Peek()

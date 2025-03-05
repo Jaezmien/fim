@@ -1,7 +1,7 @@
 package nodes
 
 import (
-	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -15,7 +15,7 @@ func (s *StatementsNode) Type() NodeType {
 	return TYPE_STATEMENTS
 }
 
-func ParseStatementsNode(ast *spike.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
+func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
 	statements := &StatementsNode{}
 
 	for {

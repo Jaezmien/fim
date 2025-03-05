@@ -7,15 +7,13 @@ import (
 
 	"git.jaezmien.com/Jaezmien/fim/celestia"
 	"git.jaezmien.com/Jaezmien/fim/spike"
-	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 	"github.com/stretchr/testify/assert"
 )
 
 func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	tokens := twilight.Parse(source)
-	ast := spike.NewAST(tokens.Flatten(), source)
-	report, err := nodes.ParseReportNode(ast)
+	report, err := spike.CreateReport(tokens.Flatten(), source)
 	if !assert.NoError(t, err) {
 		return
 	}

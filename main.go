@@ -5,7 +5,6 @@ import (
 
 	"git.jaezmien.com/Jaezmien/fim/celestia"
 	"git.jaezmien.com/Jaezmien/fim/spike"
-	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 )
 
@@ -20,8 +19,7 @@ func main() {
 
 	tokens := twilight.Parse(source)
 
-	ast := spike.NewAST(tokens.Flatten(), source)
-	report, err := nodes.ParseReportNode(ast)
+	report, err := spike.CreateReport(tokens.Flatten(), source)
 	if err != nil {
 		fmt.Println(err)
 		return

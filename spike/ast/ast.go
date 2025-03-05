@@ -1,4 +1,4 @@
-package spike
+package ast
 
 import (
 	"errors"
@@ -10,44 +10,44 @@ import (
 )
 
 type AST struct {
-	tokens     []*token.Token
-	tokenIndex int
+	Tokens     []*token.Token
+	TokenIndex int
 
-	source string
+	Source string
 }
 
 func NewAST(tokens []*token.Token, source string) *AST {
 	return &AST{
-		tokens:     tokens,
-		tokenIndex: 0,
-		source:     source,
+		Tokens:     tokens,
+		TokenIndex: 0,
+		Source:     source,
 	}
 }
 
 func (a *AST) PeekAt(index int) *token.Token {
-	if index < 0 || index >= len(a.tokens) {
+	if index < 0 || index >= len(a.Tokens) {
 		return nil
 	}
-	return a.tokens[index]
+	return a.Tokens[index]
 }
 func (a *AST) Peek() *token.Token {
-	return a.PeekAt(a.tokenIndex)
+	return a.PeekAt(a.TokenIndex)
 }
 func (a *AST) PeekNext() *token.Token {
-	return a.PeekAt(a.tokenIndex + 1)
+	return a.PeekAt(a.TokenIndex + 1)
 }
 func (a *AST) PeekPrevious() *token.Token {
-	return a.PeekAt(a.tokenIndex - 1)
+	return a.PeekAt(a.TokenIndex - 1)
 }
 func (a *AST) PeekIndex() int {
-	return a.tokenIndex
+	return a.TokenIndex
 }
 
 func (a *AST) Next() {
-	a.tokenIndex += 1
+	a.TokenIndex += 1
 }
 func (a *AST) MoveTo(index int) {
-	a.tokenIndex = index
+	a.TokenIndex = index
 }
 
 func (a *AST) EndOfFile() bool {
@@ -59,7 +59,7 @@ func (a *AST) EndOfFile() bool {
 }
 
 func (a *AST) CreateErrorFromIndex(index int, errorMessage string) error {
-	pair := utilities.GetErrorIndexPair(a.source, index)
+	pair := utilities.GetErrorIndexPair(a.Source, index)
 	return errors.New(fmt.Sprintf("[line: %d] %s", pair.Line, errorMessage))
 }
 func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
@@ -67,7 +67,7 @@ func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
 }
 
 func (a *AST) GetSourceText(start int, length int) string {
-	return a.source[start : start+length]
+	return a.Source[start : start+length]
 }
 
 func (a *AST) CheckType(tokenTypes ...token.TokenType) bool {
@@ -79,7 +79,7 @@ func (a *AST) CheckType(tokenTypes ...token.TokenType) bool {
 }
 
 func (a *AST) Contains(tokenType token.TokenType) bool {
-	for idx := a.PeekIndex(); idx < len(a.tokens); idx++ {
+	for idx := a.PeekIndex(); idx < len(a.Tokens); idx++ {
 		if a.PeekAt(idx).Type == tokenType {
 			return true
 		}
@@ -87,7 +87,7 @@ func (a *AST) Contains(tokenType token.TokenType) bool {
 	return false
 }
 func (a *AST) ContainsWithStop(tokenType token.TokenType, stopTokens ...token.TokenType) bool {
-	for idx := a.PeekIndex(); idx < len(a.tokens); idx++ {
+	for idx := a.PeekIndex(); idx < len(a.Tokens); idx++ {
 		current := a.PeekAt(idx)
 
 		if slices.Contains(stopTokens, current.Type) {

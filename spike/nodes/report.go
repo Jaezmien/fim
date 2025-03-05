@@ -1,7 +1,7 @@
 package nodes
 
 import (
-	"git.jaezmien.com/Jaezmien/fim/spike"
+	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -17,7 +17,7 @@ func (r *ReportNode) Type() NodeType {
 	return TYPE_REPORT
 }
 
-func ParseReportNode(ast *spike.AST) (*ReportNode, error) {
+func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 	report := &ReportNode{}
 
 	startToken, err := ast.ConsumeToken(token.TokenType_ReportHeader, token.TokenType_ReportHeader.Message("Expected %s"))
