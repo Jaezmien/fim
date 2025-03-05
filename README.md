@@ -26,7 +26,7 @@
 | :--- | ---: |
 | [twilight](./twilight) | Tokenizer |
 | [spike](./spike) | AST Builder |
-| celestia | Interpreter |
+| [celestia](./celestia) | Interpreter |
 
 # 📚 External Resources
 
