@@ -59,21 +59,25 @@ func IsReturnKeyword(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Then", " ", "you", " ", "get"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
-		return 0 
+		return 0
 	}
 
 	return len(ExpectedTokens)
 }
 
 func IsFunctionCallMethod(tokens *queue.Queue[*token.Token]) int {
-	if tokens.First().Value.Value != "I" { return 0 }
-	if tokens.Len() < 3 { return 0 }
+	if tokens.First().Value.Value != "I" {
+		return 0
+	}
+	if tokens.Len() < 3 {
+		return 0
+	}
 
 	ExpectedTokens := [][]string{
 		{"I", " ", "remembered"},
 		{"I", " ", "would"},
 	}
-	for _, sequence := range(ExpectedTokens) {
+	for _, sequence := range ExpectedTokens {
 		if utilities.CheckTokenSequence(tokens, sequence) {
 			return len(sequence)
 		}

@@ -7,7 +7,7 @@ import (
 
 type ReportNode struct {
 	Node
-	Name string
+	Name   string
 	Author string
 
 	Body []INode
@@ -32,7 +32,7 @@ func ParseReportNode(ast *spike.AST) (*ReportNode, error) {
 
 	firstNameToken := nameTokens[0]
 	lastNameToken := nameTokens[len(nameTokens)-1]
-	report.Name = ast.GetSourceText(firstNameToken.Start, lastNameToken.Start + lastNameToken.Length - firstNameToken.Start)
+	report.Name = ast.GetSourceText(firstNameToken.Start, lastNameToken.Start+lastNameToken.Length-firstNameToken.Start)
 
 	_, err = ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
 	if err != nil {
@@ -40,7 +40,9 @@ func ParseReportNode(ast *spike.AST) (*ReportNode, error) {
 	}
 
 	for {
-		if ast.CheckType(token.TokenType_ReportFooter) { break }
+		if ast.CheckType(token.TokenType_ReportFooter) {
+			break
+		}
 		if ast.CheckType(token.TokenType_EndOfFile) {
 			return nil, ast.CreateErrorFromToken(ast.Peek(), token.TokenType_FunctionFooter.Message("Could not find %s"))
 		}

@@ -16,7 +16,7 @@ func AssertToken(t *testing.T, tok *token.Token, tokenType token.TokenType, valu
 func TestTokenizer(t *testing.T) {
 	t.Run("basic report", func(t *testing.T) {
 		source :=
-		`Dear Princess Celestia: Hello World!
+			`Dear Princess Celestia: Hello World!
 		Your faithful student, Twilight Sparkle.
 		`
 

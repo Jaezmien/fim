@@ -106,28 +106,28 @@ const (
 	TokenType_IfEndClause
 
 	// 60
-	TokenType_WhileClause	
+	TokenType_WhileClause
 )
 
-var tokenTypeFriendlyName = map[TokenType]string {
+var tokenTypeFriendlyName = map[TokenType]string{
 	TokenType_Unknown: "UNKNOWN",
 
 	// 1
-	TokenType_Identifier: "IDENTIFIER",
+	TokenType_Identifier:  "IDENTIFIER",
 	TokenType_Punctuation: "PUNCTUATION",
-	TokenType_NewLine: "NEWLINE",
-	TokenType_Whitespace: "WHITESPACE",
-	TokenType_EndOfFile: "EOF",
+	TokenType_NewLine:     "NEWLINE",
+	TokenType_Whitespace:  "WHITESPACE",
+	TokenType_EndOfFile:   "EOF",
 
 	// 6
-	TokenType_CommentParen: "COMMENT",
+	TokenType_CommentParen:      "COMMENT",
 	TokenType_CommentPostScript: "COMMENT",
 
 	// 8
-	TokenType_String: "LITERAL(STRING)",
+	TokenType_String:    "LITERAL(STRING)",
 	TokenType_Character: "LITERAL(CHARACTER)",
-	TokenType_Number: "LITERAL(NUMBER)",
-	TokenType_Boolean: "LITERAL(BOOL)",
+	TokenType_Number:    "LITERAL(NUMBER)",
+	TokenType_Boolean:   "LITERAL(BOOL)",
 
 	// 12
 	TokenType_Null: "NULL",
@@ -138,75 +138,75 @@ var tokenTypeFriendlyName = map[TokenType]string {
 
 	// 15
 	TokenType_FunctionHeader: "FUNCTION(HEADER)",
-	TokenType_FunctionMain: "FUNCTION(MAIN)",
+	TokenType_FunctionMain:   "FUNCTION(MAIN)",
 	TokenType_FunctionFooter: "FUNCTION(FOOTER)",
 
 	// 18
-	TokenType_FunctionReturn: "FUNCTION(RETURN)",
+	TokenType_FunctionReturn:    "FUNCTION(RETURN)",
 	TokenType_FunctionParameter: "FUNCTION(PARAMETER)",
 
 	// 20
-	TokenType_Print: "PRINT",
+	TokenType_Print:        "PRINT",
 	TokenType_PrintNewline: "PRINT(NEWLINE)",
-	TokenType_Prompt: "PROMPT",
+	TokenType_Prompt:       "PROMPT",
 	TokenType_FunctionCall: "FUNCTION(CALL)",
 
 	// 24
 	TokenType_Declaration: "VARIABLE(DECLARATION)",
-	TokenType_Modify: "VARIABLE(MODIFY)",
+	TokenType_Modify:      "VARIABLE(MODIFY)",
 
 	// 26
-	TokenType_TypeString: "TYPE(STRING)",
-	TokenType_TypeChar: "TYPE(CHARACTER)",
-	TokenType_TypeNumber: "TYPE(NUMBER)",
+	TokenType_TypeString:  "TYPE(STRING)",
+	TokenType_TypeChar:    "TYPE(CHARACTER)",
+	TokenType_TypeNumber:  "TYPE(NUMBER)",
 	TokenType_TypeBoolean: "TYPE(BOOLEAN)",
 
 	// 30
-	TokenType_TypeStringArray: "TYPE(STRING_ARRAY)",
-	TokenType_TypeNumberArray: "TYPE(NUMBER_ARRAY)",
+	TokenType_TypeStringArray:  "TYPE(STRING_ARRAY)",
+	TokenType_TypeNumberArray:  "TYPE(NUMBER_ARRAY)",
 	TokenType_TypeBooleanArray: "TYPE(BOOLEAN_ARRAY)",
 
 	// 33
-	TokenType_OperatorEq: "OPERATOR(EQ)",
+	TokenType_OperatorEq:  "OPERATOR(EQ)",
 	TokenType_OperatorNeq: "OPERATOR(NEQ)",
-	TokenType_OperatorGt: "OPERATOR(GT)",
+	TokenType_OperatorGt:  "OPERATOR(GT)",
 	TokenType_OperatorGte: "OPERATOR(GTE)",
-	TokenType_OperatorLt: "OPERATOR(LT)",
+	TokenType_OperatorLt:  "OPERATOR(LT)",
 	TokenType_OperatorLte: "OPERATOR(LTE)",
 
 	// 39
 	TokenType_UnaryNot: "UNARY(NOT)",
 
 	// 40
-	TokenType_OperatorAddInfix: "OPERATOR(ADD_INFIX)",
+	TokenType_OperatorAddInfix:  "OPERATOR(ADD_INFIX)",
 	TokenType_OperatorAddPrefix: "OPERATOR(ADD_PREFIX)",
-	TokenType_UnaryIncrement: "UNARY(INCREMENT)",
+	TokenType_UnaryIncrement:    "UNARY(INCREMENT)",
 
 	// 43
-	TokenType_OperatorSubInfix: "OPERATOR(SUB_INFIX)",
+	TokenType_OperatorSubInfix:  "OPERATOR(SUB_INFIX)",
 	TokenType_OperatorSubPrefix: "OPERATOR(SUB_PREFIX)",
-	TokenType_UnaryDecrement: "UNARY(DECREMENT)",
+	TokenType_UnaryDecrement:    "UNARY(DECREMENT)",
 
 	// 46
-	TokenType_OperatorMulInfix: "OPERATOR(MUL_INFIX)",
+	TokenType_OperatorMulInfix:  "OPERATOR(MUL_INFIX)",
 	TokenType_OperatorMulPrefix: "OPEREATOR(MUL_PREFIX)",
 
 	// 48
-	TokenType_OperatorDivInfix: "OPERATOR(DIV_INFIX)",
+	TokenType_OperatorDivInfix:  "OPERATOR(DIV_INFIX)",
 	TokenType_OperatorDivPrefix: "OPERATOR(DIV_PREFIX)",
 
 	// 50
-	TokenType_KeywordOr: "OR",
-	TokenType_KeywordAnd: "AND",
-	TokenType_KeywordConst: "CONST",
-	TokenType_KeywordOf: "OF",
-	TokenType_KeywordThen: "THEN",
+	TokenType_KeywordOr:           "OR",
+	TokenType_KeywordAnd:          "AND",
+	TokenType_KeywordConst:        "CONST",
+	TokenType_KeywordOf:           "OF",
+	TokenType_KeywordThen:         "THEN",
 	TokenType_KeywordStatementEnd: "STATEMENT(END)",
-	TokenType_KeywordReturn: "RETURN",
+	TokenType_KeywordReturn:       "RETURN",
 
 	// 57
-	TokenType_IfClause: "IF",
-	TokenType_ElseClause: "ELSE",
+	TokenType_IfClause:    "IF",
+	TokenType_ElseClause:  "ELSE",
 	TokenType_IfEndClause: "IF(END)",
 
 	// 60
@@ -224,8 +224,9 @@ type Token struct {
 	Start  int
 	Length int
 	Type   TokenType
-	Value string
+	Value  string
 }
+
 func (t *Token) Append(token *Token) {
 	t.Value += token.Value
 	t.Length += token.Length

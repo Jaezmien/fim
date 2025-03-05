@@ -67,7 +67,7 @@ func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
 }
 
 func (a *AST) GetSourceText(start int, length int) string {
-	return a.source[start : start + length]
+	return a.source[start : start+length]
 }
 
 func (a *AST) CheckType(tokenTypes ...token.TokenType) bool {
@@ -133,7 +133,7 @@ func (a *AST) ConsumeFuncUntilMatch(predicate func(*token.Token) bool, errorMess
 			panic("AST@ConsumeFuncUntilMatch called with nil token")
 		}
 
-		if (a.EndOfFile()) {
+		if a.EndOfFile() {
 			return nil, a.CreateErrorFromToken(current, errorMessage)
 		}
 

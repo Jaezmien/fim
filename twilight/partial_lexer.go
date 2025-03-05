@@ -9,6 +9,7 @@ import (
 )
 
 var splittable_runes = [...]rune{'.', '!', '?', ':', ',', '(', ')', '"', '\'', ' ', '\t', '\\', '\n'}
+
 func isRuneSplittable(r rune) bool {
 	return utilities.ContainsRune(r, splittable_runes[:])
 }
@@ -26,7 +27,7 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 					Start:  start,
 					Length: length,
 					Type:   token.TokenType_Unknown,
-					Value: source[start: start + length],
+					Value:  source[start : start+length],
 				}
 				l.Queue(token)
 			}
@@ -35,7 +36,7 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 				Start:  idx,
 				Length: 1,
 				Type:   token.TokenType_Unknown,
-				Value: source[idx: idx + 1],
+				Value:  source[idx : idx+1],
 			}
 			l.Queue(token)
 
@@ -51,7 +52,7 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 			Start:  start,
 			Length: length,
 			Type:   token.TokenType_Unknown,
-			Value: source[start: start + length],
+			Value:  source[start : start+length],
 		}
 
 		l.Queue(token)
@@ -61,9 +62,12 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 }
 
 type mergePartialTokensResult = func(tokens *queue.Queue[*token.Token]) int
+
 func processPartialTokens(tokens *queue.Queue[*token.Token], process mergePartialTokensResult) {
 	mergeAmount := process(tokens)
-	if mergeAmount <= 0 { return }
+	if mergeAmount <= 0 {
+		return
+	}
 
 	token := utilities.MergeTokens(tokens, mergeAmount)
 	tokens.QueueFront(token)
@@ -109,7 +113,7 @@ func mergeDecimalTokens(tokens *queue.Queue[*token.Token]) int {
 	if !utilities.IsStringNumber(right.Value.Value) {
 		return 0
 	}
-	
+
 	return 3
 }
 
@@ -178,7 +182,9 @@ func mergeCharacterTokens(tokens *queue.Queue[*token.Token]) int {
 		}
 	}
 
-	if mergeAmount == -1 { return 0  }
+	if mergeAmount == -1 {
+		return 0
+	}
 
 	return mergeAmount
 }
@@ -189,23 +195,29 @@ func mergeDelimiters(tokens *queue.Queue[*token.Token]) int {
 	current := tokens.Peek(0)
 
 	startDelimeter := strings.IndexAny(current.Value.Value, string(StartDelimeters))
-	if startDelimeter == -1 { return 0 }
+	if startDelimeter == -1 {
+		return 0
+	}
 
 	endDelimeterIndex := -1
 	for idx := 1; idx < tokens.Len(); idx++ {
 		token := tokens.Peek(idx)
 		if token.Value.Value == "\n" || idx == tokens.Len() {
-			return 0 
+			return 0
 		}
 
 		endDelimeter := strings.IndexAny(token.Value.Value, string(EndDelimeters))
-		if startDelimeter != endDelimeter { continue }
-		
+		if startDelimeter != endDelimeter {
+			continue
+		}
+
 		endDelimeterIndex = idx
 		break
 	}
-	
-	if endDelimeterIndex == -1 { return 0 }
+
+	if endDelimeterIndex == -1 {
+		return 0
+	}
 
 	return endDelimeterIndex + 1
 }

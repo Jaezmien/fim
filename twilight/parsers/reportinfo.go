@@ -9,14 +9,18 @@ import (
 func IsReportHeader(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Dear", " ", "Princess", " ", "Celestia", ":"}
 
-	if(!utilities.CheckTokenSequence(tokens, ExpectedTokens)) { return 0 }
+	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
+		return 0
+	}
 
 	return len(ExpectedTokens)
 }
 func IsReportFooter(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Your", " ", "faithful", " ", "student", ","}
 
-	if(!utilities.CheckTokenSequence(tokens, ExpectedTokens)) { return 0 }
+	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
+		return 0
+	}
 
 	return len(ExpectedTokens)
 }

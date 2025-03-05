@@ -12,4 +12,3 @@ func TestStringNumber(t *testing.T) {
 	assert.False(t, IsStringNumber("a"), "Should not be a number")
 	assert.False(t, IsStringNumber("Zz"), "Should not be a number")
 }
-

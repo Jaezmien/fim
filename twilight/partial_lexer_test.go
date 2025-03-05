@@ -52,7 +52,7 @@ func TestPartialTokens(t *testing.T) {
 
 	t.Run("should clean tokens", func(t *testing.T) {
 		source :=
-		`hello
+			`hello
 			world
 		bye`
 
@@ -176,7 +176,7 @@ func TestTokenMerging(t *testing.T) {
 		l := createPartialTokens(source)
 		token := utilities.MergeTokens(l, 1)
 
-		assert.Equal(t, token.Value, source,  "Should be same as source")
+		assert.Equal(t, token.Value, source, "Should be same as source")
 	})
 	t.Run("should work with multiple tokens", func(t *testing.T) {
 		source := "hello world"
