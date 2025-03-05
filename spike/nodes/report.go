@@ -10,7 +10,11 @@ type ReportNode struct {
 	Name string
 	Author string
 
-	Body []*Node
+	Body []INode
+}
+
+func (r *ReportNode) Type() NodeType {
+	return TYPE_REPORT
 }
 
 func ParseReportNode(ast *spike.AST) (*ReportNode, error) {
@@ -45,7 +49,19 @@ func ParseReportNode(ast *spike.AST) (*ReportNode, error) {
 			continue
 		}
 
-		ast.Next()
+		if ast.CheckType(token.TokenType_FunctionMain) || ast.CheckType(token.TokenType_FunctionHeader) {
+			functionNode, err := ParseFunctionNode(ast)
+
+			if err != nil {
+				return nil, err
+			}
+
+			report.Body = append(report.Body, functionNode)
+
+			continue
+		} else {
+			return nil, ast.CreateErrorFromToken(ast.Peek(), ast.Peek().Type.Message("Unxpected token: %s"))
+		}
 	}
 
 	_, err = ast.ConsumeToken(token.TokenType_ReportFooter, token.TokenType_ReportFooter.Message("Expected %s"))
