@@ -14,6 +14,12 @@ type StatementsNode struct {
 func (s *StatementsNode) Type() NodeType {
 	return TYPE_STATEMENTS
 }
+func (s *StatementsNode) ToNode() Node {
+	return Node{
+		Start:  s.Start,
+		Length: s.Length,
+	}
+}
 
 func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
 	statements := &StatementsNode{}

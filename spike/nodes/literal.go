@@ -21,6 +21,12 @@ type LiteralNode struct {
 func (l *LiteralNode) Type() NodeType {
 	return TYPE_LITERAL
 }
+func (l *LiteralNode) ToNode() Node {
+	return Node{
+		Start:  l.Start,
+		Length: l.Length,
+	}
+}
 
 func (l *LiteralNode) SetValue(value string) {
 	l.value = value

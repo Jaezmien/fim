@@ -15,6 +15,12 @@ type PrintNode struct {
 func (p *PrintNode) Type() NodeType {
 	return TYPE_PRINT
 }
+func (p *PrintNode) ToNode() Node {
+	return Node{
+		Start:  p.Start,
+		Length: p.Length,
+	}
+}
 
 func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 	printNode := &PrintNode{}

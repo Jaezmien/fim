@@ -9,3 +9,10 @@ type IdentifierNode struct {
 func (i *IdentifierNode) Type() NodeType {
 	return TYPE_IDENTIFIER
 }
+
+func (i *IdentifierNode) ToNode() Node {
+	return Node{
+		Start:  i.Start,
+		Length: i.Length,
+	}
+}

@@ -19,6 +19,7 @@ type FunctionNode struct {
 func (f *FunctionNode) Type() NodeType {
 	return TYPE_FUNCTION
 }
+
 func (f *FunctionNode) ToNode() Node {
 	return Node{
 		Start:  f.Start,

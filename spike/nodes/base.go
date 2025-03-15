@@ -25,6 +25,7 @@ const (
 
 type INode interface {
 	Type() NodeType
+	ToNode() Node
 }
 
 func NewNode(start int, length int) *Node {
