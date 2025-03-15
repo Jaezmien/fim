@@ -1,6 +1,8 @@
 package nodes
 
 import (
+	"fmt"
+
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
@@ -21,6 +23,7 @@ const (
 
 	TYPE_LITERAL
 	TYPE_IDENTIFIER
+	TYPE_BINARYEXPRESSION
 )
 
 type INode interface {
@@ -62,6 +65,10 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 		return literalNode
 	}
 
+	if len(tokens) == 0 {
+		panic("ast@CreateValueNode called without any tokens")
+	}
+
 	if len(tokens) == 1 {
 		t := tokens[0]
 
@@ -90,6 +97,9 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 			literalNode.value = t.Value
 			literalNode.ValueType = defaultType
 
+			literalNode.Start = t.Start
+			literalNode.Length = t.Length
+
 			return literalNode
 		}
 		if t.Type == token.TokenType_Null && options.possibleNullType != nil {
@@ -105,5 +115,85 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 		}
 	}
 
-	panic("ast@CreateValueNode TODO/UNKNOWN")
+	if len(tokens) > 1 {
+		expressions := []struct{
+			tokenType token.TokenType
+			operator BinaryExpressionOperator
+			binaryType BinaryExpressionType
+		}{
+			// Arithmetic
+			{
+				tokenType: token.TokenType_OperatorMulInfix,
+				operator: BINARYOPERATOR_ADD,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
+			{
+				tokenType: token.TokenType_OperatorDivInfix,
+				operator: BINARYOPERATOR_DIV,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
+			{
+				tokenType: token.TokenType_OperatorAddInfix,
+				operator: BINARYOPERATOR_ADD,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
+			{
+				tokenType: token.TokenType_OperatorSubInfix,
+				operator: BINARYOPERATOR_SUB,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
+			
+			// Relational
+			{
+				tokenType: token.TokenType_OperatorGte,
+				operator: BINARYOPERATOR_GTE,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType: token.TokenType_OperatorLte,
+				operator: BINARYOPERATOR_LTE,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType: token.TokenType_OperatorGt,
+				operator: BINARYOPERATOR_GT,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType: token.TokenType_OperatorLt,
+				operator: BINARYOPERATOR_LT,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType: token.TokenType_OperatorNeq,
+				operator: BINARYOPERATOR_NEQ,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType: token.TokenType_OperatorEq,
+				operator: BINARYOPERATOR_EQ,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+
+			{
+				tokenType: token.TokenType_KeywordAnd,
+				operator: BINARYOPERATOR_AND,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType: token.TokenType_KeywordOr,
+				operator: BINARYOPERATOR_OR,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+		}
+
+		for _, expression := range expressions {
+			e, ok := CreateExpression(tokens, expression.tokenType, expression.operator, expression.binaryType)
+			if ok {
+				return e
+			}
+		}
+	}
+
+	panic(fmt.Sprintf("ast@CreateValueNode TODO/UNKNOWN\n%+v", tokens))
 }
