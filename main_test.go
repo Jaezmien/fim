@@ -60,7 +60,7 @@ func TestIO(t *testing.T) {
 		ExecuteBasicReport(t, source, "1")
 	})
 
-	t.Run("should print newline", func(t *testing.T) {
+	t.Run("should print with newline", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Hello World!
 			Today I learned how to say hello world!
