@@ -108,6 +108,27 @@ func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		processMultiTokenType(oldTokens, parsers.IsReadMethod, token.TokenType_Prompt)
 		processMultiTokenType(oldTokens, parsers.IsFunctionCallMethod, token.TokenType_FunctionCall)
 
+		processMultiTokenType(oldTokens, parsers.IsInfixAddition, token.TokenType_OperatorAddInfix)
+		processMultiTokenType(oldTokens, parsers.IsPrefixAddition, token.TokenType_OperatorAddPrefix)
+		processMultiTokenType(oldTokens, parsers.IsInfixSubtraction, token.TokenType_OperatorSubInfix)
+		processMultiTokenType(oldTokens, parsers.IsPrefixSubtraction, token.TokenType_OperatorSubPrefix)
+		processMultiTokenType(oldTokens, parsers.IsInfixMultiplication, token.TokenType_OperatorMulInfix)
+		processMultiTokenType(oldTokens, parsers.IsPrefixMultiplication, token.TokenType_OperatorMulPrefix)
+		processMultiTokenType(oldTokens, parsers.IsInfixDivision, token.TokenType_OperatorDivInfix)
+		processMultiTokenType(oldTokens, parsers.IsPrefixDivision, token.TokenType_OperatorDivPrefix)
+
+		processMultiTokenType(oldTokens, parsers.IsLessThanEqualOperator, token.TokenType_OperatorLte)
+		processMultiTokenType(oldTokens, parsers.IsGreaterThanEqualOperator, token.TokenType_OperatorGte)
+		processMultiTokenType(oldTokens, parsers.IsGreaterThanOperator, token.TokenType_OperatorGt)
+		processMultiTokenType(oldTokens, parsers.IsLessThanOperator, token.TokenType_OperatorLt)
+		processMultiTokenType(oldTokens, parsers.IsNotEqualOperator, token.TokenType_OperatorNeq)
+		processMultiTokenType(oldTokens, parsers.IsEqualOperator, token.TokenType_OperatorEq)
+
+		processMultiTokenType(oldTokens, parsers.IsConstantKeyword, token.TokenType_KeywordConst)
+		processMultiTokenType(oldTokens, parsers.IsAndKeyword, token.TokenType_KeywordAnd)
+		processMultiTokenType(oldTokens, parsers.IsOrKeyword, token.TokenType_KeywordOr)
+		processMultiTokenType(oldTokens, parsers.IsOfKeyword, token.TokenType_KeywordOf)
+
 		tokens.Queue(oldTokens.Dequeue().Value)
 	}
 
