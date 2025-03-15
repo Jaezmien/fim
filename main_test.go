@@ -122,3 +122,50 @@ func TestBasicReports(t *testing.T) {
 		ExecuteBasicReport(t, source, "1")
 	})
 }
+
+func TestExpressionNode(t *testing.T) {
+	t.Run("should add number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said 1 plus 1!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "2")
+	})
+	t.Run("should subtract number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said 1 minus 1!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "0")
+	})
+	t.Run("should concatenate string", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said "Hello" plus " " plus "World"!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Hello World")
+	})
+	t.Run("should concatenate number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			I said "Hello " plus 1!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Hello 1")
+	})
+}
