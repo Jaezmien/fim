@@ -47,6 +47,52 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	}
 }
 
+func TestReport(t *testing.T) {
+	source := `Dear Princess Celestia: Hello World!
+		Today I learned how to say hello world!
+		I said "Hello World"!
+		That's all about how to say hello world.
+		Your faithful student, Twilight Sparkle.
+		`
+
+	tokens := twilight.Parse(source)
+	report, err := spike.CreateReport(tokens.Flatten(), source)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	assert.Equal(t, "Hello World", report.Name, "Mismatch report name")
+	assert.Equal(t, "Twilight Sparkle", report.Author, "Mismatch report author")
+
+	interpreter, err := celestia.NewInterpreter(report, source)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	buffer := &bytes.Buffer{}
+	interpreter.Writer = buffer
+
+	var mainParagraph *celestia.Paragraph
+	for _, paragraph := range interpreter.Paragraphs {
+		if paragraph.Main {
+			mainParagraph = paragraph
+			break
+		}
+	}
+	if !assert.NotNil(t, mainParagraph) {
+		return
+	}
+	assert.Equal(t, "how to say hello world", mainParagraph.FunctionNode.Name, "Mismatch function name")
+
+	mainParagraph.Execute()
+	data, err := io.ReadAll(buffer)
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	assert.Equal(t, "Hello World", string(data))
+}
+
 func TestIO(t *testing.T) {
 	t.Run("should print", func(t *testing.T) {
 		source :=
