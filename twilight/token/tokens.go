@@ -19,7 +19,7 @@ const (
 	TokenType_CommentParen
 	TokenType_CommentPostScript
 
-	// 8
+	// 8 (Literals)
 	TokenType_String
 	TokenType_Character
 	TokenType_Number
