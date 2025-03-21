@@ -86,7 +86,7 @@ func main() {
 		source := args[0].String()
 
 		if len(args) >= 3 && args[2].Type() == js.TypeFunction {
-			errorCallback, err = NewCallbackWriter(&args[1])
+			errorCallback, err = NewCallbackWriter(&args[2])
 			if err != nil {
 				return err.Error()
 			}
