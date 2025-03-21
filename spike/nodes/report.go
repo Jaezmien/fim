@@ -67,9 +67,21 @@ func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 			report.Body = append(report.Body, functionNode)
 
 			continue
-		} else {
-			return nil, ast.CreateErrorFromToken(ast.Peek(), ast.Peek().Type.Message("Unxpected token: %s"))
 		}
+
+		if ast.CheckType(token.TokenType_Declaration) {
+			declarationNode, err := ParseVariableDeclarationNode(ast)
+
+			if err != nil {
+				return nil, err
+			}
+
+			report.Body = append(report.Body, declarationNode)
+
+			continue
+		}
+
+		return nil, ast.CreateErrorFromToken(ast.Peek(), ast.Peek().Type.Message("Unxpected token: %s"))
 	}
 
 	_, err = ast.ConsumeToken(token.TokenType_ReportFooter, token.TokenType_ReportFooter.Message("Expected %s"))

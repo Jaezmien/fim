@@ -64,3 +64,23 @@ func FromTokenType(t token.TokenType) VariableType {
 		return UNKNOWN
 	}
 }
+func FromTokenTypeHint(t token.TokenType) VariableType {
+	switch t {
+	case token.TokenType_TypeBoolean:
+		return BOOLEAN
+	case token.TokenType_TypeNumber:
+		return NUMBER
+	case token.TokenType_TypeChar:
+		return CHARACTER
+	case token.TokenType_TypeString:
+		return STRING
+	case token.TokenType_TypeBooleanArray:
+		return BOOLEAN_ARRAY
+	case token.TokenType_TypeNumberArray:
+		return NUMBER_ARRAY
+	case token.TokenType_TypeStringArray:
+		return STRING_ARRAY
+	default:
+		return UNKNOWN
+	}
+}
