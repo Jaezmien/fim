@@ -1,11 +1,10 @@
-package main
+package celestia
 
 import (
 	"bytes"
 	"io"
 	"testing"
 
-	"git.jaezmien.com/Jaezmien/fim/celestia"
 	"git.jaezmien.com/Jaezmien/fim/spike"
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +16,7 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	if !assert.NoError(t, err) {
 		return
 	}
-	interpreter, err := celestia.NewInterpreter(report, source)
+	interpreter, err := NewInterpreter(report, source)
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -25,7 +24,7 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	buffer := &bytes.Buffer{}
 	interpreter.Writer = buffer
 
-	var mainParagraph *celestia.Paragraph
+	var mainParagraph *Paragraph
 	for _, paragraph := range interpreter.Paragraphs {
 		if paragraph.Main {
 			mainParagraph = paragraph
@@ -64,7 +63,7 @@ func TestReport(t *testing.T) {
 	assert.Equal(t, "Hello World", report.Name, "Mismatch report name")
 	assert.Equal(t, "Twilight Sparkle", report.Author, "Mismatch report author")
 
-	interpreter, err := celestia.NewInterpreter(report, source)
+	interpreter, err := NewInterpreter(report, source)
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -72,7 +71,7 @@ func TestReport(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	interpreter.Writer = buffer
 
-	var mainParagraph *celestia.Paragraph
+	var mainParagraph *Paragraph
 	for _, paragraph := range interpreter.Paragraphs {
 		if paragraph.Main {
 			mainParagraph = paragraph
