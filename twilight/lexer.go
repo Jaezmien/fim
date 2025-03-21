@@ -58,8 +58,14 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		tokens.Queue(t)
 	}
 
+	lastToken := tokens.Last()
+	startIndex := 0
+	if lastToken != nil {
+		startIndex = lastToken.Value.Start
+	}
+
 	tokens.Queue(&token.Token{
-		Start:  tokens.Last().Value.Start,
+		Start:  startIndex,
 		Length: 0,
 		Value:  "",
 		Type:   token.TokenType_EndOfFile,
