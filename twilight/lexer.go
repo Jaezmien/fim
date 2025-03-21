@@ -114,6 +114,8 @@ func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		processMultiTokenType(oldTokens, parsers.IsReadMethod, token.TokenType_Prompt)
 		processMultiTokenType(oldTokens, parsers.IsFunctionCallMethod, token.TokenType_FunctionCall)
 
+		processMultiTokenType(oldTokens, parsers.IsPostscript, token.TokenType_CommentPostScript)
+
 		processMultiTokenType(oldTokens, parsers.IsInfixAddition, token.TokenType_OperatorAddInfix)
 		processMultiTokenType(oldTokens, parsers.IsPrefixAddition, token.TokenType_OperatorAddPrefix)
 		processMultiTokenType(oldTokens, parsers.IsInfixSubtraction, token.TokenType_OperatorSubInfix)
@@ -197,7 +199,9 @@ func cleanTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token
 			continue
 		}
 		if t.Type == token.TokenType_CommentPostScript {
-			for oldTokens.Len() > 0 && oldTokens.First().Value.Type != token.TokenType_NewLine {
+			for oldTokens.Len() > 0 && 
+				(oldTokens.First().Value.Type != token.TokenType_NewLine &&
+					oldTokens.First().Value.Type != token.TokenType_EndOfFile) {
 				oldTokens.Dequeue()
 			}
 			continue
