@@ -143,7 +143,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			// Arithmetic
 			{
 				tokenType: token.TokenType_OperatorMulInfix,
-				operator: BINARYOPERATOR_ADD,
+				operator: BINARYOPERATOR_MUL,
 				binaryType: BINARYTYPE_ARITHMETIC,
 			},
 			{
