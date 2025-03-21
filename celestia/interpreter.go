@@ -62,7 +62,7 @@ func (i *Interpreter) ReportAuthor() string {
 
 func (i *Interpreter) CreateErrorFromIndex(index int, errorMessage string) error {
 	pair := utilities.GetErrorIndexPair(i.source, index)
-	return errors.New(fmt.Sprintf("[line: %d] %s", pair.Line, errorMessage))
+	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
 }
 func (i *Interpreter) CreateErrorFromNode(n nodes.Node, errorMessage string) error {
 	return i.CreateErrorFromIndex(n.Start, errorMessage)

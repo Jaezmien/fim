@@ -60,7 +60,7 @@ func (a *AST) EndOfFile() bool {
 
 func (a *AST) CreateErrorFromIndex(index int, errorMessage string) error {
 	pair := utilities.GetErrorIndexPair(a.Source, index)
-	return errors.New(fmt.Sprintf("[line: %d] %s", pair.Line, errorMessage))
+	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
 }
 func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
 	return a.CreateErrorFromIndex(t.Start, errorMessage)
