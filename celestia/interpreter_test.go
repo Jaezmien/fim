@@ -89,7 +89,7 @@ func TestReport(t *testing.T) {
 		return
 	}
 
-	assert.Equal(t, "Hello World", string(data))
+	assert.Equal(t, "Hello World\n", string(data))
 }
 
 func TestIO(t *testing.T) {
@@ -128,7 +128,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World")
+		ExecuteBasicReport(t, source, "Hello World\n")
 	})
 
 	t.Run("should print character", func(t *testing.T) {
@@ -140,7 +140,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "a")
+		ExecuteBasicReport(t, source, "a\n")
 	})
 
 	t.Run("should print boolean", func(t *testing.T) {
@@ -152,7 +152,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "true")
+		ExecuteBasicReport(t, source, "true\n")
 	})
 
 	t.Run("should print number", func(t *testing.T) {
@@ -164,7 +164,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1")
+		ExecuteBasicReport(t, source, "1\n")
 	})
 }
 
@@ -178,7 +178,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "2")
+		ExecuteBasicReport(t, source, "2\n")
 	})
 	t.Run("should subtract number", func(t *testing.T) {
 		source :=
@@ -189,7 +189,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "0")
+		ExecuteBasicReport(t, source, "0\n")
 	})
 	t.Run("should concatenate string", func(t *testing.T) {
 		source :=
@@ -200,7 +200,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World")
+		ExecuteBasicReport(t, source, "Hello World\n")
 	})
 	t.Run("should concatenate number", func(t *testing.T) {
 		source :=
@@ -211,6 +211,6 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello 1")
+		ExecuteBasicReport(t, source, "Hello 1\n")
 	})
 }
