@@ -14,13 +14,17 @@ func TestBinaryExpression(t *testing.T) {
 		tokens := twilight.Parse(source).Flatten()
 		tokens = tokens[:len(tokens)-1] // Ignore EOF token
 
-		valueNode := CreateValueNode(tokens, CreateValueNodeOptions{}).(*BinaryExpressionNode)
+		valueNode, err := CreateValueNode(tokens, CreateValueNodeOptions{})
+		if !assert.NoError(t, err) {
+			return
+		}
+		binaryExpression := valueNode.(*BinaryExpressionNode)
 
-		assert.Equal(t, TYPE_BINARYEXPRESSION, valueNode.Type(), "Expected BinaryExpressionNode")
-		assert.Equal(t, BINARYTYPE_ARITHMETIC, valueNode.BinaryType, "Expected operator to be Arithmetic")
-		assert.Equal(t, BINARYOPERATOR_ADD, valueNode.Operator, "Expected operator to be Add")
-		assert.Equal(t, TYPE_LITERAL, valueNode.Left.Type(), "Expected left node to be LiteralNode")
-		assert.Equal(t, TYPE_LITERAL, valueNode.Right.Type(), "Expected right node to be LiteralNode")
+		assert.Equal(t, TYPE_BINARYEXPRESSION, binaryExpression.Type(), "Expected BinaryExpressionNode")
+		assert.Equal(t, BINARYTYPE_ARITHMETIC, binaryExpression.BinaryType, "Expected operator to be Arithmetic")
+		assert.Equal(t, BINARYOPERATOR_ADD, binaryExpression.Operator, "Expected operator to be Add")
+		assert.Equal(t, TYPE_LITERAL, binaryExpression.Left.Type(), "Expected left node to be LiteralNode")
+		assert.Equal(t, TYPE_LITERAL, binaryExpression.Right.Type(), "Expected right node to be LiteralNode")
 	})
 	t.Run("should handle multiple expressions", func(t *testing.T) {
 		source := "1 plus 2 minus 3"
@@ -28,16 +32,20 @@ func TestBinaryExpression(t *testing.T) {
 		tokens := twilight.Parse(source).Flatten()
 		tokens = tokens[:len(tokens)-1] // Ignore EOF token
 
-		valueNode := CreateValueNode(tokens, CreateValueNodeOptions{}).(*BinaryExpressionNode)
+		valueNode, err := CreateValueNode(tokens, CreateValueNodeOptions{})
+		if !assert.NoError(t, err) {
+			return
+		}
+		binaryExpression := valueNode.(*BinaryExpressionNode)
 
-		assert.Equal(t, TYPE_BINARYEXPRESSION, valueNode.Type(), "Expected BinaryExpressionNode")
-		assert.Equal(t, BINARYTYPE_ARITHMETIC, valueNode.BinaryType, "Expected operator to be Arithmetic")
-		assert.Equal(t, BINARYOPERATOR_ADD, valueNode.Operator, "Expected operator to be Add")
-		assert.Equal(t, TYPE_LITERAL, valueNode.Left.Type(), "Expected left node to be LiteralNode")
-		assert.Equal(t, TYPE_BINARYEXPRESSION, valueNode.Right.Type(), "Expected right node to be BinaryExpresionNode")
-		assert.Equal(t, 1.0, valueNode.Left.(*LiteralNode).GetValueNumber(), "Expected left node value to be 1")
+		assert.Equal(t, TYPE_BINARYEXPRESSION, binaryExpression.Type(), "Expected BinaryExpressionNode")
+		assert.Equal(t, BINARYTYPE_ARITHMETIC, binaryExpression.BinaryType, "Expected operator to be Arithmetic")
+		assert.Equal(t, BINARYOPERATOR_ADD, binaryExpression.Operator, "Expected operator to be Add")
+		assert.Equal(t, TYPE_LITERAL, binaryExpression.Left.Type(), "Expected left node to be LiteralNode")
+		assert.Equal(t, TYPE_BINARYEXPRESSION, binaryExpression.Right.Type(), "Expected right node to be BinaryExpresionNode")
+		assert.Equal(t, 1.0, binaryExpression.Left.(*LiteralNode).GetValueNumber(), "Expected left node value to be 1")
 
-		rightNode := valueNode.Right.(*BinaryExpressionNode)
+		rightNode := binaryExpression.Right.(*BinaryExpressionNode)
 
 		assert.Equal(t, TYPE_BINARYEXPRESSION, rightNode.Type(), "Expected BinaryExpressionNode")
 		assert.Equal(t, BINARYTYPE_ARITHMETIC, rightNode.BinaryType, "Expected operator to be Arithmetic")
@@ -54,12 +62,16 @@ func TestBinaryExpression(t *testing.T) {
 		tokens := twilight.Parse(source).Flatten()
 		tokens = tokens[:len(tokens)-1] // Ignore EOF token
 
-		valueNode := CreateValueNode(tokens, CreateValueNodeOptions{}).(*BinaryExpressionNode)
+		valueNode, err := CreateValueNode(tokens, CreateValueNodeOptions{})
+		if !assert.NoError(t, err) {
+			return
+		}
+		binaryExpression := valueNode.(*BinaryExpressionNode)
 
-		assert.Equal(t, TYPE_BINARYEXPRESSION, valueNode.Type(), "Expected BinaryExpressionNode")
-		assert.Equal(t, BINARYTYPE_RELATIONAL, valueNode.BinaryType, "Expected expression type to be Relational")
-		assert.Equal(t, BINARYOPERATOR_EQ, valueNode.Operator, "Expected operator to be Equal")
-		assert.Equal(t, TYPE_LITERAL, valueNode.Left.Type(), "Expected left node to be LiteralNode")
-		assert.Equal(t, TYPE_LITERAL, valueNode.Right.Type(), "Expected right node to be BinaryExpresionNode")
+		assert.Equal(t, TYPE_BINARYEXPRESSION, binaryExpression.Type(), "Expected BinaryExpressionNode")
+		assert.Equal(t, BINARYTYPE_RELATIONAL, binaryExpression.BinaryType, "Expected expression type to be Relational")
+		assert.Equal(t, BINARYOPERATOR_EQ, binaryExpression.Operator, "Expected operator to be Equal")
+		assert.Equal(t, TYPE_LITERAL, binaryExpression.Left.Type(), "Expected left node to be LiteralNode")
+		assert.Equal(t, TYPE_LITERAL, binaryExpression.Right.Type(), "Expected right node to be BinaryExpresionNode")
 	})
 }

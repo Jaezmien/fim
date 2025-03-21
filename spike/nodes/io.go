@@ -38,7 +38,10 @@ func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 		return nil, err
 	}
 
-	printNode.Value = CreateValueNode(valueTokens, CreateValueNodeOptions{})
+	printNode.Value, err = CreateValueNode(valueTokens, CreateValueNodeOptions{})
+	if err != nil {
+		return nil, err
+	}
 
 	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
 	if err != nil {

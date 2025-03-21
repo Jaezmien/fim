@@ -47,7 +47,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 			continue
 		}
 
-		panic(fmt.Sprintf("Unsupported node type: %d", node.Type()))
+		return nil, interpreter.CreateErrorFromNode(node.ToNode(), fmt.Sprintf("Unsupported node type: %s", node.Type()))
 	}
 
 	return interpreter, nil

@@ -1,6 +1,8 @@
 package nodes
 
 import (
+	"fmt"
+
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
@@ -46,7 +48,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		ast.Next()
+		return nil, ast.CreateErrorFromToken(ast.Peek(), fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type))
 	}
 
 	return statements, nil

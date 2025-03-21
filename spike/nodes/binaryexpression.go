@@ -53,16 +53,22 @@ func (b *BinaryExpressionNode) ToNode() Node {
 	}
 }
 
-func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator BinaryExpressionOperator, binaryType BinaryExpressionType) (*BinaryExpressionNode, bool) {
+func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator BinaryExpressionOperator, binaryType BinaryExpressionType) (*BinaryExpressionNode, error) {
 	index := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == tokenType; })
 
 	if index == -1 {
-		return nil, false
+		return nil, nil
 	}
 
 	// XXX: Do I really need .FindLastIndex on this?
-	leftNode := CreateValueNode(tokens[:index], CreateValueNodeOptions{})
-	rightNode := CreateValueNode(tokens[index+1:], CreateValueNodeOptions{})
+	leftNode, err := CreateValueNode(tokens[:index], CreateValueNodeOptions{})
+	if err != nil {
+		return nil, err
+	}
+	rightNode, err := CreateValueNode(tokens[index+1:], CreateValueNodeOptions{})
+	if err != nil {
+		return nil, err
+	}
 
 	node := &BinaryExpressionNode{
 		Left: leftNode,
@@ -75,5 +81,5 @@ func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator
 		},
 	}
 
-	return node, true
+	return node, nil
 }

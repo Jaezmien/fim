@@ -33,7 +33,10 @@ func main() {
 
 	for _, paragraph := range interpreter.Paragraphs {
 		if paragraph.Main {
-			paragraph.Execute()
+			if err := paragraph.Execute(); err != nil {
+				fmt.Println(err)
+				return
+			}
 		}
 	}
 }

@@ -20,6 +20,8 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 	return p
 }
 
-func (p *Paragraph) Execute() {
-	p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
+func (p *Paragraph) Execute() (error) {
+	err := p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
+
+	return err
 }

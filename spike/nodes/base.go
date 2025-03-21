@@ -1,6 +1,7 @@
 package nodes
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
@@ -55,15 +56,15 @@ type CreateValueNodeOptions struct {
 	possibleNullType *vartype.VariableType
 }
 
-func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INode {
+func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INode, error) {
 	if len(tokens) == 0 && options.possibleNullType != nil {
 		if options.possibleNullType.IsArray() {
-			panic("Not implemented yet")
+			panic("AST@CreateValueNode (Not implemented yet)")
 		}
 
 		defaultValue, ok := options.possibleNullType.GetDefaultValue()
 		if !ok {
-			panic("possibly unknown type?")
+			panic("AST@CreateValueNode (len 0, possibly unknown type?)")
 		}
 
 		literalNode := &LiteralNode{
@@ -75,11 +76,11 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 			ValueType: *options.possibleNullType,
 		}
 
-		return literalNode
+		return literalNode, nil
 	}
 
 	if len(tokens) == 0 {
-		panic("ast@CreateValueNode called without any tokens")
+		panic("AST@CreateValueNode called without any tokens")
 	}
 
 	if len(tokens) == 1 {
@@ -94,7 +95,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 				Identifier: t.Value,
 			}
 
-			return node
+			return node, nil
 		}
 
 		defaultType := vartype.FromTokenType(t.Type)
@@ -113,18 +114,18 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 			literalNode.Start = t.Start
 			literalNode.Length = t.Length
 
-			return literalNode
+			return literalNode, nil
 		}
 		if t.Type == token.TokenType_Null && options.possibleNullType != nil {
 			literalNode.ValueType = *options.possibleNullType
 
 			defaultValue, ok := literalNode.ValueType.GetDefaultValue()
 			if !ok {
-				panic("possibly unknown type?")
+				panic("AST@CreateValueNode (possibly unknown type?)")
 			}
 			literalNode.value = defaultValue
 
-			return literalNode
+			return literalNode, nil
 		}
 	}
 
@@ -201,12 +202,20 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) INod
 		}
 
 		for _, expression := range expressions {
-			e, ok := CreateExpression(tokens, expression.tokenType, expression.operator, expression.binaryType)
-			if ok {
-				return e
+			expressionNode, err := CreateExpression(tokens, expression.tokenType, expression.operator, expression.binaryType)
+			if err != nil {
+				return nil, err
+			}
+
+			if expressionNode != nil {
+				return expressionNode, nil
 			}
 		}
 	}
 
-	panic(fmt.Sprintf("ast@CreateValueNode TODO/UNKNOWN\n%+v", tokens))
+	unknownToken := strings.Builder{}
+	for _, token := range tokens {
+		unknownToken.WriteString(token.Value)
+	}
+	return nil, errors.New(fmt.Sprintf("Encountered unknown value token: '%s'", unknownToken.String()))
 }
