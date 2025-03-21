@@ -28,6 +28,25 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
+		if statement.Type() == nodes.TYPE_VARIABLE_DECLARATION {
+			variableNode := statement.(*nodes.VariableDeclarationNode)
+
+			value, _, err := i.EvaluateValueNode(variableNode.Value, true)
+			if err != nil {
+				return err
+			}
+
+			variable := &Variable{
+				Name: variableNode.Identifier,
+				Value: value,
+				ValueType: variableNode.ValueType,
+				Constant: variableNode.Constant,
+			}
+			
+			i.Variables.PushVariable(variable, false)
+
+			continue
+		}
 
 		return i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Unsupported statement node: %s", statement.Type()))
 	}
@@ -51,6 +70,16 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, v
 		if literalNode.ValueType == vartype.NUMBER {
 			return utilities.FloatAsString(literalNode.GetValueNumber()), literalNode.ValueType, nil
 		}
+	}
+	
+	if node.Type() == nodes.TYPE_IDENTIFIER {
+		identifierNode := node.(*nodes.IdentifierNode)
+
+		if variable := i.Variables.Get(identifierNode.Identifier, local); variable != nil {
+			return variable.Value, variable.ValueType, nil
+		}
+
+		// TODO: Check for paragraphs
 	}
 
 	if node.Type() == nodes.TYPE_BINARYEXPRESSION {

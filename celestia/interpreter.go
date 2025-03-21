@@ -18,6 +18,7 @@ type Interpreter struct {
 	reportNode *nodes.ReportNode
 	source     string
 
+	Variables *VariableManager
 	Paragraphs []*Paragraph
 }
 
@@ -29,6 +30,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 		reportNode: reportNode,
 		source:     source,
 		Paragraphs: make([]*Paragraph, 0),
+		Variables: NewVariableManager(),
 	}
 
 	for _, node := range interpreter.reportNode.Body {
@@ -43,6 +45,25 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 			}
 
 			interpreter.Paragraphs = append(interpreter.Paragraphs, paragraph)
+
+			continue
+		}
+		if node.Type() == nodes.TYPE_VARIABLE_DECLARATION {
+			variableNode := node.(*nodes.VariableDeclarationNode)
+
+			value, _, err := interpreter.EvaluateValueNode(variableNode.Value, false)
+			if err != nil {
+				return nil, err
+			}
+
+			variable := &Variable{
+				Name: variableNode.Identifier,
+				Value: value,
+				ValueType: variableNode.ValueType,
+				Constant: variableNode.Constant,
+			}
+			
+			interpreter.Variables.PushVariable(variable, true)
 
 			continue
 		}

@@ -21,7 +21,9 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 }
 
 func (p *Paragraph) Execute() (error) {
+	p.Interpreter.Variables.PushScope()
 	err := p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
+	p.Interpreter.Variables.PopScope()
 
 	return err
 }
