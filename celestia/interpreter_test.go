@@ -102,7 +102,7 @@ func TestIO(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1")
+		ExecuteBasicReport(t, source, "1\n")
 	})
 
 	t.Run("should print with newline", func(t *testing.T) {
@@ -114,7 +114,7 @@ func TestIO(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, "1")
 	})
 }
 
