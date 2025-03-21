@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"fmt"
+	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
@@ -25,6 +26,18 @@ const (
 	TYPE_IDENTIFIER
 	TYPE_BINARYEXPRESSION
 )
+var nodeTypeFriendlyName = map[NodeType]string {
+	TYPE_REPORT: "REPORT",
+	TYPE_FUNCTION: "FUNCTION",
+	TYPE_STATEMENTS: "STATEMENTS",
+	TYPE_PRINT: "PRINT",
+	TYPE_LITERAL: "LITERAL",
+	TYPE_IDENTIFIER: "IDENTIFIER",
+	TYPE_BINARYEXPRESSION: "BINARYEXPRESSION",
+}
+func (t NodeType) String() string {
+	return nodeTypeFriendlyName[t]
+}
 
 type INode interface {
 	Type() NodeType
