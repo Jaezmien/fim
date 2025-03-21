@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-func IsPrintMethod(tokens *queue.Queue[*token.Token]) int {
+func IsPrintNewlineMethod(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() < 3 {
 		return 0
 	}
@@ -26,7 +26,7 @@ func IsPrintMethod(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsPrintNewlineMethod(tokens *queue.Queue[*token.Token]) int {
+func IsPrintMethod(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() < 5 {
 		return 0
 	}
