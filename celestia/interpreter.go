@@ -12,6 +12,7 @@ import (
 
 type Interpreter struct {
 	Writer io.Writer
+	ErrorWriter io.Writer
 	Reader io.Reader
 
 	reportNode *nodes.ReportNode
@@ -23,6 +24,7 @@ type Interpreter struct {
 func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, error) {
 	interpreter := &Interpreter{
 		Writer:     os.Stdout,
+		ErrorWriter:     os.Stderr,
 		Reader:     os.Stdin,
 		reportNode: reportNode,
 		source:     source,
