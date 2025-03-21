@@ -16,7 +16,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 		if statement.Type() == nodes.TYPE_PRINT {
 			printNode := statement.(*nodes.PrintNode)
 
-			value, _, err := i.EvaluateValueNode(printNode.Value)
+			value, _, err := i.EvaluateValueNode(printNode.Value, true)
 			if err != nil {
 				return err
 			}
@@ -35,7 +35,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 	return nil
 }
 
-func (i *Interpreter) EvaluateValueNode(node nodes.INode) (string, vartype.VariableType, error) {
+func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, vartype.VariableType, error) {
 	if node.Type() == nodes.TYPE_LITERAL {
 		literalNode := node.(*nodes.LiteralNode)
 
@@ -56,11 +56,11 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode) (string, vartype.Varia
 	if node.Type() == nodes.TYPE_BINARYEXPRESSION {
 		binaryNode := node.(*nodes.BinaryExpressionNode)
 
-		left, leftType, err := i.EvaluateValueNode(binaryNode.Left)
+		left, leftType, err := i.EvaluateValueNode(binaryNode.Left, local)
 		if err != nil {
 			return "", vartype.UNKNOWN, err
 		}
-		right, rightType, err := i.EvaluateValueNode(binaryNode.Right)
+		right, rightType, err := i.EvaluateValueNode(binaryNode.Right, local)
 		if err != nil {
 			return "", vartype.UNKNOWN, err
 		}
