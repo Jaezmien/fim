@@ -214,3 +214,43 @@ func TestExpressionNode(t *testing.T) {
 		ExecuteBasicReport(t, source, "Hello 1\n")
 	})
 }
+
+func TestDeclaration(t *testing.T) {
+	t.Run("should create global variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Did you know that Spike is the number 1?
+			Today I learned how to say hello world!
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1\n")
+	})
+	t.Run("should create local variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			Did you know that Spike is the number 1?
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1\n")
+	})
+	t.Run("should create variable from another variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			Did you know that Spike is the number 1?
+			Did you know that Owlowiscious is the number Spike plus 1?
+			I said Owlowiscious!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "2\n")
+	})
+}
