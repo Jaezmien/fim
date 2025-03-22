@@ -286,4 +286,30 @@ func TestModify(t *testing.T) {
 
 		ExecuteBasicReport(t, source, "1\n")
 	})
+	t.Run("should convert number to string", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			Did you know that Spike is the word "Hello"?
+			Spike became 1.
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1\n")
+	})
+	t.Run("should convert boolean to string", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			Did you know that Spike is the word "Hello"?
+			Spike became correct.
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "true\n")
+	})
 }
