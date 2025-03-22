@@ -35,7 +35,11 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 		return
 	}
 
-	mainParagraph.Execute()
+	err = mainParagraph.Execute()
+	if !assert.NoError(t, err) {
+		return
+	}
+
 	data, err := io.ReadAll(buffer)
 	if !assert.NoError(t, err) {
 		return
