@@ -14,18 +14,18 @@ type Variable struct {
 }
 
 type VariableManager struct {
-	Globals stack.Stack[Variable]
-	Locals stack.Stack[*stack.Stack[Variable]]
+	Globals stack.Stack[*Variable]
+	Locals stack.Stack[*stack.Stack[*Variable]]
 }
 func NewVariableManager() *VariableManager {
 	return &VariableManager{
-		Globals: *stack.New[Variable](),
-		Locals: *stack.New[*stack.Stack[Variable]](),
+		Globals: *stack.New[*Variable](),
+		Locals: *stack.New[*stack.Stack[*Variable]](),
 	}
 }
 
 func (m *VariableManager) PushScope() {
-	m.Locals.Push(stack.New[Variable]())
+	m.Locals.Push(stack.New[*Variable]())
 }
 func (m *VariableManager) PopScope() {
 	m.Locals.Pop()
@@ -36,26 +36,26 @@ func (m *VariableManager) ScopeDepth() int {
 
 func (m *VariableManager) PushVariable(variable *Variable, global bool) {
 	if global {
-		m.Globals.Push(*variable)
+		m.Globals.Push(variable)
 	} else {
 		if m.ScopeDepth() == 0 {
 			panic("VariableManager@PushVariable called with no variable scopes")
 		}
 
 		current := m.Locals.Peek()
-		current.Push(*variable)
+		current.Push(variable)
 	}
 }
 func (m *VariableManager) PopVariable(global bool) *Variable {
 	if global {
-		return m.Globals.Pop()
+		return *m.Globals.Pop()
 	} else {
 		if m.ScopeDepth() == 0 {
 			panic("VariableManager@PopVariable called with no variable scopes")
 		}
 
 		current := m.Locals.Peek()
-		return current.Pop()
+		return *current.Pop()
 	}
 }
 func (m *VariableManager) PopVariableAmount(global bool, amount int) []*Variable {
@@ -64,7 +64,7 @@ func (m *VariableManager) PopVariableAmount(global bool, amount int) []*Variable
 	if global {
 
 		for m.Globals.Len() > 0 && amount > 0 {
-			variables.Push(m.Globals.Pop())
+			variables.Push(*m.Globals.Pop())
 			amount -= 1
 		}
 
@@ -76,7 +76,7 @@ func (m *VariableManager) PopVariableAmount(global bool, amount int) []*Variable
 		current := m.Locals.Peek()
 
 		for current.Len() > 0 && amount > 0 {
-			variables.Push(current.Pop())
+			variables.Push(*current.Pop())
 			amount -= 1
 		}
 	}
@@ -88,7 +88,7 @@ func (m *VariableManager) Get(name string, local bool) *Variable {
 	for idx := 0; idx < m.Globals.Len(); idx += 1 {
 		variable := m.Globals.PeekAt(idx)
 		if variable.Name == name {
-			return &variable
+			return variable
 		}
 	}
 
@@ -98,7 +98,7 @@ func (m *VariableManager) Get(name string, local bool) *Variable {
 		for idx := 0; idx < current.Len(); idx += 1 {
 			variable := current.PeekAt(idx)
 			if variable.Name == name {
-				return &variable
+				return variable
 			}
 		}
 	}
