@@ -47,6 +47,32 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
+		if statement.Type() == nodes.TYPE_VARIABLE_MODIFY {
+			modifyNode := statement.(*nodes.VariableModifyNode)
+
+			if !i.Variables.Has(modifyNode.Identifier, true) {
+				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier))
+			}
+
+			variable := i.Variables.Get(modifyNode.Identifier, true)
+			
+			if variable.Constant {
+				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
+			}
+
+			value, valueType, err := i.EvaluateValueNode(modifyNode.Value, true)
+			if err != nil {
+				return err
+			}
+
+			if variable.ValueType != valueType && (variable.ValueType != vartype.STRING && !valueType.IsArray()) {
+				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'.", variable.ValueType, valueType))
+			}
+
+			variable.Value = value
+
+			continue
+		}
 
 		return i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Unsupported statement node: %s", statement.Type()))
 	}
@@ -80,6 +106,8 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, v
 		}
 
 		// TODO: Check for paragraphs
+		pair := spikeUtils.GetErrorIndexPair(i.source, identifierNode.Start)
+		return "", vartype.UNKNOWN, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
 	}
 
 	if node.Type() == nodes.TYPE_BINARYEXPRESSION {

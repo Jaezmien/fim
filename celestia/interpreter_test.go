@@ -258,3 +258,32 @@ func TestDeclaration(t *testing.T) {
 		ExecuteBasicReport(t, source, "2\n")
 	})
 }
+
+func TestModify(t *testing.T) {
+	t.Run("should modify local variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			Did you know that Spike is the number 2?
+			Spike became 1.
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1\n")
+	})
+	t.Run("should modify global variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Did you know that Spike is the number 2?
+			Today I learned how to say hello world!
+			Spike became 1.
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "1\n")
+	})
+}
