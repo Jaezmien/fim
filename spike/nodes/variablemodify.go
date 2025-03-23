@@ -23,23 +23,6 @@ func (f *VariableModifyNode) ToNode() Node {
 	}
 }
 
-func CheckVariableModifyNode(ast *ast.AST) (bool) {
-	if ast.Peek() == nil {
-		return false
-	}	
-	if ast.Peek().Type != token.TokenType_Identifier {
-		return false
-	}
-	if ast.PeekAt(1) == nil {
-		return false
-	}	
-	if ast.PeekAt(1).Type != token.TokenType_Identifier {
-		return false
-	}
-
-	return true
-}
-
 func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 	node := &VariableModifyNode{}
 

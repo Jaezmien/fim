@@ -58,7 +58,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		if CheckVariableModifyNode(ast) {
+		if ast.ContainsWithStop(token.TokenType_Modify, token.TokenType_EndOfFile, token.TokenType_Punctuation) {
 			node, err := ParseVariableModifyNode(ast)
 			if err != nil {
 				return nil, err
@@ -66,6 +66,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 
 			statements.Statements = append(statements.Statements, node)
 			continue
+			
 		}
 
 		return nil, ast.CreateErrorFromToken(ast.Peek(), fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type))
