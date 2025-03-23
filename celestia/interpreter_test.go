@@ -244,6 +244,18 @@ func TestDeclaration(t *testing.T) {
 
 		ExecuteBasicReport(t, source, "1\n")
 	})
+	t.Run("should create an empty variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello World!
+			Today I learned how to say hello world!
+			Did you know that Spike is a word?
+			I said Spike!
+			That's all about how to say hello world.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "\n")
+	})
 	t.Run("should create variable from another variable", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Hello World!
