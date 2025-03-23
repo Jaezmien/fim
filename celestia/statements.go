@@ -154,6 +154,8 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, v
 			}
 		}
 
+		// TODO: Add type checks
+
 		switch binaryNode.Operator {
 		case nodes.BINARYOPERATOR_ADD:
 			leftFloat := utilities.StringAsFloat(left)
