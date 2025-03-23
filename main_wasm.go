@@ -30,6 +30,10 @@ func (w *CallbackWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
+func Exists(v js.Value) bool {
+	return !v.IsNull() && !v.IsUndefined()
+}
+
 func main() {
 	c := make(chan struct{}, 0)
 
@@ -57,11 +61,19 @@ func main() {
 		return []any{result, nil}
 	}))
 
-	// string, output_callback(string), error_callback(string) -> error(string)?
+	// string, output_callback(string), prompt_callback(string) -> string, error_callback(string) -> error(string)?
 	js.Global().Set("fim_exec", js.FuncOf(func(this js.Value, args []js.Value) any {
 		console := js.Global().Get("console")
-		if console.IsNull() || console.IsUndefined() {
+		if !Exists(console) {
 			return "Could not get console"
+		}
+
+		alert := js.Global().Get("alert")
+		promptCallback := js.FuncOf(func(this js.Value, args []js.Value) any {
+			return ""
+		}).Value
+		if !Exists(alert) {
+			promptCallback = alert
 		}
 
 		console_log := js.Global().Get("console").Get("log")
@@ -85,19 +97,24 @@ func main() {
 		}
 		source := args[0].String()
 
-		if len(args) >= 3 && args[2].Type() == js.TypeFunction {
-			errorCallback, err = NewCallbackWriter(&args[2])
-			if err != nil {
-				return err.Error()
-			}
-		}
-
 		if len(args) >= 2 && args[1].Type() == js.TypeFunction {
 			outputCallback, err = NewCallbackWriter(&args[1])
 			if err != nil {
 				return err.Error()
 			}
 		}
+
+		if len(args) >= 3 && args[2].Type() == js.TypeFunction {
+			promptCallback = args[2]
+		}
+
+		if len(args) >= 4 && args[3].Type() == js.TypeFunction {
+			errorCallback, err = NewCallbackWriter(&args[3])
+			if err != nil {
+				return err.Error()
+			}
+		}
+
 
 		tokens := twilight.Parse(source)
 
@@ -114,6 +131,13 @@ func main() {
 		}
 		interpreter.Writer = outputCallback
 		interpreter.ErrorWriter = errorCallback
+		interpreter.Prompt = func(prompt string) (string, error) {
+			result := promptCallback.Invoke(prompt)
+			if result.Type() != js.TypeString {
+				panic("PromptCallback returned a non-string value")
+			}
+			return result.String(), nil
+		}
 
 		for _, paragraph := range interpreter.Paragraphs {
 			if paragraph.Main {
