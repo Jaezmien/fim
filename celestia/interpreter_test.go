@@ -99,22 +99,22 @@ func TestReport(t *testing.T) {
 func TestIO(t *testing.T) {
 	t.Run("should print", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Outputs!
+			Today I learned how to output something!
 			I said 1!
-			That's all about how to say hello world.
+			That's all about how to output something.
 			Your faithful student, Twilight Sparkle.
 			`
 
 		ExecuteBasicReport(t, source, "1\n")
 	})
 
-	t.Run("should print with newline", func(t *testing.T) {
+	t.Run("should print without newline", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Newline Outputs!
+			Today I learned how to output in the same line!
 			I quickly said 1!
-			That's all about how to say hello world.
+			That's all about how to output in the same line.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -125,10 +125,10 @@ func TestIO(t *testing.T) {
 func TestBasicReports(t *testing.T) {
 	t.Run("should print string", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Printing strings!
+			Today I learned how to print a string!
 			I said "Hello World"!
-			That's all about how to say hello world.
+			That's all about how to print a string.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -137,10 +137,10 @@ func TestBasicReports(t *testing.T) {
 
 	t.Run("should print character", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Printing a character!
+			Today I learned how to print a single char!
 			I said 'a'!
-			That's all about how to say hello world.
+			That's all about how to print a single char.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -149,10 +149,10 @@ func TestBasicReports(t *testing.T) {
 
 	t.Run("should print boolean", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Printing a boolean!
+			Today I learned how to print a boolean!
 			I said correct!
-			That's all about how to say hello world.
+			That's all about how to print a boolean.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -161,10 +161,10 @@ func TestBasicReports(t *testing.T) {
 
 	t.Run("should print number", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Printing numbers!
+			Today I learned how to print a numeric value!
 			I said 1!
-			That's all about how to say hello world.
+			That's all about how to print a numeric value.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -175,10 +175,10 @@ func TestBasicReports(t *testing.T) {
 func TestExpressionNode(t *testing.T) {
 	t.Run("should add number", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Expressions!
+			Today I learned how to evaluate expressions!
 			I said 1 plus 1!
-			That's all about how to say hello world.
+			That's all about how to evaluate expressions.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -186,10 +186,10 @@ func TestExpressionNode(t *testing.T) {
 	})
 	t.Run("should subtract number", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Expressions!
+			Today I learned how to evaluate expressions!
 			I said 1 minus 1!
-			That's all about how to say hello world.
+			That's all about how to evaluate expressions.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -197,21 +197,21 @@ func TestExpressionNode(t *testing.T) {
 	})
 	t.Run("should concatenate string", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Concatenations!
+			Today I learned how to concatenate strings!
 			I said "Hello" plus " " plus "World"!
-			That's all about how to say hello world.
+			That's all about how to concatenate strings.
 			Your faithful student, Twilight Sparkle.
 			`
 
 		ExecuteBasicReport(t, source, "Hello World\n")
 	})
-	t.Run("should concatenate number", func(t *testing.T) {
+	t.Run("should concatenate multiple types", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Concatenations!
+			Today I learned how to concatenate different types!
 			I said "Hello " plus 1!
-			That's all about how to say hello world.
+			That's all about how to concatenate different types.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -222,11 +222,11 @@ func TestExpressionNode(t *testing.T) {
 func TestDeclaration(t *testing.T) {
 	t.Run("should create global variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
+			`Dear Princess Celestia: Globals!
 			Did you know that Spike is the number 1?
-			Today I learned how to say hello world!
+			Today I learned how to print a value!
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to print a value.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -234,11 +234,11 @@ func TestDeclaration(t *testing.T) {
 	})
 	t.Run("should create local variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Globals!
+			Today I learned how to print a value!
 			Did you know that Spike is the number 1?
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to print a value.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -246,11 +246,11 @@ func TestDeclaration(t *testing.T) {
 	})
 	t.Run("should create an empty variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Empties!
+			Today I learned how to output an empty variable!
 			Did you know that Spike is a word?
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to output an empty variable.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -258,12 +258,12 @@ func TestDeclaration(t *testing.T) {
 	})
 	t.Run("should create variable from another variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Variables!
+			Today I learned how to create variables!
 			Did you know that Spike is the number 1?
 			Did you know that Owlowiscious is the number Spike plus 1?
 			I said Owlowiscious!
-			That's all about how to say hello world.
+			That's all about how to create variables.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -274,12 +274,12 @@ func TestDeclaration(t *testing.T) {
 func TestModify(t *testing.T) {
 	t.Run("should modify local variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Variables!
+			Today I learned how to modify variables!
 			Did you know that Spike is the number 2?
 			Spike became 1.
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to modify variables.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -287,12 +287,12 @@ func TestModify(t *testing.T) {
 	})
 	t.Run("should modify global variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
+			`Dear Princess Celestia: Variables!
 			Did you know that Spike is the number 2?
-			Today I learned how to say hello world!
+			Today I learned how to modify variables!
 			Spike became 1.
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to modify variables.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -300,12 +300,12 @@ func TestModify(t *testing.T) {
 	})
 	t.Run("should convert number to string", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Converting!
+			Today I learned how to convert types!
 			Did you know that Spike is the word "Hello"?
 			Spike became 1.
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to convert types.
 			Your faithful student, Twilight Sparkle.
 			`
 
@@ -313,12 +313,12 @@ func TestModify(t *testing.T) {
 	})
 	t.Run("should convert boolean to string", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Hello World!
-			Today I learned how to say hello world!
+			`Dear Princess Celestia: Converting!
+			Today I learned how to convert types!
 			Did you know that Spike is the word "Hello"?
 			Spike became correct.
 			I said Spike!
-			That's all about how to say hello world.
+			That's all about how to convert types.
 			Your faithful student, Twilight Sparkle.
 			`
 

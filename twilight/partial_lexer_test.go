@@ -67,13 +67,13 @@ func TestPartialTokens(t *testing.T) {
 		assert.Equal(t, "\n", token.Value, "Expected newline")
 
 		token = l.Dequeue().Value
-		assert.Equal(t, "world", token.Value, "Expected 'hello'")
+		assert.Equal(t, "world", token.Value, "Expected 'world'")
 
 		token = l.Dequeue().Value
 		assert.Equal(t, "\n", token.Value, "Expected newline")
 
 		token = l.Dequeue().Value
-		assert.Equal(t, "bye", token.Value, "Expected 'hello'")
+		assert.Equal(t, "bye", token.Value, "Expected 'bye'")
 	})
 }
 
