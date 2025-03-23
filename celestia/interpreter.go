@@ -1,6 +1,7 @@
 package celestia
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"io"
@@ -13,7 +14,8 @@ import (
 type Interpreter struct {
 	Writer io.Writer
 	ErrorWriter io.Writer
-	Reader io.Reader
+
+	Prompt func(prompt string) (string, error)
 
 	reportNode *nodes.ReportNode
 	source     string
@@ -26,11 +28,27 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 	interpreter := &Interpreter{
 		Writer:     os.Stdout,
 		ErrorWriter:     os.Stderr,
-		Reader:     os.Stdin,
 		reportNode: reportNode,
 		source:     source,
 		Paragraphs: make([]*Paragraph, 0),
 		Variables: NewVariableManager(),
+	}
+
+	interpreter.Prompt = func(prompt string) (string, error) {
+		interpreter.Writer.Write([]byte(prompt))
+
+		scanner := bufio.NewScanner(os.Stdin)
+
+		var response string
+		for scanner.Scan() {
+			response = scanner.Text()
+			break
+		}
+		if err := scanner.Err(); err != nil {
+			return "", err
+		}
+
+		return response, nil
 	}
 
 	for _, node := range interpreter.reportNode.Body {

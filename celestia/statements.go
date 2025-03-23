@@ -28,6 +28,33 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
+		if statement.Type() == nodes.TYPE_PROMPT {
+			promptNode := statement.(*nodes.PromptNode)
+
+			if !i.Variables.Has(promptNode.Identifier, true) {
+				return i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier))
+			}
+			variable := i.Variables.Get(promptNode.Identifier, true)
+			if variable.ValueType != vartype.STRING {
+				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected variable to be of type STRING")
+			}
+
+			value, valueType, err := i.EvaluateValueNode(promptNode.Prompt, true)
+			if err != nil {
+				return err
+			}
+			if valueType != vartype.STRING {
+				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected prompt to be of type STRING")
+			}
+
+			response, err := i.Prompt(value)
+			if err != nil {
+				return err
+			}
+			variable.Value = response
+
+			continue
+		}
 		if statement.Type() == nodes.TYPE_VARIABLE_DECLARATION {
 			variableNode := statement.(*nodes.VariableDeclarationNode)
 
@@ -53,7 +80,6 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if !i.Variables.Has(modifyNode.Identifier, true) {
 				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier))
 			}
-
 			variable := i.Variables.Get(modifyNode.Identifier, true)
 			
 			if variable.Constant {

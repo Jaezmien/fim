@@ -120,6 +120,59 @@ func TestIO(t *testing.T) {
 
 		ExecuteBasicReport(t, source, "1")
 	})
+
+	t.Run("should prompt", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Prompts!
+			Today I learned how to acquire prompts!
+			Did you know that Spike is a word?
+			I asked Spike: "What do you want me to say? ".
+			I said Spike!
+			That's all about how to acquire prompts.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		tokens := twilight.Parse(source)
+		report, err := spike.CreateReport(tokens.Flatten(), source)
+		if !assert.NoError(t, err) {
+			return
+		}
+		interpreter, err := NewInterpreter(report, source)
+		if !assert.NoError(t, err) {
+			return
+		}
+
+		outputBuffer := &bytes.Buffer{}
+		interpreter.Writer = outputBuffer
+		interpreter.Prompt = func(prompt string) (string, error) {
+			return "Hello!", nil
+		}
+
+		var mainParagraph *Paragraph
+		for _, paragraph := range interpreter.Paragraphs {
+			if paragraph.Main {
+				mainParagraph = paragraph
+				break
+			}
+		}
+		if !assert.NotNil(t, mainParagraph) {
+			return
+		}
+
+		err = mainParagraph.Execute()
+		if !assert.NoError(t, err) {
+			return
+		}
+
+		data, err := io.ReadAll(outputBuffer)
+		if !assert.NoError(t, err) {
+			return
+		}
+
+		if !assert.Equal(t, "Hello!\n", string(data)) {
+			return
+		}
+	})
 }
 
 func TestBasicReports(t *testing.T) {

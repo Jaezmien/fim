@@ -47,6 +47,15 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			statements.Statements = append(statements.Statements, node)
 			continue
 		}
+		if ast.CheckType(token.TokenType_Prompt)  {
+			node, err := ParsePromptNode(ast)
+			if err != nil {
+				return nil, err
+			}
+
+			statements.Statements = append(statements.Statements, node)
+			continue
+		}
 
 		if ast.CheckType(token.TokenType_Declaration) {
 			node, err := ParseVariableDeclarationNode(ast)
