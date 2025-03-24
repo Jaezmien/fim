@@ -8,7 +8,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 
-	spikeUtils "git.jaezmien.com/Jaezmien/fim/spike/utilities"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (error) {
@@ -135,7 +135,7 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, v
 		}
 
 		// TODO: Check for paragraphs
-		pair := spikeUtils.GetErrorIndexPair(i.source, identifierNode.Start)
+		pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
 		return "", vartype.UNKNOWN, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
 	}
 
@@ -210,6 +210,6 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, v
 		}
 	}
 
-	pair := spikeUtils.GetErrorIndexPair(i.source, node.ToNode().Start)
+	pair := luna.GetErrorIndexPair(i.source, node.ToNode().Start)
 	return "", vartype.UNKNOWN, errors.New(fmt.Sprintf("Unsupported value node at line %d:%d", pair.Line, pair.Column))
 }

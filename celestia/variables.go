@@ -1,7 +1,7 @@
 package celestia
 
 import (
-	"git.jaezmien.com/Jaezmien/fim/celestia/stack"
+	"git.jaezmien.com/Jaezmien/fim/luna/stack"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 )
 

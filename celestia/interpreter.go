@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
-	"git.jaezmien.com/Jaezmien/fim/spike/utilities"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 type Interpreter struct {
@@ -100,7 +100,7 @@ func (i *Interpreter) ReportAuthor() string {
 }
 
 func (i *Interpreter) CreateErrorFromIndex(index int, errorMessage string) error {
-	pair := utilities.GetErrorIndexPair(i.source, index)
+	pair := luna.GetErrorIndexPair(i.source, index)
 	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
 }
 func (i *Interpreter) CreateErrorFromNode(n nodes.Node, errorMessage string) error {

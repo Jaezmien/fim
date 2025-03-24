@@ -2,7 +2,7 @@ package utilities
 
 import "slices"
 import "git.jaezmien.com/Jaezmien/fim/twilight/token"
-import "git.jaezmien.com/Jaezmien/fim/twilight/queue"
+import "git.jaezmien.com/Jaezmien/fim/luna/queue"
 
 func IsStringNumber(value string) bool {
 	if len(value) == 0 {

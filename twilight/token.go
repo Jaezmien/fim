@@ -1,7 +1,9 @@
 package twilight
 
-import "git.jaezmien.com/Jaezmien/fim/twilight/token"
-import "git.jaezmien.com/Jaezmien/fim/twilight/queue"
+import (
+	"git.jaezmien.com/Jaezmien/fim/luna/queue"
+	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+)
 
 func Parse(source string) *queue.Queue[*token.Token] {
 	var t *queue.Queue[*token.Token]

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	"git.jaezmien.com/Jaezmien/fim/spike/utilities"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -59,7 +59,7 @@ func (a *AST) EndOfFile() bool {
 }
 
 func (a *AST) CreateErrorFromIndex(index int, errorMessage string) error {
-	pair := utilities.GetErrorIndexPair(a.Source, index)
+	pair := luna.GetErrorIndexPair(a.Source, index)
 	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
 }
 func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {

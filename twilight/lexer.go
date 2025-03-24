@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/twilight/parsers"
-	"git.jaezmien.com/Jaezmien/fim/twilight/queue"
+	"git.jaezmien.com/Jaezmien/fim/luna/queue"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
