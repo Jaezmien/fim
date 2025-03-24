@@ -35,6 +35,9 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier))
 			}
 			variable := i.Variables.Get(promptNode.Identifier, true)
+			if variable.Constant {
+				return i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
+			}
 			if variable.ValueType != vartype.STRING {
 				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected variable to be of type STRING")
 			}
