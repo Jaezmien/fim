@@ -19,3 +19,22 @@ func (l *LiteralNode) ToNode() Node {
 		Length: l.Length,
 	}
 }
+
+// -- //
+
+type LiteralDictionaryNode struct {
+	Node
+
+	Value map[int]INode
+	ValueType vartype.VariableType
+}
+
+func (l *LiteralDictionaryNode) Type() NodeType {
+	return TYPE_LITERAL_DICTIONARY
+}
+func (l *LiteralDictionaryNode) ToNode() Node {
+	return Node{
+		Start:  l.Start,
+		Length: l.Length,
+	}
+}

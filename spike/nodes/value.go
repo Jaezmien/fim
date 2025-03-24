@@ -3,14 +3,18 @@ package nodes
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 type CreateValueNodeOptions struct {
 	possibleNullType *vartype.VariableType
+	asArray bool
 }
 
 func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INode, error) {
@@ -29,7 +33,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 				Start:  0,
 				Length: 0,
 			},
-			DynamicVariable: vartype.FromValueType(defaultValue, *options.possibleNullType),
+			value:     defaultValue,
+			ValueType: *options.possibleNullType,
 		}
 
 		return literalNode, nil
@@ -64,7 +69,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 		}
 
 		if defaultType != vartype.UNKNOWN {
-			literalNode.DynamicVariable = vartype.FromValueType(t.Value, defaultType)
+			literalNode.value = t.Value
+			literalNode.ValueType = defaultType
 
 			literalNode.Start = t.Start
 			literalNode.Length = t.Length
@@ -72,21 +78,20 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			return literalNode, nil
 		}
 		if t.Type == token.TokenType_Null && options.possibleNullType != nil {
-			defaultValue, ok := options.possibleNullType.GetDefaultValue()
+			literalNode.ValueType = *options.possibleNullType
+
+			defaultValue, ok := literalNode.ValueType.GetDefaultValue()
 			if !ok {
 				panic("AST@CreateValueNode (possibly unknown type?)")
 			}
-
-			literalNode.DynamicVariable = vartype.FromValueType(
-				defaultValue,
-				*options.possibleNullType,
-			)
+			literalNode.value = defaultValue
 
 			return literalNode, nil
 		}
 	}
 
 	if len(tokens) > 1 {
+		// BinaryExpressionNode
 		expressions := []struct{
 			tokenType token.TokenType
 			operator BinaryExpressionOperator
@@ -159,15 +164,54 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 		}
 
 		for _, expression := range expressions {
-			expressionNode, err := CreateExpression(tokens, expression.tokenType, expression.operator, expression.binaryType)
-			if err != nil {
-				return nil, err
-			}
+			expressionNode, _ := CreateExpression(tokens, expression.tokenType, expression.operator, expression.binaryType)
 
 			if expressionNode != nil {
 				return expressionNode, nil
 			}
 		}
+
+		// LiteralDictionaryNode
+		if slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == token.TokenType_Punctuation && t.Value == "," }) != -1 {
+			if options.possibleNullType == nil || !options.possibleNullType.IsArray() {
+				panic("AST@CreateValueNode LiteralDictionaryNode with invalid options.possibleNullType")
+			}
+
+			baseType := options.possibleNullType.AsBaseType()
+			var pairs map[int]INode = make(map[int]INode)
+
+			lastSeenIndex := 0
+			currentPairIndex := 1
+
+			for {
+				nextIndex := luna.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == token.TokenType_Punctuation && t.Value == "," })
+				if lastSeenIndex <= nextIndex {
+					break
+				}
+
+				count := 0
+				if nextIndex == -1 {
+					count = len(tokens)
+				} else {
+					count = nextIndex
+				}
+				count -= lastSeenIndex
+
+				value, err := CreateValueNode(tokens[lastSeenIndex:nextIndex], CreateValueNodeOptions{
+					possibleNullType: &baseType,
+				})
+				if err != nil {
+					return nil, err
+				}
+
+				pairs[currentPairIndex] = value
+
+				lastSeenIndex = nextIndex + 1
+				currentPairIndex += 1
+			}
+		}
+
+
 	}
 
 	unknownToken := strings.Builder{}
@@ -176,4 +220,3 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 	}
 	return nil, errors.New(fmt.Sprintf("Encountered unknown value token: '%s'", unknownToken.String()))
 }
-

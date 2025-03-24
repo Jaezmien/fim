@@ -63,6 +63,20 @@ func (t VariableType) GetDefaultValue() (string, bool) {
 	}
 }
 
+// Returns the base type of array types
+func (t VariableType) AsBaseType() VariableType {
+	switch t {
+	case BOOLEAN_ARRAY:
+		return BOOLEAN
+	case NUMBER_ARRAY:
+		return NUMBER
+	case STRING_ARRAY:
+		return STRING
+	default:
+		return UNKNOWN
+	}
+}
+
 func FromTokenType(t token.TokenType) VariableType {
 	switch t {
 	case token.TokenType_Boolean:
