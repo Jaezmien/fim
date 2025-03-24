@@ -3,6 +3,7 @@ package nodes
 import (
 	"slices"
 
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -54,7 +55,7 @@ func (b *BinaryExpressionNode) ToNode() Node {
 }
 
 func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator BinaryExpressionOperator, binaryType BinaryExpressionType) (*BinaryExpressionNode, error) {
-	index := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == tokenType; })
+	index := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == tokenType })
 
 	if index == -1 {
 		return nil, nil
@@ -71,12 +72,12 @@ func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator
 	}
 
 	node := &BinaryExpressionNode{
-		Left: leftNode,
-		Right: rightNode,
-		Operator: operator,
+		Left:       leftNode,
+		Right:      rightNode,
+		Operator:   operator,
 		BinaryType: binaryType,
 		Node: Node{
-			Start: leftNode.ToNode().Start,
+			Start:  leftNode.ToNode().Start,
 			Length: rightNode.ToNode().Start + rightNode.ToNode().Length - leftNode.ToNode().Start,
 		},
 	}

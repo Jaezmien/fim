@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
@@ -51,9 +52,9 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 		return response, nil
 	}
 
-	for _, node := range interpreter.reportNode.Body {
-		if node.Type() == nodes.TYPE_FUNCTION {
-			funcNode := node.(*nodes.FunctionNode)
+	for _, n := range interpreter.reportNode.Body {
+		if n.Type() == node.TYPE_FUNCTION {
+			funcNode := n.(*nodes.FunctionNode)
 			paragraph := NewParagraph(interpreter, funcNode)
 
 			for _, p := range interpreter.Paragraphs {
@@ -66,8 +67,8 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 
 			continue
 		}
-		if node.Type() == nodes.TYPE_VARIABLE_DECLARATION {
-			variableNode := node.(*nodes.VariableDeclarationNode)
+		if n.Type() == node.TYPE_VARIABLE_DECLARATION {
+			variableNode := n.(*nodes.VariableDeclarationNode)
 
 			value, err := interpreter.EvaluateValueNode(variableNode.Value, false)
 			if err != nil {
@@ -85,7 +86,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 			continue
 		}
 
-		return nil, interpreter.CreateErrorFromNode(node.ToNode(), fmt.Sprintf("Unsupported node type: %s", node.Type()))
+		return nil, interpreter.CreateErrorFromNode(n.ToNode(), fmt.Sprintf("Unsupported node type: %s", n.Type()))
 	}
 
 	return interpreter, nil
@@ -102,6 +103,6 @@ func (i *Interpreter) CreateErrorFromIndex(index int, errorMessage string) error
 	pair := luna.GetErrorIndexPair(i.source, index)
 	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
 }
-func (i *Interpreter) CreateErrorFromNode(n nodes.Node, errorMessage string) error {
+func (i *Interpreter) CreateErrorFromNode(n node.Node, errorMessage string) error {
 	return i.CreateErrorFromIndex(n.Start, errorMessage)
 }

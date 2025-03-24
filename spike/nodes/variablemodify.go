@@ -3,6 +3,8 @@ package nodes
 import (
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type VariableModifyNode struct {
@@ -10,7 +12,7 @@ type VariableModifyNode struct {
 
 	Identifier string
 
-	Value     INode
+	Value INode
 }
 
 func (d *VariableModifyNode) Type() NodeType {

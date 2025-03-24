@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/utilities"
+
+	"git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type DynamicVariable struct {
@@ -13,7 +15,7 @@ type DynamicVariable struct {
 	valueNumber float64
 	valueBoolean bool
 	valueCharacter string
-	valueDictionary map[int]DynamicVariable
+	valueDictionary map[int]*node.INode
 
 	valueType VariableType
 }
@@ -87,7 +89,7 @@ func NewBooleanVariable(value bool) *DynamicVariable {
 }
 func NewDictionaryVariable(t VariableType) *DynamicVariable {
 	return &DynamicVariable{
-		valueDictionary: make(map[int]DynamicVariable),
+		valueDictionary: make(map[int]*node.INode, 0),
 		valueType: t,
 	}
 }
@@ -106,15 +108,7 @@ func (v *DynamicVariable) GetValueString() string {
 	case NUMBER:
 		return strconv.FormatFloat(v.valueNumber, 'f', -1, 64)
 	default:
-		if !v.valueType.IsArray() {
-			panic("Called DynamicVariable@GetValueString on an unhandled value type: " + v.valueType.String())
-		}
-
-		s := make([]string, len(v.valueDictionary))
-		for _, element := range v.valueDictionary {
-			s = append(s, element.GetValueString())
-		}
-		return strings.Join(s, ",")
+		panic("Called DynamicVariable@GetValueString on an unhandled value type: " + v.valueType.String())
 	}
 }
 func (v *DynamicVariable) SetValueString(value string) {
@@ -163,8 +157,8 @@ func (v *DynamicVariable) SetValueNumber(value float64) {
 	v.valueNumber = value
 }
 
-func (v *DynamicVariable) GetValueDictionary() map[int]DynamicVariable {
-	if v.valueType != NUMBER {
+func (v *DynamicVariable) GetValueDictionary() map[int]*node.INode {
+	if !v.valueType.IsArray() {
 		panic("Called DynamicVariable@GetValueDictionary on a non-dictionary variable")
 	}
 

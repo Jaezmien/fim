@@ -378,3 +378,21 @@ func TestModify(t *testing.T) {
 		ExecuteBasicReport(t, source, "true\n")
 	})
 }
+
+func TestArray(t *testing.T) {
+	t.Run("should print", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arrays!
+			Today I learned how to print arrays!
+			Did you know that Apples has the words "Gala", "Red Delicious", "Mcintosh", "Honeycrisp"?
+			I said 1 of Apples!
+			I said 2 of Apples!
+			I said 3 of Apples!
+			I said 4 of Apples!
+			That's all about how to print arrays.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Gala\nRed Delicious\nMcintosh\nHoneycrisp\n")
+	})
+}

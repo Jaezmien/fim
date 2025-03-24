@@ -3,6 +3,8 @@ package nodes
 import (
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type PrintNode struct {
@@ -58,7 +60,7 @@ type PromptNode struct {
 	Node
 
 	Identifier string
-	Prompt   INode
+	Prompt     INode
 }
 
 func (p *PromptNode) Type() NodeType {
@@ -89,7 +91,7 @@ func ParsePromptNode(ast *ast.AST) (*PromptNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	valueTokens, err := ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	if err != nil {
 		return nil, err

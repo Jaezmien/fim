@@ -5,6 +5,8 @@ import (
 
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type FunctionNode struct {

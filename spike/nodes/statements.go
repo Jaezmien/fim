@@ -5,6 +5,8 @@ import (
 
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type StatementsNode struct {
@@ -47,7 +49,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			statements.Statements = append(statements.Statements, node)
 			continue
 		}
-		if ast.CheckType(token.TokenType_Prompt)  {
+		if ast.CheckType(token.TokenType_Prompt) {
 			node, err := ParsePromptNode(ast)
 			if err != nil {
 				return nil, err
@@ -67,7 +69,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		if ast.ContainsWithStop(token.TokenType_Modify, token.TokenType_EndOfFile, token.TokenType_Punctuation) {
+		if ast.Peek().Type == token.TokenType_Identifier && ast.PeekNext().Type == token.TokenType_Modify {
 			node, err := ParseVariableModifyNode(ast)
 			if err != nil {
 				return nil, err
@@ -75,7 +77,6 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 
 			statements.Statements = append(statements.Statements, node)
 			continue
-			
 		}
 
 		return nil, ast.CreateErrorFromToken(ast.Peek(), fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type))

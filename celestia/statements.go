@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 
@@ -12,7 +13,7 @@ import (
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (error) {
 	for _, statement := range statements.Statements {
-		if statement.Type() == nodes.TYPE_PRINT {
+		if statement.Type() == node.TYPE_PRINT {
 			printNode := statement.(*nodes.PrintNode)
 
 			value, err := i.EvaluateValueNode(printNode.Value, true)
@@ -27,7 +28,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
-		if statement.Type() == nodes.TYPE_PROMPT {
+		if statement.Type() == node.TYPE_PROMPT {
 			promptNode := statement.(*nodes.PromptNode)
 
 			if !i.Variables.Has(promptNode.Identifier, true) {
@@ -57,7 +58,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
-		if statement.Type() == nodes.TYPE_VARIABLE_DECLARATION {
+		if statement.Type() == node.TYPE_VARIABLE_DECLARATION {
 			variableNode := statement.(*nodes.VariableDeclarationNode)
 
 			value, err := i.EvaluateValueNode(variableNode.Value, true)
@@ -75,7 +76,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
-		if statement.Type() == nodes.TYPE_VARIABLE_MODIFY {
+		if statement.Type() == node.TYPE_VARIABLE_MODIFY {
 			modifyNode := statement.(*nodes.VariableModifyNode)
 
 			if !i.Variables.Has(modifyNode.Identifier, true) {
@@ -119,15 +120,21 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 	return nil
 }
 
-func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (*vartype.DynamicVariable, error) {
-	if node.Type() == nodes.TYPE_LITERAL {
-		literalNode := node.(*nodes.LiteralNode)
+func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.DynamicVariable, error) {
+	if n.Type() == node.TYPE_LITERAL {
+		literalNode := n.(*nodes.LiteralNode)
+
+		return literalNode.DynamicVariable, nil
+	}
+
+	if n.Type() == node.TYPE_LITERAL_DICTIONARY {
+		literalNode := n.(*nodes.LiteralDictionaryNode)
 
 		return literalNode.DynamicVariable, nil
 	}
 	
-	if node.Type() == nodes.TYPE_IDENTIFIER {
-		identifierNode := node.(*nodes.IdentifierNode)
+	if n.Type() == node.TYPE_IDENTIFIER {
+		identifierNode := n.(*nodes.IdentifierNode)
 
 		if variable := i.Variables.Get(identifierNode.Identifier, local); variable != nil {
 			return variable.DynamicVariable, nil
@@ -138,8 +145,67 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (*vartype.
 		return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
 	}
 
-	if node.Type() == nodes.TYPE_BINARYEXPRESSION {
-		binaryNode := node.(*nodes.BinaryExpressionNode)
+	if n.Type() == node.TYPE_IDENTIFIER_DICTIONARY {
+		identifierNode := n.(*nodes.DictionaryIdentifierNode)
+
+		variable := i.Variables.Get(identifierNode.Identifier, local);
+		if variable == nil {
+			pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
+			return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
+		}
+		if !variable.GetType().IsArray() && variable.GetType() != vartype.STRING {
+			pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
+			return nil, errors.New(fmt.Sprintf("Invalid non-dictionary identifier at line %d:%d", pair.Line, pair.Column))
+		}
+
+		index, _ := i.EvaluateValueNode(identifierNode.Index, local)
+		if index.GetType() != vartype.NUMBER {
+			pair := luna.GetErrorIndexPair(i.source, identifierNode.Index.ToNode().Start)
+			return nil, errors.New(fmt.Sprintf("Expected numeric index at line %d:%d", pair.Line, pair.Column))
+		}
+		
+		indexAsInteger := int(index.GetValueNumber())
+
+		switch variable.GetType() {
+		case vartype.STRING: 
+			value := variable.GetValueString()[indexAsInteger - 1]
+			return vartype.NewRawCharacterVariable(string(value)), nil
+		case vartype.STRING_ARRAY:
+			preValue := variable.GetValueDictionary()[indexAsInteger]
+			value, err := i.EvaluateValueNode(*preValue, local)
+			if err != nil {
+				return nil, err
+			}
+			if value.GetType() != vartype.STRING {
+				return nil, errors.New(fmt.Sprintf("Expected string"))
+			}
+			return value, nil
+		case vartype.BOOLEAN_ARRAY:
+			preValue := variable.GetValueDictionary()[indexAsInteger]
+			value, err := i.EvaluateValueNode(*preValue, local)
+			if err != nil {
+				return nil, err
+			}
+			if value.GetType() != vartype.BOOLEAN {
+				return nil, errors.New(fmt.Sprintf("Expected boolean"))
+			}
+			return value, nil
+		case vartype.NUMBER_ARRAY:
+			preValue := variable.GetValueDictionary()[indexAsInteger]
+			value, err := i.EvaluateValueNode(*preValue, local)
+			if err != nil {
+				return nil, err
+			}
+			if value.GetType() != vartype.NUMBER {
+				return nil, errors.New(fmt.Sprintf("Expected number"))
+			}
+			return value, nil
+			
+		}
+	}
+
+	if n.Type() == node.TYPE_BINARYEXPRESSION {
+		binaryNode := n.(*nodes.BinaryExpressionNode)
 
 		left, err := i.EvaluateValueNode(binaryNode.Left, local)
 		if err != nil {
@@ -190,6 +256,6 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (*vartype.
 		}
 	}
 
-	pair := luna.GetErrorIndexPair(i.source, node.ToNode().Start)
+	pair := luna.GetErrorIndexPair(i.source, n.ToNode().Start)
 	return nil, errors.New(fmt.Sprintf("Unsupported value node at line %d:%d", pair.Line, pair.Column))
 }

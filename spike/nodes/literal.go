@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type LiteralNode struct {
@@ -25,8 +26,7 @@ func (l *LiteralNode) ToNode() Node {
 type LiteralDictionaryNode struct {
 	Node
 
-	Value map[int]INode
-	ValueType vartype.VariableType
+	*vartype.DynamicVariable
 }
 
 func (l *LiteralDictionaryNode) Type() NodeType {

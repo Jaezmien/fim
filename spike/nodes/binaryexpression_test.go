@@ -5,6 +5,8 @@ import (
 
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 	"github.com/stretchr/testify/assert"
+
+	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 func TestBinaryExpression(t *testing.T) {
