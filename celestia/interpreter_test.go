@@ -395,4 +395,17 @@ func TestArray(t *testing.T) {
 
 		ExecuteBasicReport(t, source, "Gala\nRed Delicious\nMcintosh\nHoneycrisp\n")
 	})
+	t.Run("should print nothing on out of range", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arrays!
+			Today I learned how to print arrays!
+			Did you know that Apples has the words "Gala"?
+			I said 1 of Apples!
+			I said 2 of Apples!
+			That's all about how to print arrays.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Gala\n\n")
+	})
 }

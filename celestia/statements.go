@@ -172,6 +172,10 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			return vartype.NewRawCharacterVariable(string(value)), nil
 		case vartype.STRING_ARRAY:
 			preValue := variable.GetValueDictionary()[indexAsInteger]
+			if preValue == nil {
+				defaultValue, _ := vartype.STRING.GetDefaultValue()
+				return vartype.FromValueType(defaultValue, vartype.STRING), nil
+			}
 			value, err := i.EvaluateValueNode(*preValue, local)
 			if err != nil {
 				return nil, err
@@ -182,6 +186,10 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			return value, nil
 		case vartype.BOOLEAN_ARRAY:
 			preValue := variable.GetValueDictionary()[indexAsInteger]
+			if preValue == nil {
+				defaultValue, _ := vartype.BOOLEAN.GetDefaultValue()
+				return vartype.FromValueType(defaultValue, vartype.BOOLEAN), nil
+			}
 			value, err := i.EvaluateValueNode(*preValue, local)
 			if err != nil {
 				return nil, err
@@ -192,6 +200,10 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			return value, nil
 		case vartype.NUMBER_ARRAY:
 			preValue := variable.GetValueDictionary()[indexAsInteger]
+			if preValue == nil {
+				defaultValue, _ := vartype.NUMBER.GetDefaultValue()
+				return vartype.FromValueType(defaultValue, vartype.NUMBER), nil
+			}
 			value, err := i.EvaluateValueNode(*preValue, local)
 			if err != nil {
 				return nil, err
