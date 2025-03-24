@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"git.jaezmien.com/Jaezmien/fim/celestia/utilities"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 
@@ -16,11 +15,11 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 		if statement.Type() == nodes.TYPE_PRINT {
 			printNode := statement.(*nodes.PrintNode)
 
-			value, _, err := i.EvaluateValueNode(printNode.Value, true)
+			value, err := i.EvaluateValueNode(printNode.Value, true)
 			if err != nil {
 				return err
 			}
-			i.Writer.Write([]byte(value))
+			i.Writer.Write([]byte(value.GetValueString()))
 
 			if printNode.NewLine {
 				i.Writer.Write([]byte("\n"))
@@ -38,38 +37,37 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if variable.Constant {
 				return i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
 			}
-			if variable.ValueType != vartype.STRING {
+			if variable.DynamicVariable.GetType() != vartype.STRING {
 				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected variable to be of type STRING")
 			}
 
-			value, valueType, err := i.EvaluateValueNode(promptNode.Prompt, true)
+			value, err := i.EvaluateValueNode(promptNode.Prompt, true)
 			if err != nil {
 				return err
 			}
-			if valueType != vartype.STRING {
+			if value.GetType() != vartype.STRING {
 				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected prompt to be of type STRING")
 			}
 
-			response, err := i.Prompt(value)
+			response, err := i.Prompt(value.GetValueString())
 			if err != nil {
 				return err
 			}
-			variable.Value = response
+			variable.DynamicVariable.SetValueString(response)
 
 			continue
 		}
 		if statement.Type() == nodes.TYPE_VARIABLE_DECLARATION {
 			variableNode := statement.(*nodes.VariableDeclarationNode)
 
-			value, _, err := i.EvaluateValueNode(variableNode.Value, true)
+			value, err := i.EvaluateValueNode(variableNode.Value, true)
 			if err != nil {
 				return err
 			}
 
 			variable := &Variable{
 				Name: variableNode.Identifier,
-				Value: value,
-				ValueType: variableNode.ValueType,
+				DynamicVariable: value,
 				Constant: variableNode.Constant,
 			}
 			
@@ -85,20 +83,32 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 			variable := i.Variables.Get(modifyNode.Identifier, true)
 			
+			if variable.GetType().IsArray() {
+				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify an array."))
+			}
 			if variable.Constant {
 				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
 			}
 
-			value, valueType, err := i.EvaluateValueNode(modifyNode.Value, true)
+			value, err := i.EvaluateValueNode(modifyNode.Value, true)
 			if err != nil {
 				return err
 			}
 
-			if variable.ValueType != valueType && (variable.ValueType != vartype.STRING && !valueType.IsArray()) {
-				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'.", variable.ValueType, valueType))
+			if variable.GetType() != value.GetType() && (variable.DynamicVariable.GetType() != vartype.STRING && !value.GetType().IsArray()) {
+				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'.", variable.GetType(), value.GetType()))
 			}
 
-			variable.Value = value
+			switch variable.GetType() {
+			case vartype.STRING:
+				variable.SetValueString(value.GetValueString())
+			case vartype.CHARACTER:
+				variable.SetValueCharacter(value.GetValueCharacter())
+			case vartype.BOOLEAN:
+				variable.SetValueBoolean(value.GetValueBoolean())
+			case vartype.NUMBER:
+				variable.SetValueNumber(value.GetValueNumber())
+			}
 
 			continue
 		}
@@ -109,51 +119,41 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 	return nil
 }
 
-func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, vartype.VariableType, error) {
+func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (*vartype.DynamicVariable, error) {
 	if node.Type() == nodes.TYPE_LITERAL {
 		literalNode := node.(*nodes.LiteralNode)
 
-		if literalNode.ValueType == vartype.BOOLEAN {
-			return utilities.BoolAsString(literalNode.GetValueBoolean()), literalNode.ValueType, nil
-		}
-		if literalNode.ValueType == vartype.STRING {
-			return literalNode.GetValueString(), literalNode.ValueType, nil
-		}
-		if literalNode.ValueType == vartype.CHARACTER {
-			return literalNode.GetValueCharacter(), literalNode.ValueType, nil
-		}
-		if literalNode.ValueType == vartype.NUMBER {
-			return utilities.FloatAsString(literalNode.GetValueNumber()), literalNode.ValueType, nil
-		}
+		return literalNode.DynamicVariable, nil
 	}
 	
 	if node.Type() == nodes.TYPE_IDENTIFIER {
 		identifierNode := node.(*nodes.IdentifierNode)
 
 		if variable := i.Variables.Get(identifierNode.Identifier, local); variable != nil {
-			return variable.Value, variable.ValueType, nil
+			return variable.DynamicVariable, nil
 		}
 
 		// TODO: Check for paragraphs
 		pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
-		return "", vartype.UNKNOWN, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
+		return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
 	}
 
 	if node.Type() == nodes.TYPE_BINARYEXPRESSION {
 		binaryNode := node.(*nodes.BinaryExpressionNode)
 
-		left, leftType, err := i.EvaluateValueNode(binaryNode.Left, local)
+		left, err := i.EvaluateValueNode(binaryNode.Left, local)
 		if err != nil {
-			return "", vartype.UNKNOWN, err
+			return nil, err
 		}
-		right, rightType, err := i.EvaluateValueNode(binaryNode.Right, local)
+		right, err := i.EvaluateValueNode(binaryNode.Right, local)
 		if err != nil {
-			return "", vartype.UNKNOWN, err
+			return nil, err
 		}
 
 		if binaryNode.Operator == nodes.BINARYOPERATOR_ADD {
-			if leftType == vartype.STRING || rightType == vartype.STRING {
-				return (left + right), vartype.STRING, nil
+			if left.GetType() == vartype.STRING || right.GetType() == vartype.STRING {
+				variable := vartype.NewRawStringVariable(left.GetValueString() + right.GetValueString())
+				return variable, nil
 			}
 		}
 
@@ -161,55 +161,35 @@ func (i *Interpreter) EvaluateValueNode(node nodes.INode, local bool) (string, v
 
 		switch binaryNode.Operator {
 		case nodes.BINARYOPERATOR_ADD:
-			leftFloat := utilities.StringAsFloat(left)
-			rightFloat := utilities.StringAsFloat(right)
-			return utilities.FloatAsString(leftFloat + rightFloat), vartype.NUMBER, nil
+			return vartype.NewNumberVariable(left.GetValueNumber() + right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_SUB:
-			leftFloat := utilities.StringAsFloat(left)
-			rightFloat := utilities.StringAsFloat(right)
-			return utilities.FloatAsString(leftFloat - rightFloat), vartype.NUMBER, nil
+			return vartype.NewNumberVariable(left.GetValueNumber() - right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_MUL:
-			leftFloat := utilities.StringAsFloat(left)
-			rightFloat := utilities.StringAsFloat(right)
-			return utilities.FloatAsString(leftFloat * rightFloat), vartype.NUMBER, nil
+			return vartype.NewNumberVariable(left.GetValueNumber() * right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_DIV:
-			leftFloat := utilities.StringAsFloat(left)
-			rightFloat := utilities.StringAsFloat(right)
-			return utilities.FloatAsString(leftFloat / rightFloat), vartype.NUMBER, nil
+			return vartype.NewNumberVariable(left.GetValueNumber() / right.GetValueNumber()), nil
 
 		case nodes.BINARYOPERATOR_AND:
-			leftBool := utilities.StringAsBool(left)
-			rightBool := utilities.StringAsBool(right)
-			return utilities.BoolAsString(leftBool && rightBool), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueBoolean() && right.GetValueBoolean()), nil
 		case nodes.BINARYOPERATOR_OR:
-			leftBool := utilities.StringAsBool(left)
-			rightBool := utilities.StringAsBool(right)
-			return utilities.BoolAsString(leftBool || rightBool), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueBoolean() || right.GetValueBoolean()), nil
 
 		case nodes.BINARYOPERATOR_GTE:
-			leftBool := utilities.StringAsFloat(left)
-			rightBool := utilities.StringAsFloat(right)
-			return utilities.BoolAsString(leftBool >= rightBool), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueNumber() >= right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_LTE:
-			leftBool := utilities.StringAsFloat(left)
-			rightBool := utilities.StringAsFloat(right)
-			return utilities.BoolAsString(leftBool <= rightBool), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueNumber() <= right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_GT:
-			leftBool := utilities.StringAsFloat(left)
-			rightBool := utilities.StringAsFloat(right)
-			return utilities.BoolAsString(leftBool > rightBool), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueNumber() > right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_LT:
-			leftBool := utilities.StringAsFloat(left)
-			rightBool := utilities.StringAsFloat(right)
-			return utilities.BoolAsString(leftBool < rightBool), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueNumber() < right.GetValueNumber()), nil
 
 		case nodes.BINARYOPERATOR_NEQ:
-			return utilities.BoolAsString(left != right), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueString() != right.GetValueString()), nil
 		case nodes.BINARYOPERATOR_EQ:
-			return utilities.BoolAsString(left == right), vartype.BOOLEAN, nil
+			return vartype.NewBooleanVariable(left.GetValueString() == right.GetValueString()), nil
 		}
 	}
 
 	pair := luna.GetErrorIndexPair(i.source, node.ToNode().Start)
-	return "", vartype.UNKNOWN, errors.New(fmt.Sprintf("Unsupported value node at line %d:%d", pair.Line, pair.Column))
+	return nil, errors.New(fmt.Sprintf("Unsupported value node at line %d:%d", pair.Line, pair.Column))
 }

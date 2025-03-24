@@ -8,8 +8,8 @@ import (
 type Variable struct {
 	Name string
 
-	Value string
-	ValueType vartype.VariableType
+	*vartype.DynamicVariable
+
 	Constant bool
 }
 

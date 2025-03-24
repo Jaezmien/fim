@@ -78,8 +78,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 				Start:  0,
 				Length: 0,
 			},
-			value:     defaultValue,
-			ValueType: *options.possibleNullType,
+			DynamicVariable: vartype.FromValueType(defaultValue, *options.possibleNullType),
 		}
 
 		return literalNode, nil
@@ -114,8 +113,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 		}
 
 		if defaultType != vartype.UNKNOWN {
-			literalNode.value = t.Value
-			literalNode.ValueType = defaultType
+			literalNode.DynamicVariable = vartype.FromValueType(t.Value, defaultType)
 
 			literalNode.Start = t.Start
 			literalNode.Length = t.Length
@@ -123,13 +121,15 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			return literalNode, nil
 		}
 		if t.Type == token.TokenType_Null && options.possibleNullType != nil {
-			literalNode.ValueType = *options.possibleNullType
-
-			defaultValue, ok := literalNode.ValueType.GetDefaultValue()
+			defaultValue, ok := options.possibleNullType.GetDefaultValue()
 			if !ok {
 				panic("AST@CreateValueNode (possibly unknown type?)")
 			}
-			literalNode.value = defaultValue
+
+			literalNode.DynamicVariable = vartype.FromValueType(
+				defaultValue,
+				*options.possibleNullType,
+			)
 
 			return literalNode, nil
 		}

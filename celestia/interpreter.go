@@ -69,15 +69,14 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 		if node.Type() == nodes.TYPE_VARIABLE_DECLARATION {
 			variableNode := node.(*nodes.VariableDeclarationNode)
 
-			value, _, err := interpreter.EvaluateValueNode(variableNode.Value, false)
+			value, err := interpreter.EvaluateValueNode(variableNode.Value, false)
 			if err != nil {
 				return nil, err
 			}
 
 			variable := &Variable{
 				Name: variableNode.Identifier,
-				Value: value,
-				ValueType: variableNode.ValueType,
+				DynamicVariable: value,
 				Constant: variableNode.Constant,
 			}
 			
