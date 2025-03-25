@@ -26,7 +26,11 @@ func NewAST(tokens []*token.Token, source string) *AST {
 
 func (a *AST) PeekAt(index int) *token.Token {
 	if index < 0 || index >= len(a.Tokens) {
-		return nil
+		return &token.Token{
+			Start: 0,
+			Length: 0,
+			Type: token.TokenType_Unknown,
+		}
 	}
 	return a.Tokens[index]
 }
