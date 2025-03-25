@@ -15,10 +15,6 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	tokens := queue.New[*token.Token]()
 
 	punctuations := [...]rune{'.', '!', '?', ':', ','}
-	isRunePunctuation := func(r rune) bool {
-		return utilities.ContainsRune(r, punctuations[:])
-	}
-
 	booleanStrings := [...]string{"yes", "true", "right", "correct", "no", "false", "wrong", "incorrect"}
 
 	processTokenType := func(t *token.Token, condition bool, resultType token.TokenType) {
@@ -37,7 +33,7 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		t := partialTokens.Dequeue().Value
 		t.Type = token.TokenType_Identifier
 
-		processTokenType(t, t.Length == 1 && isRunePunctuation(rune(t.Value[0])), token.TokenType_Punctuation)
+		processTokenType(t, t.Length == 1 && utilities.ContainsRune(rune(t.Value[0]), punctuations[:]), token.TokenType_Punctuation)
 		processTokenType(t, t.Length == 1 && t.Value == "\n", token.TokenType_NewLine)
 		processTokenType(t, t.Length == 1 && t.Value == " ", token.TokenType_Whitespace)
 		processTokenType(t, t.Length == 1 && strings.HasPrefix(t.Value, "(") && strings.HasSuffix(t.Value, ")"), token.TokenType_CommentParen)
