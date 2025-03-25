@@ -56,9 +56,6 @@ func (a *AST) MoveTo(index int) {
 
 func (a *AST) EndOfFile() bool {
 	current := a.Peek()
-	if current == nil {
-		panic("AST@EndOfFile called with nil token")
-	}
 	return current.Type == token.TokenType_EndOfFile
 }
 
@@ -76,9 +73,6 @@ func (a *AST) GetSourceText(start int, length int) string {
 
 func (a *AST) CheckType(tokenTypes ...token.TokenType) bool {
 	current := a.Peek()
-	if current == nil {
-		panic("AST@CheckType called with nil token")
-	}
 	return slices.Contains(tokenTypes, current.Type)
 }
 
@@ -107,17 +101,10 @@ func (a *AST) ContainsWithStop(tokenType token.TokenType, stopTokens ...token.To
 func (a *AST) ConsumeFunc(predicate func(*token.Token) bool, errorMessage string) (*token.Token, error) {
 	current := a.Peek()
 
-	if current == nil {
-		panic("AST@ConsumeFunc called with nil token")
-	}
-
 	if !predicate(current) {
 		return nil, a.CreateErrorFromToken(current, errorMessage)
 	}
 
-	if a.PeekNext() == nil {
-		return nil, a.CreateErrorFromToken(current, "Reached END_OF_FILE")
-	}
 	a.Next()
 
 	return a.PeekPrevious(), nil
@@ -133,9 +120,6 @@ func (a *AST) ConsumeFuncUntilMatch(predicate func(*token.Token) bool, errorMess
 
 	for {
 		current := a.Peek()
-		if current == nil {
-			panic("AST@ConsumeFuncUntilMatch called with nil token")
-		}
 
 		if a.EndOfFile() {
 			return nil, a.CreateErrorFromToken(current, errorMessage)
