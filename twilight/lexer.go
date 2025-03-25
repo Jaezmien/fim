@@ -11,28 +11,27 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-var punctuations = [...]rune{'.', '!', '?', ':', ','}
-
-func isRunePunctuation(r rune) bool {
-	return utilities.ContainsRune(r, punctuations[:])
-}
-
-var booleanStrings = [...]string{"yes", "true", "right", "correct", "no", "false", "wrong", "incorrect"}
-
-func processTokenType(t *token.Token, condition bool, resultType token.TokenType) {
-	if t.Type != token.TokenType_Identifier {
-		return
-	}
-
-	if !condition {
-		return
-	}
-
-	t.Type = resultType
-}
-
 func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
+
+	punctuations := [...]rune{'.', '!', '?', ':', ','}
+	isRunePunctuation := func(r rune) bool {
+		return utilities.ContainsRune(r, punctuations[:])
+	}
+
+	booleanStrings := [...]string{"yes", "true", "right", "correct", "no", "false", "wrong", "incorrect"}
+
+	processTokenType := func(t *token.Token, condition bool, resultType token.TokenType) {
+		if t.Type != token.TokenType_Identifier {
+			return
+		}
+
+		if !condition {
+			return
+		}
+
+		t.Type = resultType
+	}
 
 	for partialTokens.Len() > 0 {
 		t := partialTokens.Dequeue().Value
@@ -76,77 +75,77 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 
 type processMultiTokenResult = func(tokens *queue.Queue[*token.Token]) int
 
-func processMultiTokenType(tokens *queue.Queue[*token.Token], condition processMultiTokenResult, resultType token.TokenType) {
-	if tokens.Len() <= 0 {
-		return
-	}
-
-	if tokens.First().Value.Type != token.TokenType_Identifier {
-		return
-	}
-
-	amount := condition(tokens)
-	if amount <= 0 {
-		return
-	}
-
-	token := utilities.MergeTokens(tokens, amount)
-	token.Type = resultType
-
-	tokens.QueueFront(token)
-}
-
 func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
+	processMultiTokenType := func(condition processMultiTokenResult, resultType token.TokenType) {
+		if oldTokens.Len() <= 0 {
+			return
+		}
+
+		if oldTokens.First().Value.Type != token.TokenType_Identifier {
+			return
+		}
+
+		amount := condition(oldTokens)
+		if amount <= 0 {
+			return
+		}
+
+		token := utilities.MergeTokens(oldTokens, amount)
+		token.Type = resultType
+
+		oldTokens.QueueFront(token)
+	}
+
 	for oldTokens.Len() > 0 {
-		processMultiTokenType(oldTokens, parsers.IsReportHeader, token.TokenType_ReportHeader)
-		processMultiTokenType(oldTokens, parsers.IsReportFooter, token.TokenType_ReportFooter)
+		processMultiTokenType(parsers.IsReportHeader, token.TokenType_ReportHeader)
+		processMultiTokenType(parsers.IsReportFooter, token.TokenType_ReportFooter)
 
-		processMultiTokenType(oldTokens, parsers.IsFunctionHeaderMain, token.TokenType_FunctionMain)
-		processMultiTokenType(oldTokens, parsers.IsFunctionHeader, token.TokenType_FunctionHeader)
-		processMultiTokenType(oldTokens, parsers.IsFunctionFooter, token.TokenType_FunctionFooter)
-		processMultiTokenType(oldTokens, parsers.IsFunctionParameter, token.TokenType_FunctionParameter)
-		processMultiTokenType(oldTokens, parsers.IsFunctionReturn, token.TokenType_FunctionReturn)
+		processMultiTokenType(parsers.IsFunctionHeaderMain, token.TokenType_FunctionMain)
+		processMultiTokenType(parsers.IsFunctionHeader, token.TokenType_FunctionHeader)
+		processMultiTokenType(parsers.IsFunctionFooter, token.TokenType_FunctionFooter)
+		processMultiTokenType(parsers.IsFunctionParameter, token.TokenType_FunctionParameter)
+		processMultiTokenType(parsers.IsFunctionReturn, token.TokenType_FunctionReturn)
 
-		processMultiTokenType(oldTokens, parsers.IsPrintMethod, token.TokenType_Print)
-		processMultiTokenType(oldTokens, parsers.IsPrintNewlineMethod, token.TokenType_PrintNewline)
-		processMultiTokenType(oldTokens, parsers.IsReadMethod, token.TokenType_Prompt)
-		processMultiTokenType(oldTokens, parsers.IsFunctionCallMethod, token.TokenType_FunctionCall)
+		processMultiTokenType(parsers.IsPrintMethod, token.TokenType_Print)
+		processMultiTokenType(parsers.IsPrintNewlineMethod, token.TokenType_PrintNewline)
+		processMultiTokenType(parsers.IsReadMethod, token.TokenType_Prompt)
+		processMultiTokenType(parsers.IsFunctionCallMethod, token.TokenType_FunctionCall)
 
-		processMultiTokenType(oldTokens, parsers.IsVariableDeclaration, token.TokenType_Declaration)
-		processMultiTokenType(oldTokens, parsers.IsVariableModifier, token.TokenType_Modify)
+		processMultiTokenType(parsers.IsVariableDeclaration, token.TokenType_Declaration)
+		processMultiTokenType(parsers.IsVariableModifier, token.TokenType_Modify)
 
-		processMultiTokenType(oldTokens, parsers.IsBooleanType, token.TokenType_TypeBoolean);
-		processMultiTokenType(oldTokens, parsers.IsBooleanArrayType, token.TokenType_TypeBooleanArray);
-		processMultiTokenType(oldTokens, parsers.IsNumberType, token.TokenType_TypeNumber);
-		processMultiTokenType(oldTokens, parsers.IsNumberArrayType, token.TokenType_TypeNumberArray);
-		processMultiTokenType(oldTokens, parsers.IsStringType, token.TokenType_TypeString);
-		processMultiTokenType(oldTokens, parsers.IsStringArrayType, token.TokenType_TypeStringArray);
-		processMultiTokenType(oldTokens, parsers.IsCharacterType, token.TokenType_TypeChar);
+		processMultiTokenType(parsers.IsBooleanType, token.TokenType_TypeBoolean);
+		processMultiTokenType(parsers.IsBooleanArrayType, token.TokenType_TypeBooleanArray);
+		processMultiTokenType(parsers.IsNumberType, token.TokenType_TypeNumber);
+		processMultiTokenType(parsers.IsNumberArrayType, token.TokenType_TypeNumberArray);
+		processMultiTokenType(parsers.IsStringType, token.TokenType_TypeString);
+		processMultiTokenType(parsers.IsStringArrayType, token.TokenType_TypeStringArray);
+		processMultiTokenType(parsers.IsCharacterType, token.TokenType_TypeChar);
 
-		processMultiTokenType(oldTokens, parsers.IsPostscript, token.TokenType_CommentPostScript)
+		processMultiTokenType(parsers.IsPostscript, token.TokenType_CommentPostScript)
 
-		processMultiTokenType(oldTokens, parsers.IsInfixAddition, token.TokenType_OperatorAddInfix)
-		processMultiTokenType(oldTokens, parsers.IsPrefixAddition, token.TokenType_OperatorAddPrefix)
-		processMultiTokenType(oldTokens, parsers.IsInfixSubtraction, token.TokenType_OperatorSubInfix)
-		processMultiTokenType(oldTokens, parsers.IsPrefixSubtraction, token.TokenType_OperatorSubPrefix)
-		processMultiTokenType(oldTokens, parsers.IsInfixMultiplication, token.TokenType_OperatorMulInfix)
-		processMultiTokenType(oldTokens, parsers.IsPrefixMultiplication, token.TokenType_OperatorMulPrefix)
-		processMultiTokenType(oldTokens, parsers.IsInfixDivision, token.TokenType_OperatorDivInfix)
-		processMultiTokenType(oldTokens, parsers.IsPrefixDivision, token.TokenType_OperatorDivPrefix)
+		processMultiTokenType(parsers.IsInfixAddition, token.TokenType_OperatorAddInfix)
+		processMultiTokenType(parsers.IsPrefixAddition, token.TokenType_OperatorAddPrefix)
+		processMultiTokenType(parsers.IsInfixSubtraction, token.TokenType_OperatorSubInfix)
+		processMultiTokenType(parsers.IsPrefixSubtraction, token.TokenType_OperatorSubPrefix)
+		processMultiTokenType(parsers.IsInfixMultiplication, token.TokenType_OperatorMulInfix)
+		processMultiTokenType(parsers.IsPrefixMultiplication, token.TokenType_OperatorMulPrefix)
+		processMultiTokenType(parsers.IsInfixDivision, token.TokenType_OperatorDivInfix)
+		processMultiTokenType(parsers.IsPrefixDivision, token.TokenType_OperatorDivPrefix)
 
-		processMultiTokenType(oldTokens, parsers.IsLessThanEqualOperator, token.TokenType_OperatorLte)
-		processMultiTokenType(oldTokens, parsers.IsGreaterThanEqualOperator, token.TokenType_OperatorGte)
-		processMultiTokenType(oldTokens, parsers.IsGreaterThanOperator, token.TokenType_OperatorGt)
-		processMultiTokenType(oldTokens, parsers.IsLessThanOperator, token.TokenType_OperatorLt)
-		processMultiTokenType(oldTokens, parsers.IsNotEqualOperator, token.TokenType_OperatorNeq)
-		processMultiTokenType(oldTokens, parsers.IsEqualOperator, token.TokenType_OperatorEq)
+		processMultiTokenType(parsers.IsLessThanEqualOperator, token.TokenType_OperatorLte)
+		processMultiTokenType(parsers.IsGreaterThanEqualOperator, token.TokenType_OperatorGte)
+		processMultiTokenType(parsers.IsGreaterThanOperator, token.TokenType_OperatorGt)
+		processMultiTokenType(parsers.IsLessThanOperator, token.TokenType_OperatorLt)
+		processMultiTokenType(parsers.IsNotEqualOperator, token.TokenType_OperatorNeq)
+		processMultiTokenType(parsers.IsEqualOperator, token.TokenType_OperatorEq)
 
-		processMultiTokenType(oldTokens, parsers.IsConstantKeyword, token.TokenType_KeywordConst)
-		processMultiTokenType(oldTokens, parsers.IsAndKeyword, token.TokenType_KeywordAnd)
-		processMultiTokenType(oldTokens, parsers.IsOrKeyword, token.TokenType_KeywordOr)
-		processMultiTokenType(oldTokens, parsers.IsOfKeyword, token.TokenType_KeywordOf)
+		processMultiTokenType(parsers.IsConstantKeyword, token.TokenType_KeywordConst)
+		processMultiTokenType(parsers.IsAndKeyword, token.TokenType_KeywordAnd)
+		processMultiTokenType(parsers.IsOrKeyword, token.TokenType_KeywordOr)
+		processMultiTokenType(parsers.IsOfKeyword, token.TokenType_KeywordOf)
 
 		tokens.Queue(oldTokens.Dequeue().Value)
 	}
