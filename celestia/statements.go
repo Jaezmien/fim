@@ -66,6 +66,10 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return err
 			}
 
+			if variableNode.ValueType != value.GetType() {
+				return i.CreateErrorFromNode(variableNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'", variableNode.ValueType, value.GetType()))
+			}
+
 			variable := &Variable{
 				Name: variableNode.Identifier,
 				DynamicVariable: value,

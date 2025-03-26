@@ -322,6 +322,42 @@ func TestDeclaration(t *testing.T) {
 
 		ExecuteBasicReport(t, source, "2\n")
 	})
+	t.Run("should fail on invalid value type", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Variable Type!
+			Today I learned how to throw an error!
+			Did you know that Spike is the number "Hello"?
+			I said Spike!
+			That's all about how to throw an error.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		tokens := twilight.Parse(source)
+		report, err := spike.CreateReport(tokens.Flatten(), source)
+		if !assert.NoError(t, err) {
+			return
+		}
+		interpreter, err := NewInterpreter(report, source)
+		if !assert.NoError(t, err) {
+			return
+		}
+
+		var mainParagraph *Paragraph
+		for _, paragraph := range interpreter.Paragraphs {
+			if paragraph.Main {
+				mainParagraph = paragraph
+				break
+			}
+		}
+		if !assert.NotNil(t, mainParagraph) {
+			return
+		}
+
+		err = mainParagraph.Execute()
+		if !assert.Error(t, err) {
+			return
+		}
+	})
 }
 
 func TestModify(t *testing.T) {
