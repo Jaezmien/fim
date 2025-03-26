@@ -10,20 +10,20 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func ExecuteBasicReport(t *testing.T, source string, expected string) {
+func CreateReport(t *testing.T, source string) (*Interpreter, bool) {
 	tokens := twilight.Parse(source)
 	report, err := spike.CreateReport(tokens.Flatten(), source)
 	if !assert.NoError(t, err) {
-		return
+		return nil, false
 	}
 	interpreter, err := NewInterpreter(report, source)
 	if !assert.NoError(t, err) {
-		return
+		return nil, false
 	}
 
-	buffer := &bytes.Buffer{}
-	interpreter.Writer = buffer
-
+	return interpreter, true
+}
+func GetMainParagraph(t *testing.T, interpreter *Interpreter) (*Paragraph, bool) {
 	var mainParagraph *Paragraph
 	for _, paragraph := range interpreter.Paragraphs {
 		if paragraph.Main {
@@ -32,10 +32,27 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 		}
 	}
 	if !assert.NotNil(t, mainParagraph) {
+		return nil, false
+	}
+
+	return mainParagraph, true
+}
+
+func ExecuteBasicReport(t *testing.T, source string, expected string) {
+	interpreter, ok := CreateReport(t, source)
+	if !ok {
 		return
 	}
 
-	err = mainParagraph.Execute()
+	buffer := &bytes.Buffer{}
+	interpreter.Writer = buffer
+
+	mainParagraph, ok := GetMainParagraph(t, interpreter)
+	if !ok {
+		return
+	}
+
+	err := mainParagraph.Execute()
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -46,6 +63,26 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	}
 
 	if !assert.Equal(t, expected, string(data)) {
+		return
+	}
+}
+func ExpectError(t *testing.T, source string, expected string) {
+	interpreter, ok := CreateReport(t, source)
+	if !ok {
+		return
+	}
+
+	mainParagraph, ok := GetMainParagraph(t, interpreter)
+	if !ok {
+		return
+	}
+
+	err := mainParagraph.Execute()
+	if !assert.NoError(t, err) {
+		return
+	}
+
+	if !assert.Error(t, err) {
 		return
 	}
 }
