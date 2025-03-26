@@ -11,11 +11,7 @@ import (
 )
 
 type DynamicVariable struct {
-	valueString string
-	valueNumber float64
-	valueBoolean bool
-	valueCharacter string
-	valueDictionary map[int]*node.INode
+	value any
 
 	valueType VariableType
 }
@@ -45,7 +41,7 @@ func NewStringVariable(value string) *DynamicVariable {
 }
 func NewRawStringVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
-		valueString: value,
+		value: value,
 		valueType: STRING,
 	}
 }
@@ -71,25 +67,25 @@ func NewCharacterVariable(value string) *DynamicVariable {
 }
 func NewRawCharacterVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
-		valueCharacter: value,
+		value: value,
 		valueType: CHARACTER,
 	}
 }
 func NewNumberVariable(value float64) *DynamicVariable {
 	return &DynamicVariable{
-		valueNumber: value,
+		value: value,
 		valueType: NUMBER,
 	}
 }
 func NewBooleanVariable(value bool) *DynamicVariable {
 	return &DynamicVariable{
-		valueBoolean: value,
+		value: value,
 		valueType: BOOLEAN,
 	}
 }
 func NewDictionaryVariable(t VariableType) *DynamicVariable {
 	return &DynamicVariable{
-		valueDictionary: make(map[int]*node.INode, 0),
+		value: make(map[int]*node.INode, 0),
 		valueType: t,
 	}
 }
@@ -97,16 +93,16 @@ func NewDictionaryVariable(t VariableType) *DynamicVariable {
 func (v *DynamicVariable) GetValueString() string {
 	switch v.valueType {
 	case STRING:
-		return v.valueString
+		return v.value.(string)
 	case CHARACTER:
-		return v.valueCharacter
+		return v.value.(string)
 	case BOOLEAN:
-		if v.valueBoolean {
+		if v.value.(bool) {
 			return "true"
 		}
 		return "false"
 	case NUMBER:
-		return strconv.FormatFloat(v.valueNumber, 'f', -1, 64)
+		return strconv.FormatFloat(v.value.(float64), 'f', -1, 64)
 	default:
 		panic("Called DynamicVariable@GetValueString on an unhandled value type: " + v.valueType.String())
 	}
@@ -115,46 +111,46 @@ func (v *DynamicVariable) SetValueString(value string) {
 	if v.valueType != STRING {
 		panic("Called DynamicVariable@SetValueString on a non-string variable")
 	}
-	v.valueString = value
+	v.value = value
 }
 
 func (v *DynamicVariable) GetValueCharacter() string {
 	if v.valueType != CHARACTER {
 		panic("Called DynamicVariable@GetValueCharacter on a non-character variable")
 	}
-	return v.valueCharacter
+	return v.value.(string)
 }
 func (v *DynamicVariable) SetValueCharacter(value string) {
 	if v.valueType != CHARACTER {
 		panic("Called DynamicVariable@SetValueCharacter on a non-character variable")
 	}
-	v.valueCharacter = value
+	v.value = value
 }
 
 func (v *DynamicVariable) GetValueBoolean() bool {
 	if v.valueType != BOOLEAN {
 		panic("Called DynamicVariable@GetValueBoolean on a non-boolean variable")
 	}
-	return v.valueBoolean
+	return v.value.(bool)
 }
 func (v *DynamicVariable) SetValueBoolean(value bool) {
 	if v.valueType != BOOLEAN {
 		panic("Called DynamicVariable@SetValueBoolean on a non-boolean variable")
 	}
-	v.valueBoolean = value
+	v.value = value
 }
 
 func (v *DynamicVariable) GetValueNumber() float64 {
 	if v.valueType != NUMBER {
 		panic("Called DynamicVariable@GetValueNumber on a non-number variable")
 	}
-	return v.valueNumber
+	return v.value.(float64)
 }
 func (v *DynamicVariable) SetValueNumber(value float64) {
 	if v.valueType != NUMBER {
 		panic("Called DynamicVariable@SetValueNumber on a non-number variable")
 	}
-	v.valueNumber = value
+	v.value = value
 }
 
 func (v *DynamicVariable) GetValueDictionary() map[int]*node.INode {
@@ -162,7 +158,7 @@ func (v *DynamicVariable) GetValueDictionary() map[int]*node.INode {
 		panic("Called DynamicVariable@GetValueDictionary on a non-dictionary variable")
 	}
 
-	return v.valueDictionary
+	return v.value.(map[int]*node.INode)
 }
 
 func (v *DynamicVariable) GetType() VariableType {
