@@ -89,6 +89,12 @@ func NewDictionaryVariable(t VariableType) *DynamicVariable {
 		valueType: t,
 	}
 }
+func NewUnknownVariable() *DynamicVariable {
+	return &DynamicVariable{
+		value:     nil,
+		valueType: UNKNOWN,
+	}
+}
 
 func (v *DynamicVariable) GetValueString() string {
 	switch v.valueType {
@@ -103,6 +109,8 @@ func (v *DynamicVariable) GetValueString() string {
 		return "false"
 	case NUMBER:
 		return strconv.FormatFloat(v.value.(float64), 'f', -1, 64)
+	case UNKNOWN:
+		return ""
 	default:
 		panic("Called DynamicVariable@GetValueString on an unhandled value type: " + v.valueType.String())
 	}

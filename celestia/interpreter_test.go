@@ -213,6 +213,18 @@ func TestIO(t *testing.T) {
 }
 
 func TestBasicReports(t *testing.T) {
+	t.Run("should print nothing", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Printing empty!
+			Today I learned how to print empty!
+			I said nothing!
+			That's all about how to print empty. 
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "\n")
+	})
+
 	t.Run("should print string", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Printing strings!
@@ -346,6 +358,18 @@ func TestDeclaration(t *testing.T) {
 
 		ExecuteBasicReport(t, source, "\n")
 	})
+	t.Run("should create an explicit empty variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Empties!
+			Today I learned how to output an empty variable!
+			Did you know that Spike is the word nothing?
+			I said Spike!
+			That's all about how to output an empty variable.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "\n")
+	})
 	t.Run("should create variable from another variable", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Variables!
@@ -423,6 +447,19 @@ func TestModify(t *testing.T) {
 			`
 
 		ExecuteBasicReport(t, source, "1\n")
+	})
+	t.Run("should set to default value", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Variables!
+			Today I learned how to reset a variable!
+			Did you know that Spike is the number 2?
+			Spike became the word nothing.
+			I said Spike!
+			That's all about how to reset a variable.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "0\n")
 	})
 	t.Run("should convert number to string", func(t *testing.T) {
 		source :=

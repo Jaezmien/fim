@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
+	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 
 	. "git.jaezmien.com/Jaezmien/fim/spike/node"
@@ -13,6 +14,7 @@ type VariableModifyNode struct {
 	Identifier string
 
 	Value INode
+	ReinforcementType vartype.VariableType
 }
 
 func (d *VariableModifyNode) Type() NodeType {
@@ -37,6 +39,15 @@ func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 	_, err = ast.ConsumeToken(token.TokenType_Modify, token.TokenType_Modify.Message("Expected %s"))
 	if err != nil {
 		return nil, err
+	}
+
+	possibleTypeToken := ast.Peek()
+	possibleType := vartype.FromTokenTypeHint(possibleTypeToken.Type)
+	if possibleType != vartype.UNKNOWN && !possibleType.IsArray() {
+		node.ReinforcementType = vartype.UNKNOWN
+		ast.Next()
+	} else {
+		node.ReinforcementType = vartype.UNKNOWN
 	}
 
 	valueTokens, err := ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))

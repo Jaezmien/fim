@@ -66,6 +66,18 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 				return err
 			}
 
+			if value.GetType() == vartype.UNKNOWN {
+				if variableNode.ValueType.IsArray() {
+					value = vartype.NewDictionaryVariable(variableNode.ValueType)
+				} else {
+					defaultValue, ok := variableNode.ValueType.GetDefaultValue()
+					if !ok {
+						panic("Intepreter@EvaluateStatementsNode could not get default value.")
+					}
+					value = vartype.FromValueType(defaultValue, variableNode.ValueType)
+				}
+			}
+
 			if variableNode.ValueType != value.GetType() {
 				return i.CreateErrorFromNode(variableNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'", variableNode.ValueType, value.GetType()))
 			}
@@ -95,9 +107,26 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
 			}
 
+			if modifyNode.ReinforcementType != vartype.UNKNOWN {
+				if variable.GetType() != modifyNode.ReinforcementType {
+					return i.CreateErrorFromNode(
+						modifyNode.Value.ToNode(),
+						fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, variable.GetType()),
+					)
+				}
+			}
+
 			value, err := i.EvaluateValueNode(modifyNode.Value, true)
 			if err != nil {
 				return err
+			}
+
+			if value.GetType() == vartype.UNKNOWN {
+				defaultValue, ok := variable.GetType().GetDefaultValue()
+				if !ok {
+					panic("Intepreter@EvaluateStatementsNode could not get default value.")
+				}
+				value = vartype.FromValueType(defaultValue, variable.GetType())
 			}
 
 			if variable.GetType() != value.GetType() && (variable.DynamicVariable.GetType() != vartype.STRING && !value.GetType().IsArray()) {

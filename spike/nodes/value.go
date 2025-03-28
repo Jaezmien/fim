@@ -60,6 +60,18 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 	if len(tokens) == 1 {
 		t := tokens[0]
 
+		if t.Value == "nothing" {
+			nullNode := &LiteralNode{
+				Node: Node{
+					Start:  0,
+					Length: 0,
+				},
+				DynamicVariable: vartype.NewUnknownVariable(),
+			}
+
+			return nullNode, nil
+		}
+
 		if t.Type == token.TokenType_Identifier {
 			node := &IdentifierNode{
 				Node: Node{
