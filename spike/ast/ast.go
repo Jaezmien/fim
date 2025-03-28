@@ -1,8 +1,6 @@
 package ast
 
 import (
-	"errors"
-	"fmt"
 	"slices"
 
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
@@ -60,8 +58,7 @@ func (a *AST) EndOfFile() bool {
 }
 
 func (a *AST) CreateErrorFromIndex(index int, errorMessage string) error {
-	pair := luna.GetErrorIndexPair(a.Source, index)
-	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
+	return luna.CreateErrorFromIndex(a.Source, index, errorMessage)
 }
 func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
 	return a.CreateErrorFromIndex(t.Start, errorMessage)

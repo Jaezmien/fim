@@ -1,6 +1,8 @@
 package utilities
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -13,7 +15,7 @@ type ErrorPair struct {
 	Column int
 }
 
-// Create an error pair based on a character index.
+// Create an ErrorPair based on a character index.
 func GetErrorIndexPair(source string, index int) *ErrorPair {
 	content := source[0:min(index+1, len(source))]
 	lines := strings.Split(content, "\n")
@@ -22,4 +24,10 @@ func GetErrorIndexPair(source string, index int) *ErrorPair {
 		Line:   len(lines),
 		Column: len(lines[len(lines)-1]),
 	}
+}
+
+// Create an error based on a character index from the source code.
+func CreateErrorFromIndex(source string, index int, errorMessage string) error {
+	pair := GetErrorIndexPair(source, index)
+	return errors.New(fmt.Sprintf("[line %d:%d] %s", pair.Line, pair.Column, errorMessage))
 }

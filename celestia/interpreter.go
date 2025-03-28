@@ -2,7 +2,6 @@ package celestia
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -104,8 +103,7 @@ func (i *Interpreter) ReportAuthor() string {
 }
 
 func (i *Interpreter) CreateErrorFromIndex(index int, errorMessage string) error {
-	pair := luna.GetErrorIndexPair(i.source, index)
-	return errors.New(fmt.Sprintf("[line: %d:%d] %s", pair.Line, pair.Column, errorMessage))
+	return luna.CreateErrorFromIndex(i.source, index, errorMessage)
 }
 func (i *Interpreter) CreateErrorFromNode(n node.Node, errorMessage string) error {
 	return i.CreateErrorFromIndex(n.Start, errorMessage)
