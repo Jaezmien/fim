@@ -25,7 +25,7 @@ type DictionaryIdentifierNode struct {
 	Node
 
 	Identifier string
-	Index INode
+	Index      INode
 }
 
 func (i *DictionaryIdentifierNode) Type() NodeType {

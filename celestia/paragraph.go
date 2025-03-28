@@ -20,7 +20,7 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 	return p
 }
 
-func (p *Paragraph) Execute() (error) {
+func (p *Paragraph) Execute() error {
 	p.Interpreter.Variables.PushScope()
 	err := p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
 	p.Interpreter.Variables.PopScope()

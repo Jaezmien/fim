@@ -82,10 +82,10 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
-	multiTokenProcessors := []struct{
+	multiTokenProcessors := []struct {
 		condition func(tokens *queue.Queue[*token.Token]) int
-		result token.TokenType
-	} {
+		result    token.TokenType
+	}{
 		{condition: parsers.IsReportHeader, result: token.TokenType_ReportHeader},
 		{condition: parsers.IsReportFooter, result: token.TokenType_ReportFooter},
 

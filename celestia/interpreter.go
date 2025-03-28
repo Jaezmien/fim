@@ -7,13 +7,13 @@ import (
 	"io"
 	"os"
 
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
-	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 type Interpreter struct {
-	Writer io.Writer
+	Writer      io.Writer
 	ErrorWriter io.Writer
 
 	Prompt func(prompt string) (string, error)
@@ -21,18 +21,18 @@ type Interpreter struct {
 	reportNode *nodes.ReportNode
 	source     string
 
-	Variables *VariableManager
+	Variables  *VariableManager
 	Paragraphs []*Paragraph
 }
 
 func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, error) {
 	interpreter := &Interpreter{
-		Writer:     os.Stdout,
-		ErrorWriter:     os.Stderr,
-		reportNode: reportNode,
-		source:     source,
-		Paragraphs: make([]*Paragraph, 0),
-		Variables: NewVariableManager(),
+		Writer:      os.Stdout,
+		ErrorWriter: os.Stderr,
+		reportNode:  reportNode,
+		source:      source,
+		Paragraphs:  make([]*Paragraph, 0),
+		Variables:   NewVariableManager(),
 	}
 
 	interpreter.Prompt = func(prompt string) (string, error) {
@@ -76,11 +76,11 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 			}
 
 			variable := &Variable{
-				Name: variableNode.Identifier,
+				Name:            variableNode.Identifier,
 				DynamicVariable: value,
-				Constant: variableNode.Constant,
+				Constant:        variableNode.Constant,
 			}
-			
+
 			interpreter.Variables.PushVariable(variable, true)
 
 			continue

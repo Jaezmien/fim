@@ -13,5 +13,5 @@ func CreateReport(tokens []*token.Token, source string) (*nodes.ReportNode, erro
 		Source:     source,
 	}
 
-	return nodes.ParseReportNode(ast) 
+	return nodes.ParseReportNode(ast)
 }

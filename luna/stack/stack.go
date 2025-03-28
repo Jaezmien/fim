@@ -28,7 +28,7 @@ func (s *Stack[T]) Pop() *T {
 	}
 
 	item := s.Peek()
-	s.items = s.items[:s.Len() - 1]
+	s.items = s.items[:s.Len()-1]
 	return &item
 }
 
@@ -48,4 +48,3 @@ func New[T any]() *Stack[T] {
 		items: make([]T, 0),
 	}
 }
-

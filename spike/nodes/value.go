@@ -219,8 +219,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 					count = nextIndex
 				}
 				count -= lastSeenIndex
-				
-				value, err := CreateValueNode(tokens[lastSeenIndex:lastSeenIndex + count], CreateValueNodeOptions{
+
+				value, err := CreateValueNode(tokens[lastSeenIndex:lastSeenIndex+count], CreateValueNodeOptions{
 					possibleNullType: &baseType,
 				})
 				if err != nil {
@@ -249,9 +249,9 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 
 		// DictionaryIdentifierNode
 		dinOfIndex := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == token.TokenType_KeywordOf })
-		if dinOfIndex != -1 && dinOfIndex < len(tokens) - 1 {
-			indexTokens := tokens[: dinOfIndex]
-			identifierTokens := tokens[dinOfIndex + 1:]
+		if dinOfIndex != -1 && dinOfIndex < len(tokens)-1 {
+			indexTokens := tokens[:dinOfIndex]
+			identifierTokens := tokens[dinOfIndex+1:]
 
 			if len(indexTokens) < 1 {
 				return nil, errors.New("Expected dictionary identifier index")
@@ -267,12 +267,12 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			}
 
 			startToken := tokens[0]
-			endToken := tokens[len(tokens) - 1]
+			endToken := tokens[len(tokens)-1]
 
 			identifierNode := &DictionaryIdentifierNode{
-				Node: *NewNode(startToken.Start, endToken.Start + endToken.Length - startToken.Start),
+				Node:       *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
 				Identifier: identifierTokens[0].Value,
-				Index: index,
+				Index:      index,
 			}
 
 			return identifierNode, nil

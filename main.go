@@ -27,7 +27,7 @@ func main() {
 		fmt.Printf("Invalid file '%s'\n", filePath)
 		return
 	}
-	
+
 	rawSource, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Printf("An error has occured while trying to load file '%s'\n", filePath)

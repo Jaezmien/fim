@@ -19,18 +19,18 @@ func IsPostscript(tokens *queue.Queue[*token.Token]) int {
 	}
 
 	for idx := 2; idx < tokens.Len(); idx += 2 {
-		if idx + 1 >= tokens.Len() {
+		if idx+1 >= tokens.Len() {
 			return 0
 		}
 
 		if tokens.Peek(idx).Value.Value != "S" {
 			return 0
 		}
-		if tokens.Peek(idx + 1).Value.Value != "." {
+		if tokens.Peek(idx+1).Value.Value != "." {
 			return 0
 		}
-		if idx + 2 < tokens.Len() && strings.TrimSuffix(tokens.Peek(idx + 2).Value.Value, " ") == "" {
-			return idx + 1	
+		if idx+2 < tokens.Len() && strings.TrimSuffix(tokens.Peek(idx+2).Value.Value, " ") == "" {
+			return idx + 1
 		}
 	}
 

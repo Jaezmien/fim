@@ -20,16 +20,18 @@ const (
 	NUMBER_ARRAY
 	STRING_ARRAY
 )
-var variableTypeFriendlyName = map[VariableType]string {
-	UNKNOWN: "",
-	BOOLEAN: "BOOLEAN",
-	CHARACTER: "CHARACTER",
-	NUMBER: "NUMBER",
-	STRING: "STRING",
+
+var variableTypeFriendlyName = map[VariableType]string{
+	UNKNOWN:       "",
+	BOOLEAN:       "BOOLEAN",
+	CHARACTER:     "CHARACTER",
+	NUMBER:        "NUMBER",
+	STRING:        "STRING",
 	BOOLEAN_ARRAY: "ARRAY(BOOLEAN)",
-	NUMBER_ARRAY: "ARRAY(NUMBER)",
-	STRING_ARRAY: "ARRAY(STRING)",
+	NUMBER_ARRAY:  "ARRAY(NUMBER)",
+	STRING_ARRAY:  "ARRAY(STRING)",
 }
+
 func (t VariableType) String() string {
 	return variableTypeFriendlyName[t]
 }

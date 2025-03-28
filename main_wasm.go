@@ -89,11 +89,11 @@ func main() {
 		}
 
 		if len(args) < 1 {
-			return "Expected at least one argument" 
+			return "Expected at least one argument"
 		}
 
 		if args[0].Type() != js.TypeString {
-			return "Expected argument 0 to be type of string" 
+			return "Expected argument 0 to be type of string"
 		}
 		source := args[0].String()
 
@@ -114,7 +114,6 @@ func main() {
 				return err.Error()
 			}
 		}
-
 
 		tokens := twilight.Parse(source)
 

@@ -15,12 +15,13 @@ type Variable struct {
 
 type VariableManager struct {
 	Globals stack.Stack[*Variable]
-	Locals stack.Stack[*stack.Stack[*Variable]]
+	Locals  stack.Stack[*stack.Stack[*Variable]]
 }
+
 func NewVariableManager() *VariableManager {
 	return &VariableManager{
 		Globals: *stack.New[*Variable](),
-		Locals: *stack.New[*stack.Stack[*Variable]](),
+		Locals:  *stack.New[*stack.Stack[*Variable]](),
 	}
 }
 

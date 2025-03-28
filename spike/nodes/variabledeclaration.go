@@ -73,7 +73,7 @@ func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error
 
 	node.Value, err = CreateValueNode(valueTokens, CreateValueNodeOptions{
 		possibleNullType: &node.ValueType,
-		intoArray: node.ValueType.IsArray(),
+		intoArray:        node.ValueType.IsArray(),
 	})
 	if err != nil {
 		return nil, err

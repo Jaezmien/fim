@@ -11,7 +11,7 @@ import (
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
-func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (error) {
+func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) error {
 	for _, statement := range statements.Statements {
 		if statement.Type() == node.TYPE_PRINT {
 			printNode := statement.(*nodes.PrintNode)
@@ -71,11 +71,11 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 
 			variable := &Variable{
-				Name: variableNode.Identifier,
+				Name:            variableNode.Identifier,
 				DynamicVariable: value,
-				Constant: variableNode.Constant,
+				Constant:        variableNode.Constant,
 			}
-			
+
 			i.Variables.PushVariable(variable, false)
 
 			continue
@@ -87,7 +87,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier))
 			}
 			variable := i.Variables.Get(modifyNode.Identifier, true)
-			
+
 			if variable.GetType().IsArray() {
 				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify an array."))
 			}
@@ -136,7 +136,7 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 
 		return literalNode.DynamicVariable, nil
 	}
-	
+
 	if n.Type() == node.TYPE_IDENTIFIER {
 		identifierNode := n.(*nodes.IdentifierNode)
 
@@ -152,7 +152,7 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 	if n.Type() == node.TYPE_IDENTIFIER_DICTIONARY {
 		identifierNode := n.(*nodes.DictionaryIdentifierNode)
 
-		variable := i.Variables.Get(identifierNode.Identifier, local);
+		variable := i.Variables.Get(identifierNode.Identifier, local)
 		if variable == nil {
 			pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
 			return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
@@ -167,12 +167,12 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			pair := luna.GetErrorIndexPair(i.source, identifierNode.Index.ToNode().Start)
 			return nil, errors.New(fmt.Sprintf("Expected numeric index at line %d:%d", pair.Line, pair.Column))
 		}
-		
+
 		indexAsInteger := int(index.GetValueNumber())
 
 		switch variable.GetType() {
-		case vartype.STRING: 
-			value := variable.GetValueString()[indexAsInteger - 1]
+		case vartype.STRING:
+			value := variable.GetValueString()[indexAsInteger-1]
 			return vartype.NewRawCharacterVariable(string(value)), nil
 		case vartype.STRING_ARRAY:
 			preValue := variable.GetValueDictionary()[indexAsInteger]
@@ -216,7 +216,7 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 				return nil, errors.New(fmt.Sprintf("Expected number"))
 			}
 			return value, nil
-			
+
 		}
 	}
 

@@ -29,7 +29,7 @@ func FromValueType(value string, t VariableType) *DynamicVariable {
 		}
 		return NewNumberVariable(value)
 	case STRING:
-		return NewStringVariable(value) 
+		return NewStringVariable(value)
 	default:
 		panic("DynamicVariable@FromDefaultValue called with variable type " + t.String())
 
@@ -41,12 +41,12 @@ func NewStringVariable(value string) *DynamicVariable {
 }
 func NewRawStringVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
-		value: value,
+		value:     value,
 		valueType: STRING,
 	}
 }
 func NewCharacterVariable(value string) *DynamicVariable {
-	value = value[1: len(value)-1] 
+	value = value[1 : len(value)-1]
 
 	if strings.HasPrefix(value, "\\") {
 		switch value[1] {
@@ -67,25 +67,25 @@ func NewCharacterVariable(value string) *DynamicVariable {
 }
 func NewRawCharacterVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
-		value: value,
+		value:     value,
 		valueType: CHARACTER,
 	}
 }
 func NewNumberVariable(value float64) *DynamicVariable {
 	return &DynamicVariable{
-		value: value,
+		value:     value,
 		valueType: NUMBER,
 	}
 }
 func NewBooleanVariable(value bool) *DynamicVariable {
 	return &DynamicVariable{
-		value: value,
+		value:     value,
 		valueType: BOOLEAN,
 	}
 }
 func NewDictionaryVariable(t VariableType) *DynamicVariable {
 	return &DynamicVariable{
-		value: make(map[int]*node.INode, 0),
+		value:     make(map[int]*node.INode, 0),
 		valueType: t,
 	}
 }

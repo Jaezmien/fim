@@ -1,8 +1,8 @@
 package nodes
 
 import (
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 	. "git.jaezmien.com/Jaezmien/fim/spike/node"
+	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 )
 
 type LiteralNode struct {
