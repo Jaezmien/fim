@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"git.jaezmien.com/Jaezmien/fim/twilight/parsers"
 	"git.jaezmien.com/Jaezmien/fim/luna/queue"
+	"git.jaezmien.com/Jaezmien/fim/twilight/parsers"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
@@ -17,34 +17,44 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	punctuations := [...]rune{'.', '!', '?', ':', ','}
 	booleanStrings := [...]string{"yes", "true", "right", "correct", "no", "false", "wrong", "incorrect"}
 
-	processTokenType := func(t *token.Token, condition bool, resultType token.TokenType) {
-		if t.Type != token.TokenType_Identifier {
-			return
-		}
-
-		if !condition {
-			return
-		}
-
-		t.Type = resultType
+	tokenTypeProcessors := []struct {
+		condition func(t *token.Token) bool
+		result    token.TokenType
+	}{
+		{condition: func(t *token.Token) bool {
+			return t.Length == 1 && utilities.ContainsRune(rune(t.Value[0]), punctuations[:])
+		}, result: token.TokenType_Punctuation},
+		{condition: func(t *token.Token) bool { return t.Length == 1 && t.Value == "\n" }, result: token.TokenType_NewLine},
+		{condition: func(t *token.Token) bool { return t.Length == 1 && t.Value == " " }, result: token.TokenType_Whitespace},
+		{condition: func(t *token.Token) bool {
+			return t.Length == 1 && strings.HasPrefix(t.Value, "(") && strings.HasSuffix(t.Value, ")")
+		}, result: token.TokenType_CommentParen},
+		{condition: func(t *token.Token) bool {
+			return t.Length >= 1 && strings.HasPrefix(t.Value, "\"") && strings.HasSuffix(t.Value, "\"")
+		}, result: token.TokenType_String},
+		{condition: func(t *token.Token) bool {
+			return t.Length >= 1 && strings.HasPrefix(t.Value, "'") && strings.HasSuffix(t.Value, "'")
+		}, result: token.TokenType_Character},
+		{condition: func(t *token.Token) bool {
+			_, err := strconv.ParseFloat(t.Value, 64)
+			return t.Length >= 1 && err == nil
+		}, result: token.TokenType_Number},
+		{condition: func(t *token.Token) bool { return t.Length >= 1 && slices.Contains(booleanStrings[:], t.Value) }, result: token.TokenType_Boolean},
+		{condition: func(t *token.Token) bool { return t.Value == "nothing" }, result: token.TokenType_Null},
 	}
 
 	for partialTokens.Len() > 0 {
 		t := partialTokens.Dequeue().Value
 		t.Type = token.TokenType_Identifier
 
-		processTokenType(t, t.Length == 1 && utilities.ContainsRune(rune(t.Value[0]), punctuations[:]), token.TokenType_Punctuation)
-		processTokenType(t, t.Length == 1 && t.Value == "\n", token.TokenType_NewLine)
-		processTokenType(t, t.Length == 1 && t.Value == " ", token.TokenType_Whitespace)
-		processTokenType(t, t.Length == 1 && strings.HasPrefix(t.Value, "(") && strings.HasSuffix(t.Value, ")"), token.TokenType_CommentParen)
+		for _, processor := range tokenTypeProcessors {
+			if !processor.condition(t) {
+				continue
+			}
 
-		processTokenType(t, t.Length >= 1 && strings.HasPrefix(t.Value, "\"") && strings.HasSuffix(t.Value, "\""), token.TokenType_String)
-		processTokenType(t, t.Length >= 1 && strings.HasPrefix(t.Value, "'") && strings.HasSuffix(t.Value, "'"), token.TokenType_Character)
-		if _, err := strconv.ParseFloat(t.Value, 64); err == nil {
-			processTokenType(t, t.Length >= 1, token.TokenType_Number)
+			t.Type = processor.result
+			break
 		}
-		processTokenType(t, t.Length >= 1 && slices.Contains(booleanStrings[:], t.Value), token.TokenType_Boolean)
-		processTokenType(t, t.Value == "nothing", token.TokenType_Null)
 
 		if t.Length == 0 && t.Type == token.TokenType_Identifier {
 			continue
@@ -69,79 +79,83 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	return tokens
 }
 
-type processMultiTokenResult = func(tokens *queue.Queue[*token.Token]) int
-
 func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
-	processMultiTokenType := func(condition processMultiTokenResult, resultType token.TokenType) {
-		if oldTokens.Len() <= 0 {
-			return
-		}
+	multiTokenProcessors := []struct{
+		condition func(tokens *queue.Queue[*token.Token]) int
+		result token.TokenType
+	} {
+		{condition: parsers.IsReportHeader, result: token.TokenType_ReportHeader},
+		{condition: parsers.IsReportFooter, result: token.TokenType_ReportFooter},
 
-		if oldTokens.First().Value.Type != token.TokenType_Identifier {
-			return
-		}
+		{condition: parsers.IsFunctionHeaderMain, result: token.TokenType_FunctionMain},
+		{condition: parsers.IsFunctionHeader, result: token.TokenType_FunctionHeader},
+		{condition: parsers.IsFunctionFooter, result: token.TokenType_FunctionFooter},
+		{condition: parsers.IsFunctionParameter, result: token.TokenType_FunctionParameter},
+		{condition: parsers.IsFunctionReturn, result: token.TokenType_FunctionReturn},
 
-		amount := condition(oldTokens)
-		if amount <= 0 {
-			return
-		}
+		{condition: parsers.IsPrintMethod, result: token.TokenType_Print},
+		{condition: parsers.IsPrintNewlineMethod, result: token.TokenType_PrintNewline},
+		{condition: parsers.IsReadMethod, result: token.TokenType_Prompt},
+		{condition: parsers.IsFunctionCallMethod, result: token.TokenType_FunctionCall},
 
-		token := utilities.MergeTokens(oldTokens, amount)
-		token.Type = resultType
+		{condition: parsers.IsVariableDeclaration, result: token.TokenType_Declaration},
+		{condition: parsers.IsVariableModifier, result: token.TokenType_Modify},
 
-		oldTokens.QueueFront(token)
+		{condition: parsers.IsBooleanType, result: token.TokenType_TypeBoolean},
+		{condition: parsers.IsBooleanArrayType, result: token.TokenType_TypeBooleanArray},
+		{condition: parsers.IsNumberType, result: token.TokenType_TypeNumber},
+		{condition: parsers.IsNumberArrayType, result: token.TokenType_TypeNumberArray},
+		{condition: parsers.IsStringType, result: token.TokenType_TypeString},
+		{condition: parsers.IsStringArrayType, result: token.TokenType_TypeStringArray},
+		{condition: parsers.IsCharacterType, result: token.TokenType_TypeChar},
+
+		{condition: parsers.IsPostscript, result: token.TokenType_CommentPostScript},
+
+		{condition: parsers.IsInfixAddition, result: token.TokenType_OperatorAddInfix},
+		{condition: parsers.IsPrefixAddition, result: token.TokenType_OperatorAddPrefix},
+		{condition: parsers.IsInfixSubtraction, result: token.TokenType_OperatorSubInfix},
+		{condition: parsers.IsPrefixSubtraction, result: token.TokenType_OperatorSubPrefix},
+		{condition: parsers.IsInfixMultiplication, result: token.TokenType_OperatorMulInfix},
+		{condition: parsers.IsPrefixMultiplication, result: token.TokenType_OperatorMulPrefix},
+		{condition: parsers.IsInfixDivision, result: token.TokenType_OperatorDivInfix},
+		{condition: parsers.IsPrefixDivision, result: token.TokenType_OperatorDivPrefix},
+
+		{condition: parsers.IsLessThanEqualOperator, result: token.TokenType_OperatorLte},
+		{condition: parsers.IsGreaterThanEqualOperator, result: token.TokenType_OperatorGte},
+		{condition: parsers.IsGreaterThanOperator, result: token.TokenType_OperatorGt},
+		{condition: parsers.IsLessThanOperator, result: token.TokenType_OperatorLt},
+		{condition: parsers.IsNotEqualOperator, result: token.TokenType_OperatorNeq},
+		{condition: parsers.IsEqualOperator, result: token.TokenType_OperatorEq},
+
+		{condition: parsers.IsConstantKeyword, result: token.TokenType_KeywordConst},
+		{condition: parsers.IsAndKeyword, result: token.TokenType_KeywordAnd},
+		{condition: parsers.IsOrKeyword, result: token.TokenType_KeywordOr},
+		{condition: parsers.IsOfKeyword, result: token.TokenType_KeywordOf},
 	}
 
 	for oldTokens.Len() > 0 {
-		processMultiTokenType(parsers.IsReportHeader, token.TokenType_ReportHeader)
-		processMultiTokenType(parsers.IsReportFooter, token.TokenType_ReportFooter)
+		for _, processor := range multiTokenProcessors {
+			if oldTokens.Len() <= 0 {
+				break
+			}
 
-		processMultiTokenType(parsers.IsFunctionHeaderMain, token.TokenType_FunctionMain)
-		processMultiTokenType(parsers.IsFunctionHeader, token.TokenType_FunctionHeader)
-		processMultiTokenType(parsers.IsFunctionFooter, token.TokenType_FunctionFooter)
-		processMultiTokenType(parsers.IsFunctionParameter, token.TokenType_FunctionParameter)
-		processMultiTokenType(parsers.IsFunctionReturn, token.TokenType_FunctionReturn)
+			if oldTokens.First().Value.Type != token.TokenType_Identifier {
+				continue
+			}
 
-		processMultiTokenType(parsers.IsPrintMethod, token.TokenType_Print)
-		processMultiTokenType(parsers.IsPrintNewlineMethod, token.TokenType_PrintNewline)
-		processMultiTokenType(parsers.IsReadMethod, token.TokenType_Prompt)
-		processMultiTokenType(parsers.IsFunctionCallMethod, token.TokenType_FunctionCall)
+			amount := processor.condition(oldTokens)
+			if amount <= 0 {
+				continue
+			}
 
-		processMultiTokenType(parsers.IsVariableDeclaration, token.TokenType_Declaration)
-		processMultiTokenType(parsers.IsVariableModifier, token.TokenType_Modify)
+			token := utilities.MergeTokens(oldTokens, amount)
+			token.Type = processor.result
 
-		processMultiTokenType(parsers.IsBooleanType, token.TokenType_TypeBoolean);
-		processMultiTokenType(parsers.IsBooleanArrayType, token.TokenType_TypeBooleanArray);
-		processMultiTokenType(parsers.IsNumberType, token.TokenType_TypeNumber);
-		processMultiTokenType(parsers.IsNumberArrayType, token.TokenType_TypeNumberArray);
-		processMultiTokenType(parsers.IsStringType, token.TokenType_TypeString);
-		processMultiTokenType(parsers.IsStringArrayType, token.TokenType_TypeStringArray);
-		processMultiTokenType(parsers.IsCharacterType, token.TokenType_TypeChar);
+			oldTokens.QueueFront(token)
 
-		processMultiTokenType(parsers.IsPostscript, token.TokenType_CommentPostScript)
-
-		processMultiTokenType(parsers.IsInfixAddition, token.TokenType_OperatorAddInfix)
-		processMultiTokenType(parsers.IsPrefixAddition, token.TokenType_OperatorAddPrefix)
-		processMultiTokenType(parsers.IsInfixSubtraction, token.TokenType_OperatorSubInfix)
-		processMultiTokenType(parsers.IsPrefixSubtraction, token.TokenType_OperatorSubPrefix)
-		processMultiTokenType(parsers.IsInfixMultiplication, token.TokenType_OperatorMulInfix)
-		processMultiTokenType(parsers.IsPrefixMultiplication, token.TokenType_OperatorMulPrefix)
-		processMultiTokenType(parsers.IsInfixDivision, token.TokenType_OperatorDivInfix)
-		processMultiTokenType(parsers.IsPrefixDivision, token.TokenType_OperatorDivPrefix)
-
-		processMultiTokenType(parsers.IsLessThanEqualOperator, token.TokenType_OperatorLte)
-		processMultiTokenType(parsers.IsGreaterThanEqualOperator, token.TokenType_OperatorGte)
-		processMultiTokenType(parsers.IsGreaterThanOperator, token.TokenType_OperatorGt)
-		processMultiTokenType(parsers.IsLessThanOperator, token.TokenType_OperatorLt)
-		processMultiTokenType(parsers.IsNotEqualOperator, token.TokenType_OperatorNeq)
-		processMultiTokenType(parsers.IsEqualOperator, token.TokenType_OperatorEq)
-
-		processMultiTokenType(parsers.IsConstantKeyword, token.TokenType_KeywordConst)
-		processMultiTokenType(parsers.IsAndKeyword, token.TokenType_KeywordAnd)
-		processMultiTokenType(parsers.IsOrKeyword, token.TokenType_KeywordOr)
-		processMultiTokenType(parsers.IsOfKeyword, token.TokenType_KeywordOf)
+		}
 
 		tokens.Queue(oldTokens.Dequeue().Value)
 	}
@@ -205,7 +219,7 @@ func cleanTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token
 			continue
 		}
 		if t.Type == token.TokenType_CommentPostScript {
-			for oldTokens.Len() > 0 && 
+			for oldTokens.Len() > 0 &&
 				(oldTokens.First().Value.Type != token.TokenType_NewLine &&
 					oldTokens.First().Value.Type != token.TokenType_EndOfFile) {
 				oldTokens.Dequeue()

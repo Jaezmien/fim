@@ -61,19 +61,17 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 	return l
 }
 
-type mergePartialTokensResult = func(tokens *queue.Queue[*token.Token]) int
-
-func processPartialTokens(tokens *queue.Queue[*token.Token], process mergePartialTokensResult) {
-	mergeAmount := process(tokens)
-	if mergeAmount <= 0 {
-		return
-	}
-
-	token := utilities.MergeTokens(tokens, mergeAmount)
-	tokens.QueueFront(token)
-}
 func mergePartialTokens(tokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	l := queue.New[*token.Token]()
+
+	partialTokensProcessor := []struct {
+		process func(tokens *queue.Queue[*token.Token]) int
+	}{
+		{process: mergeDecimalTokens},
+		{process: mergeStringTokens},
+		{process: mergeCharacterTokens},
+		{process: mergeDelimiters},
+	}
 
 	newline := false
 	for tokens.Len() > 0 {
@@ -83,10 +81,15 @@ func mergePartialTokens(tokens *queue.Queue[*token.Token]) *queue.Queue[*token.T
 		}
 		newline = false
 
-		processPartialTokens(tokens, mergeDecimalTokens)
-		processPartialTokens(tokens, mergeStringTokens)
-		processPartialTokens(tokens, mergeCharacterTokens)
-		processPartialTokens(tokens, mergeDelimiters)
+		for _, processor := range partialTokensProcessor {
+			mergeAmount := processor.process(tokens)
+			if mergeAmount <= 0 {
+				continue
+			}
+
+			token := utilities.MergeTokens(tokens, mergeAmount)
+			tokens.QueueFront(token)
+		}
 
 		if tokens.First().Value.Length == 1 && tokens.First().Value.Value == "\n" {
 			newline = true
