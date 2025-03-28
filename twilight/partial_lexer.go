@@ -1,6 +1,7 @@
 package twilight
 
 import (
+	"slices"
 	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/luna/queue"
@@ -10,16 +11,12 @@ import (
 
 var splittable_runes = [...]rune{'.', '!', '?', ':', ',', '(', ')', '"', '\'', ' ', '\t', '\\', '\n'}
 
-func isRuneSplittable(r rune) bool {
-	return utilities.ContainsRune(r, splittable_runes[:])
-}
-
 func createPartialTokens(source string) *queue.Queue[*token.Token] {
 	l := queue.New[*token.Token]()
 
 	start := 0
 	for idx, r := range source {
-		if isRuneSplittable(r) || len(source) == idx {
+		if slices.Contains(splittable_runes[:], r) || len(source) == idx {
 			length := idx - start
 
 			if length > 0 {

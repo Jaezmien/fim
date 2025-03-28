@@ -1,6 +1,7 @@
 package twilight
 
 import (
+	"slices"
 	"testing"
 
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
@@ -10,10 +11,10 @@ import (
 
 func TestRuneSplittable(t *testing.T) {
 	t.Run("should be splittable", func(t *testing.T) {
-		assert.True(t, isRuneSplittable(' '), "Rune should be splittable")
+		assert.True(t, slices.Contains(splittable_runes[:], ' '), "Rune should be splittable")
 	})
 	t.Run("should not be splittable", func(t *testing.T) {
-		assert.False(t, isRuneSplittable('a'), "Rune should not be splittable")
+		assert.False(t, slices.Contains(splittable_runes[:], 'a'), "Rune should not be splittable")
 	})
 }
 

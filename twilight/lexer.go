@@ -22,7 +22,7 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		result    token.TokenType
 	}{
 		{condition: func(t *token.Token) bool {
-			return t.Length == 1 && utilities.ContainsRune(rune(t.Value[0]), punctuations[:])
+			return t.Length == 1 && slices.Contains(punctuations[:], rune(t.Value[0]))
 		}, result: token.TokenType_Punctuation},
 		{condition: func(t *token.Token) bool { return t.Length == 1 && t.Value == "\n" }, result: token.TokenType_NewLine},
 		{condition: func(t *token.Token) bool { return t.Length == 1 && t.Value == " " }, result: token.TokenType_Whitespace},

@@ -1,6 +1,5 @@
 package utilities
 
-import "slices"
 import "git.jaezmien.com/Jaezmien/fim/twilight/token"
 import "git.jaezmien.com/Jaezmien/fim/luna/queue"
 
@@ -46,10 +45,6 @@ func MergeTokens(q *queue.Queue[*token.Token], amount int) *token.Token {
 	}
 
 	return token.Value
-}
-
-func ContainsRune(sampleRune rune, runes []rune) bool {
-	return slices.Contains(runes, sampleRune)
 }
 
 func CheckTokenSequence(tokens *queue.Queue[*token.Token], sequence []string) bool {
