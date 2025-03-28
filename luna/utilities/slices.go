@@ -1,10 +1,10 @@
 package utilities
 
-// A variant of slices.IndexFunc, but allowing a custom starting index
+// A variant of slices.IndexFunc, but allowing a custom starting index.
 // Setting `start` into a non-negative value will skip the according amount of elements
-func IndexFunc[S ~[]E, E any](s S, f func(E) bool, start int) int {
+func IndexFunc[S ~[]E, E any](s S, f func(E) bool, skip int) int {
 	for i := range s {
-		if i < start {
+		if i < skip {
 			continue
 		}
 

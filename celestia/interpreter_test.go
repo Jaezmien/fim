@@ -12,7 +12,7 @@ import (
 
 func CreateReport(t *testing.T, source string) (*Interpreter, bool) {
 	tokens := twilight.Parse(source)
-	report, err := spike.CreateReport(tokens.Flatten(), source)
+	report, err := spike.CreateReport(tokens, source)
 	if !assert.NoError(t, err) {
 		return nil, false
 	}
@@ -96,12 +96,12 @@ func TestReport(t *testing.T) {
 		`
 
 	tokens := twilight.Parse(source)
-	report, err := spike.CreateReport(tokens.Flatten(), source)
+	report, err := spike.CreateReport(tokens, source)
 	if !assert.NoError(t, err) {
 		return
 	}
 
-	assert.Equal(t, "Hello World", report.Name, "Mismatch report name")
+	assert.Equal(t, "Hello World", report.Title, "Mismatch report name")
 	assert.Equal(t, "Twilight Sparkle", report.Author, "Mismatch report author")
 
 	interpreter, err := NewInterpreter(report, source)
@@ -170,7 +170,7 @@ func TestIO(t *testing.T) {
 			`
 
 		tokens := twilight.Parse(source)
-		report, err := spike.CreateReport(tokens.Flatten(), source)
+		report, err := spike.CreateReport(tokens, source)
 		if !assert.NoError(t, err) {
 			return
 		}
@@ -394,7 +394,7 @@ func TestDeclaration(t *testing.T) {
 			`
 
 		tokens := twilight.Parse(source)
-		report, err := spike.CreateReport(tokens.Flatten(), source)
+		report, err := spike.CreateReport(tokens, source)
 		if !assert.NoError(t, err) {
 			return
 		}

@@ -37,7 +37,7 @@ func Exists(v js.Value) bool {
 func main() {
 	c := make(chan struct{}, 0)
 
-	// string -> [string[], error(string)?]
+	// fim(source: string) => [tokens: string[], error: string | null]
 	js.Global().Set("fim", js.FuncOf(func(this js.Value, args []js.Value) any {
 		if len(args) != 1 {
 			return []any{nil, "Expected only one argument"}
@@ -48,11 +48,10 @@ func main() {
 
 		source := args[0]
 
-		result := make([]any, 0)
-
 		tokens := twilight.Parse(source.String())
-		for tokens.Len() > 0 {
-			token := tokens.Dequeue().Value
+
+		result := make([]any, 0)
+		for _, token := range tokens {
 			if len(token.Value) > 0 {
 				result = append(result, token.Value)
 			}
@@ -61,7 +60,7 @@ func main() {
 		return []any{result, nil}
 	}))
 
-	// string, output_callback(string), prompt_callback(string) -> string, error_callback(string) -> error(string)?
+	// fim_exec( source: string, output?: (data: string) => void, prompt?: (prompt: string) => string, error?: (info: string) => void) => error?: string
 	js.Global().Set("fim_exec", js.FuncOf(func(this js.Value, args []js.Value) any {
 		console := js.Global().Get("console")
 		if !Exists(console) {
@@ -117,7 +116,7 @@ func main() {
 
 		tokens := twilight.Parse(source)
 
-		report, err := spike.CreateReport(tokens.Flatten(), source)
+		report, err := spike.CreateReport(tokens, source)
 		if err != nil {
 			fmt.Fprintln(errorCallback, err)
 			return nil

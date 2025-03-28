@@ -5,15 +5,16 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
-func Parse(source string) *queue.Queue[*token.Token] {
+// Parses the source string into a queue of tokens 
+func Parse(source string) []*token.Token {
 	var t *queue.Queue[*token.Token]
 	t = createPartialTokens(source)
 	t = mergePartialTokens(t)
 
 	t = createTokens(t)
-	t = mergeMultitokens(t)
+	t = mergeMultiTokens(t)
 	t = mergeLiterals(t)
 	t = cleanTokens(t)
 
-	return t
+	return t.Flatten()
 }

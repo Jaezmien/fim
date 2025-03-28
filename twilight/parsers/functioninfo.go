@@ -6,7 +6,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-func IsFunctionHeaderMain(tokens *queue.Queue[*token.Token]) int {
+func CheckFunctionHeaderMain(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Today", " ", "I", " ", "learned"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
@@ -16,7 +16,7 @@ func IsFunctionHeaderMain(tokens *queue.Queue[*token.Token]) int {
 	return len(ExpectedTokens)
 }
 
-func IsFunctionHeader(tokens *queue.Queue[*token.Token]) int {
+func CheckFunctionHeader(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"I", " ", "learned"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
@@ -26,7 +26,7 @@ func IsFunctionHeader(tokens *queue.Queue[*token.Token]) int {
 	return len(ExpectedTokens)
 }
 
-func IsFunctionFooter(tokens *queue.Queue[*token.Token]) int {
+func CheckFunctionFooter(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"That", "'", "s", " ", "all", " ", "about"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
@@ -35,14 +35,14 @@ func IsFunctionFooter(tokens *queue.Queue[*token.Token]) int {
 
 	return len(ExpectedTokens)
 }
-func IsFunctionParameter(tokens *queue.Queue[*token.Token]) int {
+func CheckFunctionParameter(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value != "using" {
 		return 0
 	}
 
 	return 1
 }
-func IsFunctionReturn(tokens *queue.Queue[*token.Token]) int {
+func CheckFunctionReturn(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value == "with" {
 		return 1
 	}
@@ -55,7 +55,7 @@ func IsFunctionReturn(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsReturnKeyword(tokens *queue.Queue[*token.Token]) int {
+func CheckReturnKeyword(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Then", " ", "you", " ", "get"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
@@ -65,7 +65,7 @@ func IsReturnKeyword(tokens *queue.Queue[*token.Token]) int {
 	return len(ExpectedTokens)
 }
 
-func IsFunctionCallMethod(tokens *queue.Queue[*token.Token]) int {
+func CheckFunctionCallMethod(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value != "I" {
 		return 0
 	}

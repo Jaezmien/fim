@@ -6,7 +6,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-func IsReportHeader(tokens *queue.Queue[*token.Token]) int {
+func CheckReportHeader(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Dear", " ", "Princess", " ", "Celestia", ":"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
@@ -15,7 +15,7 @@ func IsReportHeader(tokens *queue.Queue[*token.Token]) int {
 
 	return len(ExpectedTokens)
 }
-func IsReportFooter(tokens *queue.Queue[*token.Token]) int {
+func CheckReportFooter(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Your", " ", "faithful", " ", "student", ","}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {

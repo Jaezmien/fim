@@ -38,7 +38,7 @@ func main() {
 
 	tokens := twilight.Parse(source)
 
-	report, err := spike.CreateReport(tokens.Flatten(), source)
+	report, err := spike.CreateReport(tokens, source)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -52,7 +52,7 @@ func main() {
 
 	if *prettyFlag == true {
 		fmt.Printf("┌─ fim (v0.0.0-alpha)\n")
-		fmt.Printf("├─ Report Name: %s\n", interpreter.ReportName())
+		fmt.Printf("├─ Report Name: %s\n", interpreter.ReportTitle())
 		fmt.Printf("└─ Report Author: %s\n", interpreter.ReportAuthor())
 	}
 

@@ -6,7 +6,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-func IsConstantKeyword(tokens *queue.Queue[*token.Token]) int {
+func CheckConstantKeyword(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value != "always" {
 		return 0
 	}
@@ -14,7 +14,7 @@ func IsConstantKeyword(tokens *queue.Queue[*token.Token]) int {
 	return 1
 }
 
-func IsAndKeyword(tokens *queue.Queue[*token.Token]) int {
+func CheckAndKeyword(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value != "and" {
 		return 0
 	}
@@ -22,7 +22,7 @@ func IsAndKeyword(tokens *queue.Queue[*token.Token]) int {
 	return 1
 }
 
-func IsOrKeyword(tokens *queue.Queue[*token.Token]) int {
+func CheckOrKeyword(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value != "or" {
 		return 0
 	}
@@ -30,7 +30,7 @@ func IsOrKeyword(tokens *queue.Queue[*token.Token]) int {
 	return 1
 }
 
-func IsOfKeyword(tokens *queue.Queue[*token.Token]) int {
+func CheckOfKeyword(tokens *queue.Queue[*token.Token]) int {
 	if tokens.First().Value.Value != "of" {
 		return 0
 	}
@@ -38,7 +38,7 @@ func IsOfKeyword(tokens *queue.Queue[*token.Token]) int {
 	return 1
 }
 
-func IsStatementEndKeyword(tokens *queue.Queue[*token.Token]) int {
+func CheckStatementEndKeyword(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"That", "'", "s", " ", "what", " ", "I", "did"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {

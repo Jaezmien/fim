@@ -11,6 +11,11 @@ import (
 
 var splittable_runes = [...]rune{'.', '!', '?', ':', ',', '(', ')', '"', '\'', ' ', '\t', '\\', '\n'}
 
+// Split the source string into a queue separated by a splittable rune
+// This extra step is needed to handle the multi-word tokens that FiM++ uses.
+//
+// See:
+// 	var splittable_runes
 func createPartialTokens(source string) *queue.Queue[*token.Token] {
 	l := queue.New[*token.Token]()
 
@@ -42,6 +47,7 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 		}
 	}
 
+	// Fallback for empty sources
 	if start < len(source) {
 		length := len(source) - start
 
@@ -58,16 +64,19 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 	return l
 }
 
+// Merge basic tokens that are split across multiple partial tokens.
+// 
+// e.g.: '0' '.' '0' becomes '0.0'
 func mergePartialTokens(tokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	l := queue.New[*token.Token]()
 
 	partialTokensProcessor := []struct {
 		process func(tokens *queue.Queue[*token.Token]) int
 	}{
-		{process: mergeDecimalTokens},
-		{process: mergeStringTokens},
-		{process: mergeCharacterTokens},
-		{process: mergeDelimiters},
+		{process: checkDecimalTokens},
+		{process: checkStringTokens},
+		{process: checkCharacterTokens},
+		{process: checkDelimiters},
 	}
 
 	newline := false
@@ -98,7 +107,10 @@ func mergePartialTokens(tokens *queue.Queue[*token.Token]) *queue.Queue[*token.T
 	return l
 }
 
-func mergeDecimalTokens(tokens *queue.Queue[*token.Token]) int {
+// Check for tokens that has the decimal pattern (\d+.\d+).
+// If it is a decimal token, return the amount of tokens it consumes.
+// Otherwise, return 0
+func checkDecimalTokens(tokens *queue.Queue[*token.Token]) int {
 	left := tokens.Peek(0)
 	if !utilities.IsStringNumber(left.Value.Value) {
 		return 0
@@ -117,7 +129,12 @@ func mergeDecimalTokens(tokens *queue.Queue[*token.Token]) int {
 	return 3
 }
 
-func mergeStringTokens(tokens *queue.Queue[*token.Token]) int {
+// Check for tokens that has a string pattern.
+// If it is a string token, return the amount of tokens it consumes.
+// Otherwise, return 0.
+//
+// This function also handles escaped quotes.
+func checkStringTokens(tokens *queue.Queue[*token.Token]) int {
 	const Delimeter = "\""
 	const EscapeToken = "\\"
 
@@ -156,7 +173,13 @@ func mergeStringTokens(tokens *queue.Queue[*token.Token]) int {
 
 	return endIndex + 1
 }
-func mergeCharacterTokens(tokens *queue.Queue[*token.Token]) int {
+
+// Check for tokens that has a character pattern.
+// If it is a character token, return the amount of tokens it consumes.
+// Otherwise, return 0.
+//
+// This function also supports special characters.
+func checkCharacterTokens(tokens *queue.Queue[*token.Token]) int {
 	const Delimeter = "'"
 	const EscapeToken = "\\"
 
@@ -188,7 +211,11 @@ func mergeCharacterTokens(tokens *queue.Queue[*token.Token]) int {
 
 	return mergeAmount
 }
-func mergeDelimiters(tokens *queue.Queue[*token.Token]) int {
+
+// Check for tokens that matches against generic delimiter patterns.
+// If it matches, return the amount of tokens it consumes.
+// Otherwise, return 0.
+func checkDelimiters(tokens *queue.Queue[*token.Token]) int {
 	StartDelimeters := []rune{'('}
 	EndDelimeters := []rune{')'}
 

@@ -11,6 +11,9 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
+// Assign basic TokenTypes to partial tokens.
+//
+// Note: This will also insert an End Of File token to the end of the queue.
 func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
@@ -79,60 +82,61 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	return tokens
 }
 
-func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
+// Merge full tokens that span across multiple tokens.
+func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
 	multiTokenProcessors := []struct {
 		condition func(tokens *queue.Queue[*token.Token]) int
 		result    token.TokenType
 	}{
-		{condition: parsers.IsReportHeader, result: token.TokenType_ReportHeader},
-		{condition: parsers.IsReportFooter, result: token.TokenType_ReportFooter},
+		{condition: parsers.CheckReportHeader, result: token.TokenType_ReportHeader},
+		{condition: parsers.CheckReportFooter, result: token.TokenType_ReportFooter},
 
-		{condition: parsers.IsFunctionHeaderMain, result: token.TokenType_FunctionMain},
-		{condition: parsers.IsFunctionHeader, result: token.TokenType_FunctionHeader},
-		{condition: parsers.IsFunctionFooter, result: token.TokenType_FunctionFooter},
-		{condition: parsers.IsFunctionParameter, result: token.TokenType_FunctionParameter},
-		{condition: parsers.IsFunctionReturn, result: token.TokenType_FunctionReturn},
+		{condition: parsers.CheckFunctionHeaderMain, result: token.TokenType_FunctionMain},
+		{condition: parsers.CheckFunctionHeader, result: token.TokenType_FunctionHeader},
+		{condition: parsers.CheckFunctionFooter, result: token.TokenType_FunctionFooter},
+		{condition: parsers.CheckFunctionParameter, result: token.TokenType_FunctionParameter},
+		{condition: parsers.CheckFunctionReturn, result: token.TokenType_FunctionReturn},
 
-		{condition: parsers.IsPrintMethod, result: token.TokenType_Print},
-		{condition: parsers.IsPrintNewlineMethod, result: token.TokenType_PrintNewline},
-		{condition: parsers.IsReadMethod, result: token.TokenType_Prompt},
-		{condition: parsers.IsFunctionCallMethod, result: token.TokenType_FunctionCall},
+		{condition: parsers.CheckPrintMethod, result: token.TokenType_Print},
+		{condition: parsers.CheckPrintNewlineMethod, result: token.TokenType_PrintNewline},
+		{condition: parsers.CheckReadMethod, result: token.TokenType_Prompt},
+		{condition: parsers.CheckFunctionCallMethod, result: token.TokenType_FunctionCall},
 
-		{condition: parsers.IsVariableDeclaration, result: token.TokenType_Declaration},
-		{condition: parsers.IsVariableModifier, result: token.TokenType_Modify},
+		{condition: parsers.CheckVariableDeclaration, result: token.TokenType_Declaration},
+		{condition: parsers.CheckVariableModifier, result: token.TokenType_Modify},
 
-		{condition: parsers.IsBooleanType, result: token.TokenType_TypeBoolean},
-		{condition: parsers.IsBooleanArrayType, result: token.TokenType_TypeBooleanArray},
-		{condition: parsers.IsNumberType, result: token.TokenType_TypeNumber},
-		{condition: parsers.IsNumberArrayType, result: token.TokenType_TypeNumberArray},
-		{condition: parsers.IsStringType, result: token.TokenType_TypeString},
-		{condition: parsers.IsStringArrayType, result: token.TokenType_TypeStringArray},
-		{condition: parsers.IsCharacterType, result: token.TokenType_TypeChar},
+		{condition: parsers.CheckBooleanType, result: token.TokenType_TypeBoolean},
+		{condition: parsers.CheckBooleanArrayType, result: token.TokenType_TypeBooleanArray},
+		{condition: parsers.CheckNumberType, result: token.TokenType_TypeNumber},
+		{condition: parsers.CheckNumberArrayType, result: token.TokenType_TypeNumberArray},
+		{condition: parsers.CheckStringType, result: token.TokenType_TypeString},
+		{condition: parsers.CheckStringArrayType, result: token.TokenType_TypeStringArray},
+		{condition: parsers.CheckCharacterType, result: token.TokenType_TypeChar},
 
-		{condition: parsers.IsPostscript, result: token.TokenType_CommentPostScript},
+		{condition: parsers.CheckPostscript, result: token.TokenType_CommentPostScript},
 
-		{condition: parsers.IsInfixAddition, result: token.TokenType_OperatorAddInfix},
-		{condition: parsers.IsPrefixAddition, result: token.TokenType_OperatorAddPrefix},
-		{condition: parsers.IsInfixSubtraction, result: token.TokenType_OperatorSubInfix},
-		{condition: parsers.IsPrefixSubtraction, result: token.TokenType_OperatorSubPrefix},
-		{condition: parsers.IsInfixMultiplication, result: token.TokenType_OperatorMulInfix},
-		{condition: parsers.IsPrefixMultiplication, result: token.TokenType_OperatorMulPrefix},
-		{condition: parsers.IsInfixDivision, result: token.TokenType_OperatorDivInfix},
-		{condition: parsers.IsPrefixDivision, result: token.TokenType_OperatorDivPrefix},
+		{condition: parsers.CheckInfixAddition, result: token.TokenType_OperatorAddInfix},
+		{condition: parsers.CheckPrefixAddition, result: token.TokenType_OperatorAddPrefix},
+		{condition: parsers.CheckInfixSubtraction, result: token.TokenType_OperatorSubInfix},
+		{condition: parsers.CheckPrefixSubtraction, result: token.TokenType_OperatorSubPrefix},
+		{condition: parsers.CheckInfixMultiplication, result: token.TokenType_OperatorMulInfix},
+		{condition: parsers.CheckPrefixMultiplication, result: token.TokenType_OperatorMulPrefix},
+		{condition: parsers.CheckInfixDivision, result: token.TokenType_OperatorDivInfix},
+		{condition: parsers.CheckPrefixDivision, result: token.TokenType_OperatorDivPrefix},
 
-		{condition: parsers.IsLessThanEqualOperator, result: token.TokenType_OperatorLte},
-		{condition: parsers.IsGreaterThanEqualOperator, result: token.TokenType_OperatorGte},
-		{condition: parsers.IsGreaterThanOperator, result: token.TokenType_OperatorGt},
-		{condition: parsers.IsLessThanOperator, result: token.TokenType_OperatorLt},
-		{condition: parsers.IsNotEqualOperator, result: token.TokenType_OperatorNeq},
-		{condition: parsers.IsEqualOperator, result: token.TokenType_OperatorEq},
+		{condition: parsers.CheckLessThanEqualOperator, result: token.TokenType_OperatorLte},
+		{condition: parsers.CheckGreaterThanEqualOperator, result: token.TokenType_OperatorGte},
+		{condition: parsers.CheckGreaterThanOperator, result: token.TokenType_OperatorGt},
+		{condition: parsers.CheckLessThanOperator, result: token.TokenType_OperatorLt},
+		{condition: parsers.CheckNotEqualOperator, result: token.TokenType_OperatorNeq},
+		{condition: parsers.CheckEqualOperator, result: token.TokenType_OperatorEq},
 
-		{condition: parsers.IsConstantKeyword, result: token.TokenType_KeywordConst},
-		{condition: parsers.IsAndKeyword, result: token.TokenType_KeywordAnd},
-		{condition: parsers.IsOrKeyword, result: token.TokenType_KeywordOr},
-		{condition: parsers.IsOfKeyword, result: token.TokenType_KeywordOf},
+		{condition: parsers.CheckConstantKeyword, result: token.TokenType_KeywordConst},
+		{condition: parsers.CheckAndKeyword, result: token.TokenType_KeywordAnd},
+		{condition: parsers.CheckOrKeyword, result: token.TokenType_KeywordOr},
+		{condition: parsers.CheckOfKeyword, result: token.TokenType_KeywordOf},
 	}
 
 	for oldTokens.Len() > 0 {
@@ -163,6 +167,8 @@ func mergeMultitokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	return tokens
 }
 
+// Combine any literal tokens that are queued against one another into just one partial
+// token instead.
 func mergeLiterals(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
@@ -203,6 +209,7 @@ func mergeLiterals(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Tok
 	return tokens
 }
 
+// Remove any unnecessary tokens from the token queue
 func cleanTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 

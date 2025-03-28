@@ -1,16 +1,21 @@
 package twilight
 
 import (
-	"fmt"
 	"testing"
 
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 	"github.com/stretchr/testify/assert"
 )
 
-func AssertToken(t *testing.T, tok *token.Token, tokenType token.TokenType, value string, typeOf string) {
-	assert.Equal(t, tokenType, tok.Type, fmt.Sprintf("Token type should be %s", typeOf))
-	assert.Equal(t, value, tok.Value, fmt.Sprintf("Token value should be of %s", typeOf))
+func CheckTokens(t *testing.T, tokens []*token.Token, checks []struct{ tokenType token.TokenType; expectedValue string }) {
+	if !assert.Equal(t, len(checks), len(tokens), "Mismatch token count") {
+		return
+	}
+	
+	for idx, check := range checks {
+		assert.Equal(t, check.tokenType, tokens[idx].Type)
+		assert.Equal(t, check.expectedValue, tokens[idx].Value)
+	}
 }
 
 func TestTokenizer(t *testing.T) {
@@ -22,14 +27,20 @@ func TestTokenizer(t *testing.T) {
 
 		tokens := Parse(source)
 
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_ReportHeader, "Dear Princess Celestia:", "header")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Identifier, "Hello World", "identifier")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Punctuation, "!", "punctuation")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_ReportFooter, "Your faithful student,", "footer")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Identifier, "Twilight Sparkle", "identifier")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Punctuation, ".", "punctuation")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_EndOfFile, "", "end_of_file")
-		assert.Equal(t, 0, tokens.Len(), "Tokens should be empty")
+		checks := []struct{
+			tokenType token.TokenType
+			expectedValue string
+		}{
+			{ tokenType: token.TokenType_ReportHeader, expectedValue: "Dear Princess Celestia:" },
+			{ tokenType: token.TokenType_Identifier, expectedValue: "Hello World" },
+			{ tokenType: token.TokenType_Punctuation, expectedValue: "!" },
+			{ tokenType: token.TokenType_ReportFooter, expectedValue: "Your faithful student," },
+			{ tokenType: token.TokenType_Identifier, expectedValue: "Twilight Sparkle" },
+			{ tokenType: token.TokenType_Punctuation, expectedValue: "." },
+			{ tokenType: token.TokenType_EndOfFile, expectedValue: "" },
+		}
+
+		CheckTokens(t, tokens, checks)
 	})
 }
 
@@ -40,8 +51,14 @@ func TestPostscript(t *testing.T) {
 
 		tokens := Parse(source)
 
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_EndOfFile, "", "end_of_file")
-		assert.Equal(t, 0, tokens.Len(), "Tokens should be empty")
+		checks := []struct{
+			tokenType token.TokenType
+			expectedValue string
+		}{
+			{ tokenType: token.TokenType_EndOfFile, expectedValue: "" },
+		}
+
+		CheckTokens(t, tokens, checks)
 	})
 
 	t.Run("clean post-postscript", func(t *testing.T) {
@@ -50,8 +67,14 @@ func TestPostscript(t *testing.T) {
 
 		tokens := Parse(source)
 
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_EndOfFile, "", "end_of_file")
-		assert.Equal(t, 0, tokens.Len(), "Tokens should be empty")
+		checks := []struct{
+			tokenType token.TokenType
+			expectedValue string
+		}{
+			{ tokenType: token.TokenType_EndOfFile, expectedValue: "" },
+		}
+
+		CheckTokens(t, tokens, checks)
 	})
 	t.Run("ignore invalid postscript", func(t *testing.T) {
 		source :=
@@ -59,7 +82,20 @@ func TestPostscript(t *testing.T) {
 
 		tokens := Parse(source)
 
-		assert.NotEqual(t, 0, tokens.Len(), "Tokens should not be empty")
+		checks := []struct{
+			tokenType token.TokenType
+			expectedValue string
+		}{
+			{ tokenType: token.TokenType_Identifier, expectedValue: "P" },
+			{ tokenType: token.TokenType_Punctuation, expectedValue: "." },
+			{ tokenType: token.TokenType_Identifier, expectedValue: "S" },
+			{ tokenType: token.TokenType_Punctuation, expectedValue: "." },
+			{ tokenType: token.TokenType_Identifier, expectedValue: "Hello" },
+			{ tokenType: token.TokenType_Punctuation, expectedValue: "!" },
+			{ tokenType: token.TokenType_EndOfFile, expectedValue: "" },
+		}
+
+		CheckTokens(t, tokens, checks)
 	})
 
 	t.Run("clean inside postscript", func(t *testing.T) {
@@ -70,9 +106,15 @@ func TestPostscript(t *testing.T) {
 
 		tokens := Parse(source)
 
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Identifier, "Hello", "")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_Identifier, "World", "")
-		AssertToken(t, tokens.Dequeue().Value, token.TokenType_EndOfFile, "", "end_of_file")
-		assert.Equal(t, 0, tokens.Len(), "Tokens should be empty")
+		checks := []struct{
+			tokenType token.TokenType
+			expectedValue string
+		}{
+			{ tokenType: token.TokenType_Identifier, expectedValue: "Hello" },
+			{ tokenType: token.TokenType_Identifier, expectedValue: "World" },
+			{ tokenType: token.TokenType_EndOfFile, expectedValue: "" },
+		}
+
+		CheckTokens(t, tokens, checks)
 	})
 }

@@ -25,6 +25,7 @@ type Interpreter struct {
 	Paragraphs []*Paragraph
 }
 
+// Create a new interpreter based on the ReportNode
 func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, error) {
 	interpreter := &Interpreter{
 		Writer:      os.Stdout,
@@ -92,9 +93,12 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 	return interpreter, nil
 }
 
-func (i *Interpreter) ReportName() string {
-	return i.reportNode.Name
+// Return the report's title
+func (i *Interpreter) ReportTitle() string {
+	return i.reportNode.Title
 }
+
+// Return the report's author
 func (i *Interpreter) ReportAuthor() string {
 	return i.reportNode.Author
 }

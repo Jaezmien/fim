@@ -13,7 +13,7 @@ func TestBinaryExpression(t *testing.T) {
 	t.Run("should create an add expression", func(t *testing.T) {
 		source := "1 plus 1"
 
-		tokens := twilight.Parse(source).Flatten()
+		tokens := twilight.Parse(source)
 		tokens = tokens[:len(tokens)-1] // Ignore EOF token
 
 		valueNode, err := CreateValueNode(tokens, CreateValueNodeOptions{})
@@ -31,7 +31,7 @@ func TestBinaryExpression(t *testing.T) {
 	t.Run("should handle multiple expressions", func(t *testing.T) {
 		source := "1 plus 2 minus 3"
 
-		tokens := twilight.Parse(source).Flatten()
+		tokens := twilight.Parse(source)
 		tokens = tokens[:len(tokens)-1] // Ignore EOF token
 
 		valueNode, err := CreateValueNode(tokens, CreateValueNodeOptions{})
@@ -61,7 +61,7 @@ func TestBinaryExpression(t *testing.T) {
 	t.Run("should handle relationals", func(t *testing.T) {
 		source := "correct is equal to true"
 
-		tokens := twilight.Parse(source).Flatten()
+		tokens := twilight.Parse(source)
 		tokens = tokens[:len(tokens)-1] // Ignore EOF token
 
 		valueNode, err := CreateValueNode(tokens, CreateValueNodeOptions{})

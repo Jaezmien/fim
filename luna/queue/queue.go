@@ -1,8 +1,11 @@
 package queue
 
+// The Queue represents a Queue data structure
 type Queue[T any] struct {
 	front *QueueItem[T]
 }
+
+// The QueueItem is a wrapper to allow double-linked list 
 type QueueItem[T any] struct {
 	previous *QueueItem[T]
 	next     *QueueItem[T]
@@ -10,6 +13,7 @@ type QueueItem[T any] struct {
 	Value T
 }
 
+// Get the first item inserted into the queue
 func (q *Queue[T]) First() *QueueItem[T] {
 	if q.front == nil {
 		return nil
@@ -17,6 +21,8 @@ func (q *Queue[T]) First() *QueueItem[T] {
 
 	return q.front
 }
+
+// Get the last item inserted into the queue
 func (q *Queue[T]) Last() *QueueItem[T] {
 	if q.front == nil {
 		return nil
@@ -28,6 +34,8 @@ func (q *Queue[T]) Last() *QueueItem[T] {
 	}
 	return item
 }
+
+// Peek the n-th item inserted into the queue
 func (q *Queue[T]) Peek(index int) *QueueItem[T] {
 	if q.front == nil {
 		return nil
@@ -44,6 +52,7 @@ func (q *Queue[T]) Peek(index int) *QueueItem[T] {
 	return item
 }
 
+// Return the amount of items in the queue
 func (q *Queue[T]) Len() int {
 	if q.front == nil {
 		return 0
@@ -61,6 +70,7 @@ func (q *Queue[T]) Len() int {
 	return length
 }
 
+// Remove the first item from the start of the queue
 func (q *Queue[T]) Dequeue() *QueueItem[T] {
 	if q.front == nil {
 		return nil
@@ -72,6 +82,8 @@ func (q *Queue[T]) Dequeue() *QueueItem[T] {
 
 	return item
 }
+
+// Insert an item into the back of the queue
 func (q *Queue[T]) Queue(value T) {
 	item := &QueueItem[T]{
 		Value: value,
@@ -90,6 +102,9 @@ func (q *Queue[T]) Queue(value T) {
 	last.next = item
 	item.previous = last
 }
+
+// Insert an item into the front of the queue.
+// Preposterous!
 func (q *Queue[T]) QueueFront(value T) {
 	item := &QueueItem[T]{
 		Value: value,
@@ -106,6 +121,7 @@ func (q *Queue[T]) QueueFront(value T) {
 	q.front = item
 }
 
+// Turn the queue into an array
 func (q *Queue[T]) Flatten() []T {
 	s := make([]T, 0, q.Len())
 
@@ -119,6 +135,7 @@ func (q *Queue[T]) Flatten() []T {
 	return s
 }
 
+// Create a new Queue
 func New[T any]() *Queue[T] {
 	return &Queue[T]{}
 }

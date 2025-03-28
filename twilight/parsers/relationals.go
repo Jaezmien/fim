@@ -8,7 +8,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-func IsLessThanEqualOperator(tokens *queue.Queue[*token.Token]) int {
+func CheckLessThanEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	MultiTokens := [][]string{
 		{"had", " ", "no", " ", "more", " ", "than"},
 		{"has", " ", "no", " ", "more", " ", "than"},
@@ -41,7 +41,7 @@ func IsLessThanEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsGreaterThanEqualOperator(tokens *queue.Queue[*token.Token]) int {
+func CheckGreaterThanEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	MultiTokens := [][]string{
 		{"had", " ", "no", " ", "less", " ", "than"},
 		{"has", " ", "no", " ", "less", " ", "than"},
@@ -65,7 +65,7 @@ func IsGreaterThanEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsGreaterThanOperator(tokens *queue.Queue[*token.Token]) int {
+func CheckGreaterThanOperator(tokens *queue.Queue[*token.Token]) int {
 	MultiTokens := [][]string{
 		{"had", " ", "more", " ", "than"},
 		{"has", " ", "more", " ", "than"},
@@ -86,7 +86,7 @@ func IsGreaterThanOperator(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsLessThanOperator(tokens *queue.Queue[*token.Token]) int {
+func CheckLessThanOperator(tokens *queue.Queue[*token.Token]) int {
 	MultiTokens := [][]string{
 		{"had", " ", "less", " ", "than"},
 		{"has", " ", "less", " ", "than"},
@@ -104,7 +104,7 @@ func IsLessThanOperator(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsNotEqualOperator(tokens *queue.Queue[*token.Token]) int {
+func CheckNotEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	MultiTokens := [][]string{
 		{"wasn", "'", "t", " ", "equal", " ", "to"},
 		{"isn", "'", "t", " ", "equal", " ", "to"},
@@ -130,7 +130,7 @@ func IsNotEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsEqualOperator(tokens *queue.Queue[*token.Token]) int {
+func CheckEqualOperator(tokens *queue.Queue[*token.Token]) int {
 	MultiTokens := [][]string{
 		{"is", " ", "equal", " ", "to"},
 		{"was", " ", "equal", " ", "to"},

@@ -8,7 +8,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-func IsNumberType(tokens *queue.Queue[*token.Token]) int {
+func CheckNumberType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"number"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
@@ -31,7 +31,7 @@ func IsNumberType(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsNumberArrayType(tokens *queue.Queue[*token.Token]) int {
+func CheckNumberArrayType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"numbers"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
@@ -54,7 +54,7 @@ func IsNumberArrayType(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsBooleanType(tokens *queue.Queue[*token.Token]) int {
+func CheckBooleanType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"argument", "logic"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
@@ -78,7 +78,7 @@ func IsBooleanType(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsBooleanArrayType(tokens *queue.Queue[*token.Token]) int {
+func CheckBooleanArrayType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"arguments", "logics"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
@@ -103,7 +103,7 @@ func IsBooleanArrayType(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsCharacterType(tokens *queue.Queue[*token.Token]) int {
+func CheckCharacterType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"character", "letter"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
@@ -128,7 +128,7 @@ func IsCharacterType(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsStringType(tokens *queue.Queue[*token.Token]) int {
+func CheckStringType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"characters", "letters", "phrase", "quote", "sentence", "word"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
@@ -159,7 +159,7 @@ func IsStringType(tokens *queue.Queue[*token.Token]) int {
 	return 0
 }
 
-func IsStringArrayType(tokens *queue.Queue[*token.Token]) int {
+func CheckStringArrayType(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() >= 1 {
 		ExpectedSingleTokens := []string{"phrases", "quotes", "sentences", "words"}
 		if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {

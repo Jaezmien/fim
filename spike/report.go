@@ -6,6 +6,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
+// Create a ReportNode based on the generated token array.
 func CreateReport(tokens []*token.Token, source string) (*nodes.ReportNode, error) {
 	ast := &ast.AST{
 		Tokens:     tokens,

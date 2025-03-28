@@ -8,7 +8,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
 )
 
-func IsVariableDeclaration(tokens *queue.Queue[*token.Token]) int {
+func CheckVariableDeclaration(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"Did", " ", "you", " ", "know", " ", "that"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
@@ -18,7 +18,7 @@ func IsVariableDeclaration(tokens *queue.Queue[*token.Token]) int {
 	return len(ExpectedTokens)
 }
 
-func IsVariableModifier(tokens *queue.Queue[*token.Token]) int {
+func CheckVariableModifier(tokens *queue.Queue[*token.Token]) int {
 	ExpectedSingleTokens := []string{"becomes", "become", "became"}
 	if slices.Contains(ExpectedSingleTokens, tokens.First().Value.Value) {
 		return 1

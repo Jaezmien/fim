@@ -7,7 +7,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
-func IsPostscript(tokens *queue.Queue[*token.Token]) int {
+func CheckPostscript(tokens *queue.Queue[*token.Token]) int {
 	if tokens.Len() < 5 {
 		return 0
 	}

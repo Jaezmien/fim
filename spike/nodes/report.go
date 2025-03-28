@@ -9,7 +9,7 @@ import (
 
 type ReportNode struct {
 	Node
-	Name   string
+	Title   string
 	Author string
 
 	Body []INode
@@ -40,7 +40,7 @@ func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 
 	firstNameToken := nameTokens[0]
 	lastNameToken := nameTokens[len(nameTokens)-1]
-	report.Name = ast.GetSourceText(firstNameToken.Start, lastNameToken.Start+lastNameToken.Length-firstNameToken.Start)
+	report.Title = ast.GetSourceText(firstNameToken.Start, lastNameToken.Start+lastNameToken.Length-firstNameToken.Start)
 
 	_, err = ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
 	if err != nil {
