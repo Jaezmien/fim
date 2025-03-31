@@ -14,6 +14,7 @@ import (
 
 func main() {
 	prettyFlag := flag.Bool("pretty", false, "Prettify output")
+	tokenDisplayFlag := flag.Bool("tokens", false, "Display tokens")
 	flag.Parse()
 
 	args := flag.Args()
@@ -38,6 +39,18 @@ func main() {
 
 	tokens := twilight.Parse(source)
 
+	if *tokenDisplayFlag == true {
+		for idx, token := range tokens {
+			fmt.Printf(
+				"%d.\t%d:%d\t-> %s (%s)\n",
+				idx,
+				token.Start, token.Start + token.Length,
+				token.Value,
+				token.Type,
+			)
+		}
+	}
+
 	report, err := spike.CreateReport(tokens, source)
 	if err != nil {
 		fmt.Println(err)
@@ -58,7 +71,7 @@ func main() {
 
 	for _, paragraph := range interpreter.Paragraphs {
 		if paragraph.Main {
-			if err := paragraph.Execute(); err != nil {
+			if _, err := paragraph.Execute(); err != nil {
 				fmt.Println(err)
 				return
 			}
