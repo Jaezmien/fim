@@ -13,7 +13,7 @@ type VariableModifyNode struct {
 
 	Identifier string
 
-	Value INode
+	Value             INode
 	ReinforcementType vartype.VariableType
 }
 

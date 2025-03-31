@@ -5,7 +5,7 @@ type Queue[T any] struct {
 	front *QueueItem[T]
 }
 
-// The QueueItem is a wrapper to allow double-linked list 
+// The QueueItem is a wrapper to allow double-linked list
 type QueueItem[T any] struct {
 	previous *QueueItem[T]
 	next     *QueueItem[T]

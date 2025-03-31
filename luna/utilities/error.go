@@ -10,7 +10,7 @@ import (
 // to the source code.
 type ErrorPair struct {
 	// 1-based line number of the error
-	Line   int
+	Line int
 	// 1-based column number of the error
 	Column int
 }

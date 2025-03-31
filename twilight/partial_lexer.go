@@ -15,7 +15,8 @@ var splittable_runes = [...]rune{'.', '!', '?', ':', ',', '(', ')', '"', '\'', '
 // This extra step is needed to handle the multi-word tokens that FiM++ uses.
 //
 // See:
-// 	var splittable_runes
+//
+//	var splittable_runes
 func createPartialTokens(source string) *queue.Queue[*token.Token] {
 	l := queue.New[*token.Token]()
 
@@ -65,7 +66,7 @@ func createPartialTokens(source string) *queue.Queue[*token.Token] {
 }
 
 // Merge basic tokens that are split across multiple partial tokens.
-// 
+//
 // e.g.: '0' '.' '0' becomes '0.0'
 func mergePartialTokens(tokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	l := queue.New[*token.Token]()

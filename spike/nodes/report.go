@@ -9,7 +9,7 @@ import (
 
 type ReportNode struct {
 	Node
-	Title   string
+	Title  string
 	Author string
 
 	Body []INode
