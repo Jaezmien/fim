@@ -79,6 +79,9 @@ func (t VariableType) AsBaseType() VariableType {
 	}
 }
 
+// Converts a token.TokenType literal to its respective vartype.VariableType
+//
+// This function does not handle arrays type
 func FromTokenType(t token.TokenType) VariableType {
 	switch t {
 	case token.TokenType_Boolean:
@@ -93,6 +96,8 @@ func FromTokenType(t token.TokenType) VariableType {
 		return UNKNOWN
 	}
 }
+
+// Converts a token.TokenType type hint to its respective vartype.VariableType
 func FromTokenTypeHint(t token.TokenType) VariableType {
 	switch t {
 	case token.TokenType_TypeBoolean:
