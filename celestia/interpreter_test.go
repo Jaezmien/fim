@@ -52,7 +52,7 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 		return
 	}
 
-	err := mainParagraph.Execute()
+	_, err := mainParagraph.Execute()
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -77,7 +77,7 @@ func ExpectError(t *testing.T, source string, expected string) {
 		return
 	}
 
-	err := mainParagraph.Execute()
+	_, err := mainParagraph.Execute()
 	if !assert.NoError(t, err) {
 		return
 	}
@@ -196,7 +196,7 @@ func TestIO(t *testing.T) {
 			return
 		}
 
-		err = mainParagraph.Execute()
+		_, err = mainParagraph.Execute()
 		if !assert.NoError(t, err) {
 			return
 		}
@@ -414,7 +414,7 @@ func TestDeclaration(t *testing.T) {
 			return
 		}
 
-		err = mainParagraph.Execute()
+		_, err = mainParagraph.Execute()
 		if !assert.Error(t, err) {
 			return
 		}
@@ -534,5 +534,33 @@ func TestFunctions(t *testing.T) {
 			`
 
 		ExecuteBasicReport(t, source, "Hello World\n")
+	})
+	t.Run("should return a value", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to ask to get a word!
+			Then you get "Hello World"!
+			That's all about how to ask.
+			Today I learned how to run a function!
+			I said how to ask.
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Hello World\n")
+	})
+	t.Run("should run even with return", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to ask to get a word!
+			Then you get "Hello World"!
+			That's all about how to ask.
+			Today I learned how to run a function!
+			I remembered how to ask.
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "")
 	})
 }

@@ -139,7 +139,7 @@ func main() {
 
 		for _, paragraph := range interpreter.Paragraphs {
 			if paragraph.Main {
-				if err := paragraph.Execute(); err != nil {
+				if _, err := paragraph.Execute(); err != nil {
 					fmt.Fprintln(errorCallback, err)
 					return nil
 				}

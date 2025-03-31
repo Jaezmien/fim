@@ -12,14 +12,14 @@ import (
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
-func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) error {
+func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*vartype.DynamicVariable, error) {
 	for _, statement := range statements.Statements {
 		if statement.Type() == node.TYPE_PRINT {
 			printNode := statement.(*nodes.PrintNode)
 
 			value, err := i.EvaluateValueNode(printNode.Value, true)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			i.Writer.Write([]byte(value.GetValueString()))
 
@@ -33,27 +33,27 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 			promptNode := statement.(*nodes.PromptNode)
 
 			if !i.Variables.Has(promptNode.Identifier, true) {
-				return i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier))
+				return nil, i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier))
 			}
 			variable := i.Variables.Get(promptNode.Identifier, true)
 			if variable.Constant {
-				return i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
+				return nil, i.CreateErrorFromNode(promptNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
 			}
 			if variable.DynamicVariable.GetType() != vartype.STRING {
-				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected variable to be of type STRING")
+				return nil, i.CreateErrorFromNode(promptNode.ToNode(), "Expected variable to be of type STRING")
 			}
 
 			value, err := i.EvaluateValueNode(promptNode.Prompt, true)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if value.GetType() != vartype.STRING {
-				return i.CreateErrorFromNode(promptNode.ToNode(), "Expected prompt to be of type STRING")
+				return nil, i.CreateErrorFromNode(promptNode.ToNode(), "Expected prompt to be of type STRING")
 			}
 
 			response, err := i.Prompt(value.GetValueString())
 			if err != nil {
-				return err
+				return nil, err
 			}
 			variable.DynamicVariable.SetValueString(response)
 
@@ -64,7 +64,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 
 			value, err := i.EvaluateValueNode(variableNode.Value, true)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			if value.GetType() == vartype.UNKNOWN {
@@ -80,7 +80,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 			}
 
 			if variableNode.ValueType != value.GetType() {
-				return i.CreateErrorFromNode(variableNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'", variableNode.ValueType, value.GetType()))
+				return nil, i.CreateErrorFromNode(variableNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'", variableNode.ValueType, value.GetType()))
 			}
 
 			variable := &Variable{
@@ -97,20 +97,20 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 			modifyNode := statement.(*nodes.VariableModifyNode)
 
 			if !i.Variables.Has(modifyNode.Identifier, true) {
-				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier))
+				return nil, i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier))
 			}
 			variable := i.Variables.Get(modifyNode.Identifier, true)
 
 			if variable.GetType().IsArray() {
-				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify an array."))
+				return nil, i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify an array."))
 			}
 			if variable.Constant {
-				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
+				return nil, i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Cannot modify a constant variable."))
 			}
 
 			if modifyNode.ReinforcementType != vartype.UNKNOWN {
 				if variable.GetType() != modifyNode.ReinforcementType {
-					return i.CreateErrorFromNode(
+					return nil, i.CreateErrorFromNode(
 						modifyNode.Value.ToNode(),
 						fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, variable.GetType()),
 					)
@@ -119,7 +119,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 
 			value, err := i.EvaluateValueNode(modifyNode.Value, true)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			if value.GetType() == vartype.UNKNOWN {
@@ -131,7 +131,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 			}
 
 			if variable.GetType() != value.GetType() && (variable.DynamicVariable.GetType() != vartype.STRING && !value.GetType().IsArray()) {
-				return i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'.", variable.GetType(), value.GetType()))
+				return nil, i.CreateErrorFromNode(modifyNode.ToNode(), fmt.Sprintf("Expected type '%s', got '%s'.", variable.GetType(), value.GetType()))
 			}
 
 			switch variable.GetType() {
@@ -152,23 +152,31 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 
 			paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
 			if paragraphIndex == -1 {
-				return i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Paragraph '%s' not found", callNode.Identifier))
+				return nil, i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Paragraph '%s' not found", callNode.Identifier))
 			}
 
 			paragraph := i.Paragraphs[paragraphIndex]
 
-			err := paragraph.Execute()
+			_, err := paragraph.Execute()
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			continue
 		}
 
-		return i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Unsupported statement node: %s", statement.Type()))
+		if statement.Type() == node.TYPE_FUNCTION_RETURN {
+			returnNode := statement.(*nodes.FunctionReturnNode)
+
+			value, err := i.EvaluateValueNode(returnNode.Value, true)
+
+			return value, err
+		}
+
+		return nil, i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Unsupported statement node: %s", statement.Type()))
 	}
 
-	return nil
+	return nil, nil
 }
 
 func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.DynamicVariable, error) {
@@ -191,7 +199,13 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			return variable.DynamicVariable, nil
 		}
 
-		// TODO: Check for paragraphs
+		if paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == identifierNode.Identifier }); paragraphIndex != -1 {
+			// TODO: Check for parameters
+			paragraph := i.Paragraphs[paragraphIndex]
+			value, err := paragraph.Execute()
+			return value, err
+		}
+
 		pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
 		return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
 	}

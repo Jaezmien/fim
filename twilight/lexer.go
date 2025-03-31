@@ -133,6 +133,7 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		{condition: parsers.CheckNotEqualOperator, result: token.TokenType_OperatorNeq},
 		{condition: parsers.CheckEqualOperator, result: token.TokenType_OperatorEq},
 
+		{condition: parsers.CheckReturnKeyword, result: token.TokenType_KeywordReturn},
 		{condition: parsers.CheckConstantKeyword, result: token.TokenType_KeywordConst},
 		{condition: parsers.CheckAndKeyword, result: token.TokenType_KeywordAnd},
 		{condition: parsers.CheckOrKeyword, result: token.TokenType_KeywordOr},
