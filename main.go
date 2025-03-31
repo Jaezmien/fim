@@ -44,7 +44,7 @@ func main() {
 			fmt.Printf(
 				"%d.\t%d:%d\t-> %s (%s)\n",
 				idx,
-				token.Start, token.Start + token.Length,
+				token.Start, token.Start+token.Length,
 				token.Value,
 				token.Type,
 			)
