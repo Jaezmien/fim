@@ -112,7 +112,7 @@ func (a *AST) ConsumeToken(tokenType token.TokenType, errorMessage string) (*tok
 	}, errorMessage)
 }
 
-func (a *AST) ConsumeFuncUntilMatch(predicate func(*token.Token) bool, errorMessage string) ([]*token.Token, error) {
+func (a *AST) ConsumeUntilFuncMatch(predicate func(*token.Token) bool, errorMessage string) ([]*token.Token, error) {
 	tokens := make([]*token.Token, 0)
 
 	for {
@@ -132,8 +132,8 @@ func (a *AST) ConsumeFuncUntilMatch(predicate func(*token.Token) bool, errorMess
 
 	return tokens, nil
 }
-func (a *AST) ConsumeTokenUntilMatch(tokenType token.TokenType, errorMessage string) ([]*token.Token, error) {
-	return a.ConsumeFuncUntilMatch(func(t *token.Token) bool {
+func (a *AST) ConsumeUntilTokenMatch(tokenType token.TokenType, errorMessage string) ([]*token.Token, error) {
+	return a.ConsumeUntilFuncMatch(func(t *token.Token) bool {
 		return t.Type == tokenType
 	}, errorMessage)
 }

@@ -33,7 +33,7 @@ func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 		return nil, err
 	}
 
-	nameTokens, err := ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
+	nameTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	if err != nil {
 		return nil, err
 	}

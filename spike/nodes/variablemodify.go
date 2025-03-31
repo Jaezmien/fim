@@ -50,7 +50,7 @@ func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 		node.ReinforcementType = vartype.UNKNOWN
 	}
 
-	valueTokens, err := ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
+	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	if err != nil {
 		return nil, err
 	}

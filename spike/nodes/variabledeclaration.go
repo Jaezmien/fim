@@ -61,11 +61,11 @@ func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error
 
 	var valueTokens []*token.Token
 	if node.ValueType.IsArray() {
-		valueTokens, err = ast.ConsumeFuncUntilMatch(func(t *token.Token) bool {
+		valueTokens, err = ast.ConsumeUntilFuncMatch(func(t *token.Token) bool {
 			return t.Type == token.TokenType_Punctuation && t.Value != ","
 		}, token.TokenType_Punctuation.Message("Could not find %s"))
 	} else {
-		valueTokens, err = ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
+		valueTokens, err = ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	}
 	if err != nil {
 		return nil, err

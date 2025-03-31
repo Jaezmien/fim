@@ -13,6 +13,12 @@ type Variable struct {
 	Constant bool
 }
 
+// The VariableManager will be the one handling our variables.
+//
+// The local stack is a stack of variables, inside another stack.
+// This is because our way of managing local variables is a new
+// paragraph scope, and each new stack represents one scope
+// deep of statements.
 type VariableManager struct {
 	Globals stack.Stack[*Variable]
 	Locals  stack.Stack[*stack.Stack[*Variable]]
@@ -25,12 +31,17 @@ func NewVariableManager() *VariableManager {
 	}
 }
 
+// Create a new paragraph scope.
 func (m *VariableManager) PushScope() {
 	m.Locals.Push(stack.New[*Variable]())
 }
+
+// Delete current paragraph scope.
 func (m *VariableManager) PopScope() {
 	m.Locals.Pop()
 }
+
+// Returns the depth of paragraph scopes.
 func (m *VariableManager) ScopeDepth() int {
 	return m.Locals.Len()
 }

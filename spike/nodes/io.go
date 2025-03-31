@@ -35,7 +35,7 @@ func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 	printNode.NewLine = startToken.Type == token.TokenType_PrintNewline
 	ast.Next()
 
-	valueTokens, err := ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
+	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func ParsePromptNode(ast *ast.AST) (*PromptNode, error) {
 		return nil, err
 	}
 
-	valueTokens, err := ast.ConsumeTokenUntilMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
+	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	if err != nil {
 		return nil, err
 	}
