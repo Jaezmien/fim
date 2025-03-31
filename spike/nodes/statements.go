@@ -79,6 +79,16 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
+		if ast.Peek().Type == token.TokenType_FunctionCall {
+			node, err := ParseFunctionCallNode(ast)
+			if err != nil {
+				return nil, err
+			}
+
+			statements.Statements = append(statements.Statements, node)
+			continue
+		}
+
 		return nil, ast.CreateErrorFromToken(ast.Peek(), fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type))
 	}
 

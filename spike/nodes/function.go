@@ -94,3 +94,47 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 
 	return function, nil
 }
+
+// --- //
+
+type FunctionCallNode struct {
+	Node
+
+	Identifier string
+}
+
+func (f *FunctionCallNode) Type() NodeType {
+	return TYPE_FUNCTION_CALL
+}
+
+func (f *FunctionCallNode) ToNode() Node {
+	return Node{
+		Start:  f.Start,
+		Length: f.Length,
+	}
+}
+
+func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
+	call := &FunctionCallNode{}
+
+	startToken, err := ast.ConsumeToken(token.TokenType_FunctionCall, token.TokenType_FunctionCall.Message("Expected %s"))
+
+	nameToken, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
+	call.Identifier = nameToken.Value
+
+	// TODO: Parameter check
+	// TODO: Return check
+
+	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
+
+	call.Start = startToken.Start
+	call.Length = endToken.Start + endToken.Length - startToken.Start
+
+	return call, nil
+}

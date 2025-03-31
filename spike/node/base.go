@@ -9,7 +9,9 @@ type NodeType uint
 
 const (
 	TYPE_REPORT NodeType = iota
+
 	TYPE_FUNCTION
+	TYPE_FUNCTION_CALL
 
 	TYPE_STATEMENTS
 	TYPE_PRINT

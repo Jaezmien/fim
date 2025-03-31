@@ -15,6 +15,7 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 		Interpreter:  interpreter,
 		FunctionNode: node,
 		Main:         node.Main,
+		Name:         node.Name,
 	}
 
 	return p

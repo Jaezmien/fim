@@ -3,6 +3,7 @@ package celestia
 import (
 	"errors"
 	"fmt"
+	"slices"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
@@ -142,6 +143,23 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) e
 				variable.SetValueBoolean(value.GetValueBoolean())
 			case vartype.NUMBER:
 				variable.SetValueNumber(value.GetValueNumber())
+			}
+
+			continue
+		}
+		if statement.Type() == node.TYPE_FUNCTION_CALL {
+			callNode := statement.(*nodes.FunctionCallNode)
+
+			paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
+			if paragraphIndex == -1 {
+				return i.CreateErrorFromNode(statement.ToNode(), fmt.Sprintf("Paragraph '%s' not found", callNode.Identifier))
+			}
+
+			paragraph := i.Paragraphs[paragraphIndex]
+
+			err := paragraph.Execute()
+			if err != nil {
+				return err
 			}
 
 			continue

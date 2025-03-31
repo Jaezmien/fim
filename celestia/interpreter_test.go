@@ -519,3 +519,20 @@ func TestArray(t *testing.T) {
 		ExecuteBasicReport(t, source, "Gala\n\n")
 	})
 }
+
+func TestFunctions(t *testing.T) {
+	t.Run("should run function", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Functions!
+			I learned how to say hello world!
+			I said "Hello World"!
+			That's all about how to say hello world.
+			Today I learned how to run a function!
+			I remembered how to say hello world.
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Hello World\n")
+	})
+}
