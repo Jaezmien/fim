@@ -229,13 +229,13 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 
 			paramTypeToken := ast.Peek()
 			paramType := vartype.FromTokenTypeHint(paramTypeToken.Type)
-			if paramType == vartype.UNKNOWN {
+			if paramType != vartype.UNKNOWN {
 				// TODO: Add type safety?
+				ast.Next()
 			}
-			ast.Next()
 
 			valueTokens, err := ast.ConsumeUntilFuncMatch(func(t *token.Token) bool {
-				return t.Type == token.TokenType_Punctuation && t.Value != ","
+				return t.Type == token.TokenType_Punctuation
 			}, token.TokenType_Punctuation.Message("Could not find %s"))
 			if err != nil {
 				return nil, err
