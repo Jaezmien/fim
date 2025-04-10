@@ -27,13 +27,13 @@ func (p *PrintNode) ToNode() Node {
 func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 	printNode := &PrintNode{}
 
-	startToken := ast.Peek()
-	if startToken.Type != token.TokenType_Print && startToken.Type != token.TokenType_PrintNewline {
-		return nil, ast.CreateErrorFromToken(startToken, "Expected print token")
+	startToken, err := ast.ConsumeFunc(func(t *token.Token) bool {
+		return t.Type == token.TokenType_Print || t.Type == token.TokenType_PrintNewline
+	}, "Expected print token")
+	if err != nil {
+		return nil, err
 	}
-
 	printNode.NewLine = startToken.Type == token.TokenType_PrintNewline
-	ast.Next()
 
 	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
 	if err != nil {
