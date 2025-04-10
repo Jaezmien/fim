@@ -38,7 +38,12 @@ func GetMainParagraph(t *testing.T, interpreter *Interpreter) (*Paragraph, bool)
 	return mainParagraph, true
 }
 
-func ExecuteBasicReport(t *testing.T, source string, expected string) {
+type BasicReportOptions struct {
+	Expects string
+	Error bool
+	Prompt func(prompt string) (string, error)
+}
+func ExecuteBasicReport(t *testing.T, source string, options BasicReportOptions) {
 	interpreter, ok := CreateReport(t, source)
 	if !ok {
 		return
@@ -46,30 +51,8 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 
 	buffer := &bytes.Buffer{}
 	interpreter.Writer = buffer
-
-	mainParagraph, ok := GetMainParagraph(t, interpreter)
-	if !ok {
-		return
-	}
-
-	_, err := mainParagraph.Execute()
-	if !assert.NoError(t, err, "handled by celestia") {
-		return
-	}
-
-	data, err := io.ReadAll(buffer)
-	if !assert.NoError(t, err) {
-		return
-	}
-
-	if !assert.Equal(t, expected, string(data)) {
-		return
-	}
-}
-func ExpectError(t *testing.T, source string, expected string) {
-	interpreter, ok := CreateReport(t, source)
-	if !ok {
-		return
+	if options.Prompt != nil {
+		interpreter.Prompt = options.Prompt
 	}
 
 	mainParagraph, ok := GetMainParagraph(t, interpreter)
@@ -78,12 +61,22 @@ func ExpectError(t *testing.T, source string, expected string) {
 	}
 
 	_, err := mainParagraph.Execute()
-	if !assert.NoError(t, err) {
+	if options.Error && assert.Error(t, err, "handled by celestia") {
+		return
+	}
+	if !options.Error && assert.NoError(t, err, "handled by celestia") {
 		return
 	}
 
-	if !assert.Error(t, err) {
-		return
+	if options.Expects != "" {
+		data, err := io.ReadAll(buffer)
+		if !assert.NoError(t, err) {
+			return
+		}
+
+		if !assert.Equal(t, options.Expects, string(data)) {
+			return
+		}
 	}
 }
 
@@ -143,7 +136,7 @@ func TestIO(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 
 	t.Run("should print without newline", func(t *testing.T) {
@@ -155,7 +148,7 @@ func TestIO(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1" })
 	})
 
 	t.Run("should prompt", func(t *testing.T) {
@@ -169,46 +162,50 @@ func TestIO(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		tokens := twilight.Parse(source)
-		report, err := spike.CreateReport(tokens, source)
-		if !assert.NoError(t, err) {
-			return
-		}
-		interpreter, err := NewInterpreter(report, source)
-		if !assert.NoError(t, err) {
-			return
-		}
+		ExecuteBasicReport(t, source, BasicReportOptions{
+			Expects: "Hello!\n",
+			Prompt: func(prompt string) (string, error) {
+				return "Hello!", nil
+			},
+		})
+	})
 
-		outputBuffer := &bytes.Buffer{}
-		interpreter.Writer = outputBuffer
-		interpreter.Prompt = func(prompt string) (string, error) {
-			return "Hello!", nil
-		}
+	t.Run("should convert response type", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Prompts!
+			Today I learned how to acquire prompts!
+			Did you know that Spike is a number?
+			I asked Spike: "Give me a number! ".
+			I said Spike!
+			That's all about how to acquire prompts.
+			Your faithful student, Twilight Sparkle.
+			`
 
-		var mainParagraph *Paragraph
-		for _, paragraph := range interpreter.Paragraphs {
-			if paragraph.Main {
-				mainParagraph = paragraph
-				break
-			}
-		}
-		if !assert.NotNil(t, mainParagraph) {
-			return
-		}
+		ExecuteBasicReport(t, source, BasicReportOptions{
+			Expects: "1\n",
+			Prompt: func(prompt string) (string, error) {
+				return "1", nil
+			},
+		})
+	})
 
-		_, err = mainParagraph.Execute()
-		if !assert.NoError(t, err) {
-			return
-		}
+	t.Run("should error on invalid response type", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Prompts!
+			Today I learned how to acquire prompts!
+			Did you know that Spike is a number?
+			I asked Spike: "Give me a number! ".
+			I said Spike!
+			That's all about how to acquire prompts.
+			Your faithful student, Twilight Sparkle.
+			`
 
-		data, err := io.ReadAll(outputBuffer)
-		if !assert.NoError(t, err) {
-			return
-		}
-
-		if !assert.Equal(t, "Hello!\n", string(data)) {
-			return
-		}
+		ExecuteBasicReport(t, source, BasicReportOptions{
+			Error: true,
+			Prompt: func(prompt string) (string, error) {
+				return "Books!", nil
+			},
+		})
 	})
 }
 
@@ -222,7 +219,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "\n" })
 	})
 
 	t.Run("should print string", func(t *testing.T) {
@@ -234,7 +231,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello World\n" })
 	})
 
 	t.Run("should print character", func(t *testing.T) {
@@ -246,7 +243,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "a\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "a\n" })
 	})
 
 	t.Run("should print boolean", func(t *testing.T) {
@@ -258,7 +255,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "true\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "true\n" })
 	})
 
 	t.Run("should print number", func(t *testing.T) {
@@ -270,7 +267,7 @@ func TestBasicReports(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 }
 
@@ -284,7 +281,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "2\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "2\n" })
 	})
 	t.Run("should subtract number", func(t *testing.T) {
 		source :=
@@ -295,7 +292,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "0\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "0\n" })
 	})
 	t.Run("should concatenate string", func(t *testing.T) {
 		source :=
@@ -306,7 +303,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello World\n" })
 	})
 	t.Run("should concatenate multiple types", func(t *testing.T) {
 		source :=
@@ -317,7 +314,7 @@ func TestExpressionNode(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello 1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello 1\n" })
 	})
 }
 
@@ -332,7 +329,7 @@ func TestDeclaration(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 	t.Run("should create local variable", func(t *testing.T) {
 		source :=
@@ -344,7 +341,7 @@ func TestDeclaration(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 	t.Run("should create an empty variable", func(t *testing.T) {
 		source :=
@@ -356,7 +353,7 @@ func TestDeclaration(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "\n" })
 	})
 	t.Run("should create an explicit empty variable", func(t *testing.T) {
 		source :=
@@ -368,7 +365,7 @@ func TestDeclaration(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "\n" })
 	})
 	t.Run("should create variable from another variable", func(t *testing.T) {
 		source :=
@@ -381,7 +378,7 @@ func TestDeclaration(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "2\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "2\n" })
 	})
 	t.Run("should fail on invalid value type", func(t *testing.T) {
 		source :=
@@ -433,7 +430,7 @@ func TestModify(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 	t.Run("should modify global variable", func(t *testing.T) {
 		source :=
@@ -446,7 +443,7 @@ func TestModify(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 	t.Run("should set to default value", func(t *testing.T) {
 		source :=
@@ -459,7 +456,7 @@ func TestModify(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "0\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "0\n" })
 	})
 	t.Run("should convert number to string", func(t *testing.T) {
 		source :=
@@ -472,7 +469,7 @@ func TestModify(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "1\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
 	})
 	t.Run("should convert boolean to string", func(t *testing.T) {
 		source :=
@@ -485,7 +482,7 @@ func TestModify(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "true\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "true\n" })
 	})
 }
 
@@ -500,7 +497,7 @@ func TestArray(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "\n" })
 	})
 	t.Run("should print when out of bounds", func(t *testing.T) {
 		source :=
@@ -512,7 +509,7 @@ func TestArray(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "\n" })
 	})
 	t.Run("should print", func(t *testing.T) {
 		source :=
@@ -527,7 +524,7 @@ func TestArray(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Gala\nRed Delicious\nMcintosh\nHoneycrisp\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Gala\nRed Delicious\nMcintosh\nHoneycrisp\n" })
 	})
 	t.Run("should print nothing on out of range", func(t *testing.T) {
 		source :=
@@ -540,7 +537,7 @@ func TestArray(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Gala\n\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Gala\n\n" })
 	})
 }
 
@@ -557,7 +554,7 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello World\n" })
 	})
 	t.Run("should return a value", func(t *testing.T) {
 		source :=
@@ -571,7 +568,7 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello World\n" })
 	})
 	t.Run("should run even with return", func(t *testing.T) {
 		source :=
@@ -585,7 +582,7 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "")
+		ExecuteBasicReport(t, source, BasicReportOptions{ })
 	})
 	t.Run("should accept a value", func(t *testing.T) {
 		source :=
@@ -599,7 +596,7 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello World\n" })
 	})
 	t.Run("should handle multiple values", func(t *testing.T) {
 		source :=
@@ -613,7 +610,7 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello World\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello World\n" })
 	})
 	t.Run("should handle a default value", func(t *testing.T) {
 		source :=
@@ -628,6 +625,6 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, "Hello\n0\n")
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "Hello\n0\n" })
 	})
 }
