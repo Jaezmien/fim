@@ -9,7 +9,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 
-	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
+	lunaErrors "git.jaezmien.com/Jaezmien/fim/luna/errors"
 )
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*vartype.DynamicVariable, error) {
@@ -214,8 +214,7 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			return value, err
 		}
 
-		pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
-		return nil, errors.New(fmt.Sprintf("Unknown identifier (%s) at line %d:%d", identifierNode.Identifier, pair.Line, pair.Column))
+		return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
 	}
 
 	if n.Type() == node.TYPE_FUNCTION_CALL {
@@ -228,8 +227,7 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			return value, err
 		}
 
-		pair := luna.GetErrorIndexPair(i.source, callNode.Start)
-		return nil, errors.New(fmt.Sprintf("Unknown paragraph at line %d:%d", pair.Line, pair.Column))
+		return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown paragraph (%s)", callNode.Identifier), i.source, callNode.Start)
 	}
 
 	if n.Type() == node.TYPE_IDENTIFIER_DICTIONARY {
@@ -237,18 +235,15 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 
 		variable := i.Variables.Get(identifierNode.Identifier, local)
 		if variable == nil {
-			pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
-			return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
+			return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
 		}
 		if !variable.GetType().IsArray() && variable.GetType() != vartype.STRING {
-			pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
-			return nil, errors.New(fmt.Sprintf("Invalid non-dictionary identifier at line %d:%d", pair.Line, pair.Column))
+			return nil, lunaErrors.NewParseError(fmt.Sprintf("Invalid non-dicionary identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
 		}
 
 		index, _ := i.EvaluateValueNode(identifierNode.Index, local)
 		if index.GetType() != vartype.NUMBER {
-			pair := luna.GetErrorIndexPair(i.source, identifierNode.Index.ToNode().Start)
-			return nil, errors.New(fmt.Sprintf("Expected numeric index at line %d:%d", pair.Line, pair.Column))
+			return nil, lunaErrors.NewParseError(fmt.Sprintf("Expected numeric index, got type %s", index.GetType()), i.source, identifierNode.Index.ToNode().Start)
 		}
 
 		indexAsInteger := int(index.GetValueNumber())
@@ -355,6 +350,5 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 		}
 	}
 
-	pair := luna.GetErrorIndexPair(i.source, n.ToNode().Start)
-	return nil, errors.New(fmt.Sprintf("Unsupported value node at line %d:%d", pair.Line, pair.Column))
+	return nil, lunaErrors.NewParseError(fmt.Sprintf("Unsupported value node"), i.source, n.ToNode().Start)
 }

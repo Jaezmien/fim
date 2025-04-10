@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
+	"git.jaezmien.com/Jaezmien/fim/luna/errors"
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 )
@@ -103,7 +103,7 @@ func (i *Interpreter) ReportAuthor() string {
 }
 
 func (i *Interpreter) CreateErrorFromIndex(index int, errorMessage string) error {
-	return luna.CreateErrorFromIndex(i.source, index, errorMessage)
+	return errors.NewParseError(errorMessage, i.source, index)
 }
 func (i *Interpreter) CreateErrorFromNode(n node.Node, errorMessage string) error {
 	return i.CreateErrorFromIndex(n.Start, errorMessage)

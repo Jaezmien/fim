@@ -3,7 +3,7 @@ package ast
 import (
 	"slices"
 
-	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
+	"git.jaezmien.com/Jaezmien/fim/luna/errors"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -58,7 +58,7 @@ func (a *AST) EndOfFile() bool {
 }
 
 func (a *AST) CreateErrorFromIndex(index int, errorMessage string) error {
-	return luna.CreateErrorFromIndex(a.Source, index, errorMessage)
+	return errors.NewParseError(errorMessage, a.Source, index)
 }
 func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
 	return a.CreateErrorFromIndex(t.Start, errorMessage)
