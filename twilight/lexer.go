@@ -9,6 +9,7 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight/parsers"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 // Assign basic TokenTypes to partial tokens.
@@ -18,7 +19,6 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	tokens := queue.New[*token.Token]()
 
 	punctuations := [...]rune{'.', '!', '?', ':', ','}
-	booleanStrings := [...]string{"yes", "true", "right", "correct", "no", "false", "wrong", "incorrect"}
 
 	tokenTypeProcessors := []struct {
 		condition func(t *token.Token) bool
@@ -42,7 +42,10 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 			_, err := strconv.ParseFloat(t.Value, 64)
 			return t.Length >= 1 && err == nil
 		}, result: token.TokenType_Number},
-		{condition: func(t *token.Token) bool { return t.Length >= 1 && slices.Contains(booleanStrings[:], t.Value) }, result: token.TokenType_Boolean},
+		{condition: func(t *token.Token) bool {
+			_, ok := luna.AsBooleanValue(t.Value)
+			return t.Length >= 1 && ok
+		}, result: token.TokenType_Boolean},
 		{condition: func(t *token.Token) bool { return t.Value == "nothing" }, result: token.TokenType_Null},
 	}
 

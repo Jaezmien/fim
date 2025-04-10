@@ -1,13 +1,11 @@
 package vartype
 
 import (
-	"slices"
 	"strconv"
-	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/utilities"
-
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 type DynamicVariable struct {
@@ -19,7 +17,11 @@ type DynamicVariable struct {
 func FromValueType(value string, t VariableType) *DynamicVariable {
 	switch t {
 	case BOOLEAN:
-		return NewBooleanVariable(slices.Contains([]string{"yes", "true", "right", "correct"}, value))
+		boolValue, ok := luna.AsBooleanValue(value)
+		if !ok {
+			panic("FromValueType got invalid boolean: " + value)
+		}
+		return NewBooleanVariable(boolValue)
 	case CHARACTER:
 		return NewCharacterVariable(value)
 	case NUMBER:
@@ -48,19 +50,9 @@ func NewRawStringVariable(value string) *DynamicVariable {
 func NewCharacterVariable(value string) *DynamicVariable {
 	value = value[1 : len(value)-1]
 
-	if strings.HasPrefix(value, "\\") {
-		switch value[1] {
-		case '0':
-			value = string(byte(0))
-		case 'r':
-			value = "\r"
-		case 'n':
-			value = "\n"
-		case 't':
-			value = "\t"
-		default:
-			value = string(value[1])
-		}
+	value, ok := luna.AsCharacterValue(value)
+	if !ok {
+		panic("NewCharacterVariable got invalid character: " + value)
 	}
 
 	return NewRawCharacterVariable(value)

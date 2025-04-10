@@ -4,12 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strconv"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
 
 	lunaErrors "git.jaezmien.com/Jaezmien/fim/luna/errors"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*vartype.DynamicVariable, error) {
@@ -39,8 +41,9 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if variable.Constant {
 				return nil, promptNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
-			if variable.DynamicVariable.GetType() != vartype.STRING {
-				return nil, promptNode.ToNode().CreateError("Expected variable to be of type STRING", i.source)
+
+			if variable.DynamicVariable.GetType().IsArray() {
+				return nil, promptNode.ToNode().CreateError("Expected variable to be of non-array type", i.source)
 			}
 
 			value, err := i.EvaluateValueNode(promptNode.Prompt, true)
@@ -55,7 +58,33 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if err != nil {
 				return nil, err
 			}
-			variable.DynamicVariable.SetValueString(response)
+
+			switch variable.GetType() {
+			case vartype.STRING:
+				variable.DynamicVariable.SetValueString(response)
+				break
+			case vartype.CHARACTER:
+				value, ok := luna.AsCharacterValue(response)
+				if !ok {
+					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid character value: %s", response), i.source)
+				}
+				variable.DynamicVariable.SetValueCharacter(value)
+				break
+			case vartype.BOOLEAN:
+				value, ok := luna.AsBooleanValue(response)
+				if !ok {
+					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid boolean value: %s", response), i.source)
+				}
+				variable.DynamicVariable.SetValueBoolean(value)
+				break
+			case vartype.NUMBER:
+				value, err := strconv.ParseFloat(response, 64)
+				if err != nil {
+					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid number value: %s", response), i.source)
+				}
+				variable.DynamicVariable.SetValueNumber(value)
+				break
+			}
 
 			continue
 		}
