@@ -157,7 +157,16 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			paragraph := i.Paragraphs[paragraphIndex]
 
-			_, err := paragraph.Execute()
+			parameters := make([]*vartype.DynamicVariable, 0)
+			for _, parameter := range callNode.Parameters {
+				valueNode, err := i.EvaluateValueNode(parameter, true)
+				if err != nil {
+					return nil, err 
+				}
+				parameters = append( parameters, valueNode )
+			}
+
+			_, err := paragraph.Execute(parameters...)
 			if err != nil {
 				return nil, err
 			}
@@ -200,14 +209,27 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 		}
 
 		if paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == identifierNode.Identifier }); paragraphIndex != -1 {
-			// TODO: Check for parameters
 			paragraph := i.Paragraphs[paragraphIndex]
 			value, err := paragraph.Execute()
 			return value, err
 		}
 
 		pair := luna.GetErrorIndexPair(i.source, identifierNode.Start)
-		return nil, errors.New(fmt.Sprintf("Unknown identifier at line %d:%d", pair.Line, pair.Column))
+		return nil, errors.New(fmt.Sprintf("Unknown identifier (%s) at line %d:%d", identifierNode.Identifier, pair.Line, pair.Column))
+	}
+
+	if n.Type() == node.TYPE_FUNCTION_CALL {
+		callNode := n.(*nodes.FunctionCallNode)
+
+		paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
+		if paragraphIndex != -1 {
+			paragraph := i.Paragraphs[paragraphIndex]
+			value, err := paragraph.Execute()
+			return value, err
+		}
+
+		pair := luna.GetErrorIndexPair(i.source, callNode.Start)
+		return nil, errors.New(fmt.Sprintf("Unknown paragraph at line %d:%d", pair.Line, pair.Column))
 	}
 
 	if n.Type() == node.TYPE_IDENTIFIER_DICTIONARY {

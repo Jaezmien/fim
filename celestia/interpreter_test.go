@@ -13,11 +13,11 @@ import (
 func CreateReport(t *testing.T, source string) (*Interpreter, bool) {
 	tokens := twilight.Parse(source)
 	report, err := spike.CreateReport(tokens, source)
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err, "handled spike") {
 		return nil, false
 	}
 	interpreter, err := NewInterpreter(report, source)
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err, "handled pre-celestia") {
 		return nil, false
 	}
 
@@ -53,7 +53,7 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	}
 
 	_, err := mainParagraph.Execute()
-	if !assert.NoError(t, err) {
+	if !assert.NoError(t, err, "handled celestia") {
 		return
 	}
 
@@ -562,5 +562,19 @@ func TestFunctions(t *testing.T) {
 			`
 
 		ExecuteBasicReport(t, source, "")
+	})
+	t.Run("should accept a value", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to give a text using the word text!
+			I said "Hello " plus text.
+			That's all about how to give a text.
+			Today I learned how to run a function!
+			I remembered how to give a text using the word "World".
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "Hello World\n")
 	})
 }

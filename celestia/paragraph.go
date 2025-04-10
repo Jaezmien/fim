@@ -26,8 +26,25 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 	return p
 }
 
-func (p *Paragraph) Execute() (*vartype.DynamicVariable, error) {
+func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.DynamicVariable, error) {
 	p.Interpreter.Variables.PushScope()
+
+	if len(parameters) > 0 {
+		for i := range min(len(p.FunctionNode.Parameters), len(parameters)) {
+			expecting := p.FunctionNode.Parameters[i]	
+			received := parameters[i]
+
+			if received.GetType() != expecting.VariableType {
+				return nil, p.Interpreter.CreateErrorFromNode(p.FunctionNode.ToNode(), fmt.Sprintf("Expecting parameter type %s, got %s", expecting.VariableType, received.GetType()))
+			}
+
+			p.Interpreter.Variables.PushVariable(&Variable{
+				Name: expecting.Name,
+				DynamicVariable: received,
+			}, false)
+		}
+	}
+
 	value, err := p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
 	p.Interpreter.Variables.PopScope()
 

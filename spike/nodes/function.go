@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"fmt"
+	"slices"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
@@ -70,7 +71,50 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 			parameterToken, _ := ast.ConsumeToken(token.TokenType_FunctionParameter, token.TokenType_FunctionParameter.Message("Expected %s"))
 
 			if len(function.Parameters) > 0 {
-				return nil, ast.CreateErrorFromToken(parameterToken, "Return type already exists")
+				return nil, ast.CreateErrorFromToken(parameterToken, "Parameter already exists")
+			}
+
+			isExpectingComma := false
+			for {
+				if ast.Peek().Type == token.TokenType_FunctionReturn {
+					break
+				}
+
+				if ast.Peek().Type == token.TokenType_Punctuation {
+					if ast.Peek().Value == "," {
+						ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected '%s'"))		
+						isExpectingComma = false
+						continue
+					}
+					break
+				}
+
+				if isExpectingComma {
+					return nil, ast.CreateErrorFromToken(parameterToken, "Expecting parameters separated by comma")
+				}
+
+				paramTypeToken := ast.Peek()
+				paramType := vartype.FromTokenTypeHint(paramTypeToken.Type)
+				if paramType == vartype.UNKNOWN {
+					return nil, ast.CreateErrorFromToken(paramTypeToken, "Expected variable type")
+				}
+				ast.Next()
+
+				literalIdentifier, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
+				if err != nil {
+					return nil, err
+				}
+
+				if idx := slices.IndexFunc(function.Parameters, func(p FunctionNodeParameter) bool { return p.Name == literalIdentifier.Value} ); idx != -1 {
+					return nil, ast.CreateErrorFromToken(literalIdentifier, "Parameter already exists")
+				}
+
+				function.Parameters = append(function.Parameters, FunctionNodeParameter{
+					Name:  literalIdentifier.Value,
+					VariableType: paramType,
+				})
+
+				isExpectingComma = true
 			}
 
 			continue
@@ -140,6 +184,7 @@ type FunctionCallNode struct {
 	Node
 
 	Identifier string
+	Parameters []INode
 }
 
 func (f *FunctionCallNode) Type() NodeType {
@@ -164,8 +209,48 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 	}
 	call.Identifier = nameToken.Value
 
-	// TODO: Parameter check
-	// TODO: Return check
+	if ast.CheckType(token.TokenType_FunctionParameter) {
+		parameterToken, _ := ast.ConsumeToken(token.TokenType_FunctionParameter, token.TokenType_FunctionParameter.Message("Expected %s"))
+
+		isExpectingComma := false
+		for {
+			if ast.Peek().Type == token.TokenType_Punctuation {
+				if ast.Peek().Value == "," {
+					ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected '%s'"))		
+					isExpectingComma = false
+					continue
+				}
+				break
+			}
+
+			if isExpectingComma {
+				return nil, ast.CreateErrorFromToken(parameterToken, "Expecting parameters separated by comma")
+			}
+
+			paramTypeToken := ast.Peek()
+			paramType := vartype.FromTokenTypeHint(paramTypeToken.Type)
+			if paramType == vartype.UNKNOWN {
+				// TODO: Add type safety?
+			}
+			ast.Next()
+
+			valueTokens, err := ast.ConsumeUntilFuncMatch(func(t *token.Token) bool {
+				return t.Type == token.TokenType_Punctuation && t.Value != ","
+			}, token.TokenType_Punctuation.Message("Could not find %s"))
+			if err != nil {
+				return nil, err
+			}
+
+			valueNode, err := CreateValueNode(valueTokens, CreateValueNodeOptions{})
+			if err != nil {
+				return nil, err
+			}
+
+			call.Parameters = append(call.Parameters, valueNode)
+
+			isExpectingComma = true
+		}
+	}
 
 	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
 	if err != nil {
