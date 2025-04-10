@@ -13,7 +13,7 @@ import (
 func CreateReport(t *testing.T, source string) (*Interpreter, bool) {
 	tokens := twilight.Parse(source)
 	report, err := spike.CreateReport(tokens, source)
-	if !assert.NoError(t, err, "handled spike") {
+	if !assert.NoError(t, err, "handled by spike") {
 		return nil, false
 	}
 	interpreter, err := NewInterpreter(report, source)
@@ -53,7 +53,7 @@ func ExecuteBasicReport(t *testing.T, source string, expected string) {
 	}
 
 	_, err := mainParagraph.Execute()
-	if !assert.NoError(t, err, "handled celestia") {
+	if !assert.NoError(t, err, "handled by celestia") {
 		return
 	}
 

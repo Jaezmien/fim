@@ -53,12 +53,14 @@ func main() {
 
 	report, err := spike.CreateReport(tokens, source)
 	if err != nil {
+		fmt.Println("Spike noticed something unusual in your report...")
 		fmt.Println(err)
 		return
 	}
 
 	interpreter, err := celestia.NewInterpreter(report, source)
 	if err != nil {
+		fmt.Println("Princess Celestia noticed something unusual in your report...")
 		fmt.Println(err)
 		return
 	}
@@ -72,6 +74,7 @@ func main() {
 	for _, paragraph := range interpreter.Paragraphs {
 		if paragraph.Main {
 			if _, err := paragraph.Execute(); err != nil {
+				fmt.Println("Princess Celestia caught something unusual in your report!")
 				fmt.Println(err)
 				return
 			}
