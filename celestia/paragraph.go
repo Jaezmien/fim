@@ -29,7 +29,32 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.DynamicVariable, error) {
 	p.Interpreter.Variables.PushScope()
 
-	if len(parameters) > 0 {
+	for idx, expecting := range p.FunctionNode.Parameters {
+		if idx < len(parameters) {
+			received := parameters[idx]
+
+			if received.GetType() != expecting.VariableType {
+				return nil, p.Interpreter.CreateErrorFromNode(p.FunctionNode.ToNode(), fmt.Sprintf("Expecting parameter type %s, got %s", expecting.VariableType, received.GetType()))
+			}
+
+			p.Interpreter.Variables.PushVariable(&Variable{
+				Name: expecting.Name,
+				DynamicVariable: received,
+			}, false)
+		} else {
+			value, ok := expecting.VariableType.GetDefaultValue()
+			if !ok {
+				return nil, p.Interpreter.CreateErrorFromNode(p.FunctionNode.ToNode(), fmt.Sprintf("Could not get default value of %s (type %s)", expecting.Name, expecting.VariableType))
+			}
+
+			defaultVariable := vartype.FromValueType(value, expecting.VariableType)
+			p.Interpreter.Variables.PushVariable(&Variable{
+				Name: expecting.Name,
+				DynamicVariable: defaultVariable,
+			}, false)
+		}
+	}
+	if len(p.FunctionNode.Parameters) > 0 {
 		for i := range min(len(p.FunctionNode.Parameters), len(parameters)) {
 			expecting := p.FunctionNode.Parameters[i]	
 			received := parameters[i]
