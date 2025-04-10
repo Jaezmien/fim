@@ -1,5 +1,12 @@
 package errors
 
+// NOTE: "When should I be using an error, and when should I be using panic()?"
+// a. If the issue is caused by the reportee, then it should be an error.
+// b. If the issue is caused by a fault in the interpreter itself, then it should be a panic.
+// For example:
+//		A user mistyped an identifier => Throw an error
+//		The interpreter somehow popped a variable stack when it's already empty => Panic
+
 import (
 	"fmt"
 	"strings"
