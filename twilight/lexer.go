@@ -30,7 +30,7 @@ func createTokens(partialTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		{condition: func(t *token.Token) bool { return t.Length == 1 && t.Value == "\n" }, result: token.TokenType_NewLine},
 		{condition: func(t *token.Token) bool { return t.Length == 1 && t.Value == " " }, result: token.TokenType_Whitespace},
 		{condition: func(t *token.Token) bool {
-			return t.Length == 1 && strings.HasPrefix(t.Value, "(") && strings.HasSuffix(t.Value, ")")
+			return t.Length >= 1 && strings.HasPrefix(t.Value, "(") && strings.HasSuffix(t.Value, ")")
 		}, result: token.TokenType_CommentParen},
 		{condition: func(t *token.Token) bool {
 			return t.Length >= 1 && strings.HasPrefix(t.Value, "\"") && strings.HasSuffix(t.Value, "\"")
