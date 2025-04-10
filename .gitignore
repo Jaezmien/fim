@@ -26,3 +26,4 @@ go.work.sum
 
 *.fim
 dist/
+!samples/*.fim
