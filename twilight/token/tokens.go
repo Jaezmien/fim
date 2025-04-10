@@ -1,6 +1,10 @@
 package token
 
-import "fmt"
+import (
+	"fmt"
+
+	"git.jaezmien.com/Jaezmien/fim/luna/errors"
+)
 
 type TokenType uint
 
@@ -230,4 +234,8 @@ type Token struct {
 func (t *Token) Append(token *Token) {
 	t.Value += token.Value
 	t.Length += token.Length
+}
+
+func (t *Token) CreateError(msg string, source string) error {
+	return errors.NewParseError(msg, source, t.Start)
 }

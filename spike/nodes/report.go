@@ -52,7 +52,7 @@ func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 			break
 		}
 		if ast.CheckType(token.TokenType_EndOfFile) {
-			return nil, ast.CreateErrorFromToken(ast.Peek(), token.TokenType_FunctionFooter.Message("Could not find %s"))
+			return nil, ast.Peek().CreateError(token.TokenType_FunctionFooter.Message("Could not find %s"), ast.Source)
 		}
 
 		if ast.CheckType(token.TokenType_NewLine) {
@@ -83,7 +83,7 @@ func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 			continue
 		}
 
-		return nil, ast.CreateErrorFromToken(ast.Peek(), ast.Peek().Type.Message("Unxpected token: %s"))
+		return nil, ast.Peek().CreateError(ast.Peek().Type.Message("Unxpected token: %s"), ast.Source)
 	}
 
 	_, err = ast.ConsumeToken(token.TokenType_ReportFooter, token.TokenType_ReportFooter.Message("Expected %s"))
@@ -103,7 +103,7 @@ func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 	}
 
 	if !ast.EndOfFile() {
-		return nil, ast.CreateErrorFromToken(ast.Peek(), token.TokenType_EndOfFile.Message("Expected %s"))
+		return nil, ast.Peek().CreateError(token.TokenType_EndOfFile.Message("Expected %s"), ast.Source)
 	}
 
 	report.Start = startToken.Start

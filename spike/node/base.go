@@ -1,8 +1,14 @@
 package node
 
+import "git.jaezmien.com/Jaezmien/fim/luna/errors"
+
 type Node struct {
 	Start  int
 	Length int
+}
+
+func (n Node) CreateError(msg string, source string) error {
+	return errors.NewParseError(msg, source, n.Start)
 }
 
 type NodeType uint
@@ -56,3 +62,4 @@ func NewNode(start int, length int) *Node {
 		Length: length,
 	}
 }
+

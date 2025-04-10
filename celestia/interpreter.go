@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 
-	"git.jaezmien.com/Jaezmien/fim/luna/errors"
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 )
@@ -59,7 +58,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 
 			for _, p := range interpreter.Paragraphs {
 				if p.Name == paragraph.Name {
-					return nil, interpreter.CreateErrorFromNode(funcNode.ToNode(), fmt.Sprintf("Paragraph '%s' already exists", p.Name))
+					return nil, funcNode.ToNode().CreateError(fmt.Sprintf("Paragraph '%s' already exists", p.Name), interpreter.source)
 				}
 			}
 
@@ -86,7 +85,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 			continue
 		}
 
-		return nil, interpreter.CreateErrorFromNode(n.ToNode(), fmt.Sprintf("Unsupported node type: %s", n.Type()))
+		return nil, n.ToNode().CreateError(fmt.Sprintf("Unsupported node type: %s", n.Type()), interpreter.source)
 	}
 
 	return interpreter, nil
@@ -100,11 +99,4 @@ func (i *Interpreter) ReportTitle() string {
 // Return the report's author
 func (i *Interpreter) ReportAuthor() string {
 	return i.reportNode.Author
-}
-
-func (i *Interpreter) CreateErrorFromIndex(index int, errorMessage string) error {
-	return errors.NewParseError(errorMessage, i.source, index)
-}
-func (i *Interpreter) CreateErrorFromNode(n node.Node, errorMessage string) error {
-	return i.CreateErrorFromIndex(n.Start, errorMessage)
 }

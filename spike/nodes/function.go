@@ -71,7 +71,7 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 			parameterToken, _ := ast.ConsumeToken(token.TokenType_FunctionParameter, token.TokenType_FunctionParameter.Message("Expected %s"))
 
 			if len(function.Parameters) > 0 {
-				return nil, ast.CreateErrorFromToken(parameterToken, "Parameter already exists")
+				return nil, parameterToken.CreateError("Parameter already exists", ast.Source)
 			}
 
 			isExpectingComma := false
@@ -90,13 +90,13 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 				}
 
 				if isExpectingComma {
-					return nil, ast.CreateErrorFromToken(parameterToken, "Expecting parameters separated by comma")
+					return nil, parameterToken.CreateError("Expecting parameters separated by comma", ast.Source)
 				}
 
 				paramTypeToken := ast.Peek()
 				paramType := vartype.FromTokenTypeHint(paramTypeToken.Type)
 				if paramType == vartype.UNKNOWN {
-					return nil, ast.CreateErrorFromToken(paramTypeToken, "Expected variable type")
+					return nil, paramTypeToken.CreateError("Expected variable type", ast.Source)
 				}
 				ast.Next()
 
@@ -106,7 +106,7 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 				}
 
 				if idx := slices.IndexFunc(function.Parameters, func(p FunctionNodeParameter) bool { return p.Name == literalIdentifier.Value} ); idx != -1 {
-					return nil, ast.CreateErrorFromToken(literalIdentifier, "Parameter already exists")
+					return nil, literalIdentifier.CreateError("Parameter already exists", ast.Source)
 				}
 
 				function.Parameters = append(function.Parameters, FunctionNodeParameter{
@@ -123,13 +123,13 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 			returnToken, _ := ast.ConsumeToken(token.TokenType_FunctionReturn, token.TokenType_FunctionReturn.Message("Expected %s"))
 
 			if function.ReturnType != vartype.UNKNOWN {
-				return nil, ast.CreateErrorFromToken(returnToken, "Return type already exists")
+				return nil, returnToken.CreateError("Return type already exists", ast.Source)
 			}
 
 			returnTypeHintToken := ast.Peek()
 			possibleTypeHint := vartype.FromTokenTypeHint(returnTypeHintToken.Type)
 			if possibleTypeHint == vartype.UNKNOWN {
-				return nil, ast.CreateErrorFromToken(returnTypeHintToken, "Expected variable type hint")
+				return nil, returnTypeHintToken.CreateError("Expected variable type hint", ast.Source)
 			}
 			function.ReturnType = possibleTypeHint
 
@@ -164,7 +164,7 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 	}
 
 	if startNameToken.Value != endNameToken.Value {
-		return nil, ast.CreateErrorFromToken(endNameToken, fmt.Sprintf("Mismatch method name. Expected '%s', got '%s'", startNameToken.Value, endNameToken.Value))
+		return nil, endNameToken.CreateError(fmt.Sprintf("Mismatch method name. Expected '%s', got '%s'", startNameToken.Value, endNameToken.Value), ast.Source)
 	}
 
 	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
@@ -224,7 +224,7 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 			}
 
 			if isExpectingComma {
-				return nil, ast.CreateErrorFromToken(parameterToken, "Expecting parameters separated by comma")
+				return nil, parameterToken.CreateError("Expecting parameters separated by comma", ast.Source)
 			}
 
 			paramTypeToken := ast.Peek()

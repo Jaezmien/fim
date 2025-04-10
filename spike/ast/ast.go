@@ -3,7 +3,6 @@ package ast
 import (
 	"slices"
 
-	"git.jaezmien.com/Jaezmien/fim/luna/errors"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 )
 
@@ -57,13 +56,6 @@ func (a *AST) EndOfFile() bool {
 	return current.Type == token.TokenType_EndOfFile
 }
 
-func (a *AST) CreateErrorFromIndex(index int, errorMessage string) error {
-	return errors.NewParseError(errorMessage, a.Source, index)
-}
-func (a *AST) CreateErrorFromToken(t *token.Token, errorMessage string) error {
-	return a.CreateErrorFromIndex(t.Start, errorMessage)
-}
-
 func (a *AST) GetSourceText(start int, length int) string {
 	return a.Source[start : start+length]
 }
@@ -99,7 +91,7 @@ func (a *AST) ConsumeFunc(predicate func(*token.Token) bool, errorMessage string
 	current := a.Peek()
 
 	if !predicate(current) {
-		return nil, a.CreateErrorFromToken(current, errorMessage)
+		return nil, current.CreateError(errorMessage, a.Source)
 	}
 
 	a.Next()
@@ -119,7 +111,7 @@ func (a *AST) ConsumeUntilFuncMatch(predicate func(*token.Token) bool, errorMess
 		current := a.Peek()
 
 		if a.EndOfFile() {
-			return nil, a.CreateErrorFromToken(current, errorMessage)
+			return nil, current.CreateError(errorMessage, a.Source)
 		}
 
 		if predicate(current) {

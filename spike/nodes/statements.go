@@ -33,7 +33,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			break
 		}
 		if ast.CheckType(token.TokenType_EndOfFile) {
-			return nil, ast.CreateErrorFromToken(ast.Peek(), token.TokenType_FunctionFooter.Message("Could not find %s"))
+			return nil, ast.Peek().CreateError(token.TokenType_FunctionFooter.Message("Could not find %s"), ast.Source)
 		}
 
 		if ast.CheckType(token.TokenType_NewLine) {
@@ -99,7 +99,7 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		return nil, ast.CreateErrorFromToken(ast.Peek(), fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type))
+		return nil, ast.Peek().CreateError(fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type), ast.Source)
 	}
 
 	return statements, nil

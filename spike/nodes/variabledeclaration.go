@@ -55,7 +55,7 @@ func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error
 	typeToken := ast.Peek()
 	node.ValueType = vartype.FromTokenTypeHint(typeToken.Type)
 	if node.ValueType == vartype.UNKNOWN {
-		return nil, ast.CreateErrorFromToken(typeToken, "Expected variable type hint")
+		return nil, typeToken.CreateError("Expected variable type hint", ast.Source)
 	}
 	ast.Next()
 
