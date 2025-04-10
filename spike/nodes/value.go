@@ -34,7 +34,15 @@ func wrapAsDictionaryNode(n INode, arrayType *vartype.VariableType, start int, l
 func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INode, error) {
 	if len(tokens) == 0 && options.possibleNullType != nil {
 		if options.possibleNullType != nil && options.possibleNullType.IsArray() {
-			panic("AST@CreateValueNode (Not implemented yet)")
+			literalNode := &LiteralNode{
+				Node: Node{
+					Start:  0,
+					Length: 0,
+				},
+				DynamicVariable: vartype.NewDictionaryVariable(*options.possibleNullType),
+			}
+
+			return literalNode, nil
 		}
 
 		defaultValue, ok := options.possibleNullType.GetDefaultValue()

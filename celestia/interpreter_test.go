@@ -490,6 +490,30 @@ func TestModify(t *testing.T) {
 }
 
 func TestArray(t *testing.T) {
+	t.Run("should create an empty array", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arrays!
+			Today I learned how to print arrays!
+			Did you know that Apples has many words?
+			I said 1 of Apples!
+			That's all about how to print arrays.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "\n")
+	})
+	t.Run("should print when out of bounds", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arrays!
+			Today I learned how to print arrays!
+			Did you know that Apples has many words?
+			I said 100 of Apples!
+			That's all about how to print arrays.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, "\n")
+	})
 	t.Run("should print", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Arrays!
