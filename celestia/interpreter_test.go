@@ -61,10 +61,10 @@ func ExecuteBasicReport(t *testing.T, source string, options BasicReportOptions)
 	}
 
 	_, err := mainParagraph.Execute()
-	if options.Error && assert.Error(t, err, "handled by celestia") {
+	if options.Error && !assert.Error(t, err, "handled by celestia") {
 		return
 	}
-	if !options.Error && assert.NoError(t, err, "handled by celestia") {
+	if !options.Error && !assert.NoError(t, err, "handled by celestia") {
 		return
 	}
 
