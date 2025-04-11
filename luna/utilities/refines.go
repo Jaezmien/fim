@@ -1,8 +1,6 @@
 package utilities
 
-import (
-	"strings"
-)
+import "strings"
 
 func UnsanitizeString(value string, trim bool) string {
 	sb := strings.Builder{}

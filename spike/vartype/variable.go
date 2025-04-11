@@ -3,7 +3,6 @@ package vartype
 import (
 	"strconv"
 
-	"git.jaezmien.com/Jaezmien/fim/spike/utilities"
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
@@ -39,7 +38,7 @@ func FromValueType(value string, t VariableType) *DynamicVariable {
 }
 
 func NewStringVariable(value string) *DynamicVariable {
-	return NewRawStringVariable(utilities.UnsanitizeString(value, true))
+	return NewRawStringVariable(luna.UnsanitizeString(value, true))
 }
 func NewRawStringVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
