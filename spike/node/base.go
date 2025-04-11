@@ -32,6 +32,8 @@ const (
 
 	TYPE_VARIABLE_DECLARATION
 	TYPE_VARIABLE_MODIFY
+
+	TYPE_UNARYEXPRESSION
 )
 
 var nodeTypeFriendlyName = map[NodeType]string{
@@ -45,6 +47,7 @@ var nodeTypeFriendlyName = map[NodeType]string{
 	TYPE_BINARYEXPRESSION:     "BINARYEXPRESSION",
 	TYPE_VARIABLE_DECLARATION: "VARIABLE_DECLARATION",
 	TYPE_VARIABLE_MODIFY:      "VARIABLE_MODIFY",
+	TYPE_UNARYEXPRESSION:      "UNARYEXPRESSION",
 }
 
 func (t NodeType) String() string {
@@ -62,4 +65,3 @@ func NewNode(start int, length int) *Node {
 		Length: length,
 	}
 }
-

@@ -9,64 +9,51 @@ import (
 type TokenType uint
 
 const (
-	// 0
 	TokenType_Unknown TokenType = iota
 
-	// 1
 	TokenType_Identifier
 	TokenType_Punctuation
 	TokenType_NewLine
 	TokenType_Whitespace
 	TokenType_EndOfFile
 
-	// 6
 	TokenType_CommentParen
 	TokenType_CommentPostScript
 
-	// 8 (Literals)
 	TokenType_String
 	TokenType_Character
 	TokenType_Number
 	TokenType_Boolean
 
-	// 12
 	TokenType_Null
 
-	// 13
 	TokenType_ReportHeader
 	TokenType_ReportFooter
 
-	// 15
 	TokenType_FunctionHeader
 	TokenType_FunctionMain
 	TokenType_FunctionFooter
 
-	// 18
 	TokenType_FunctionReturn
 	TokenType_FunctionParameter
 
-	// 20
 	TokenType_Print
 	TokenType_PrintNewline
 	TokenType_Prompt
 	TokenType_FunctionCall
 
-	// 24
 	TokenType_Declaration
 	TokenType_Modify
 
-	// 26
 	TokenType_TypeString
 	TokenType_TypeChar
 	TokenType_TypeNumber
 	TokenType_TypeBoolean
 
-	// 30
 	TokenType_TypeStringArray
 	TokenType_TypeNumberArray
 	TokenType_TypeBooleanArray
 
-	// 33
 	TokenType_OperatorEq
 	TokenType_OperatorNeq
 	TokenType_OperatorGt
@@ -74,28 +61,24 @@ const (
 	TokenType_OperatorLt
 	TokenType_OperatorLte
 
-	// 39
 	TokenType_UnaryNot
 
-	// 40
 	TokenType_OperatorAddInfix
 	TokenType_OperatorAddPrefix
-	TokenType_UnaryIncrement
+	TokenType_UnaryIncrementPrefix
+	TokenType_UnaryIncrementPostfix
 
-	// 43
 	TokenType_OperatorSubInfix
 	TokenType_OperatorSubPrefix
-	TokenType_UnaryDecrement
+	TokenType_UnaryDecrementPrefix
+	TokenType_UnaryDecrementPostfix
 
-	// 46
 	TokenType_OperatorMulInfix
 	TokenType_OperatorMulPrefix
 
-	// 48
 	TokenType_OperatorDivInfix
 	TokenType_OperatorDivPrefix
 
-	// 50
 	TokenType_KeywordOr
 	TokenType_KeywordAnd
 	TokenType_KeywordConst
@@ -104,12 +87,10 @@ const (
 	TokenType_KeywordStatementEnd
 	TokenType_KeywordReturn
 
-	// 57
 	TokenType_IfClause
 	TokenType_ElseClause
 	TokenType_IfEndClause
 
-	// 60
 	TokenType_WhileClause
 )
 
@@ -184,12 +165,14 @@ var tokenTypeFriendlyName = map[TokenType]string{
 	// 40
 	TokenType_OperatorAddInfix:  "OPERATOR(ADD_INFIX)",
 	TokenType_OperatorAddPrefix: "OPERATOR(ADD_PREFIX)",
-	TokenType_UnaryIncrement:    "UNARY(INCREMENT)",
+	TokenType_UnaryIncrementPrefix:    "UNARY(INCREMENT(PREFIX))",
+	TokenType_UnaryIncrementPostfix:    "UNARY(INCREMENT(POSTFIX))",
 
 	// 43
 	TokenType_OperatorSubInfix:  "OPERATOR(SUB_INFIX)",
 	TokenType_OperatorSubPrefix: "OPERATOR(SUB_PREFIX)",
-	TokenType_UnaryDecrement:    "UNARY(DECREMENT)",
+	TokenType_UnaryDecrementPrefix:    "UNARY(DECREMENT(PREFIX))",
+	TokenType_UnaryDecrementPostfix:    "UNARY(DECREMENT(POSTFIX))",
 
 	// 46
 	TokenType_OperatorMulInfix:  "OPERATOR(MUL_INFIX)",

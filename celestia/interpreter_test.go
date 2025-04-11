@@ -486,6 +486,50 @@ func TestModify(t *testing.T) {
 	})
 }
 
+func TestUnary(t *testing.T) {
+	t.Run("should increment number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Unaries!
+			Today I learned how to increment a value!
+			Did you know that Spike is the number 1?
+			Spike got one more.
+			There was one more Spike.
+			I said Spike!
+			That's all about how to increment a value.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "3\n" })
+	})
+	t.Run("should decrement number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Unaries!
+			Today I learned how to decrement a value!
+			Did you know that Spike is the number 3?
+			Spike got one less.
+			There was one less Spike.
+			I said Spike!
+			That's all about how to decrement a value.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{ Expects: "1\n" })
+	})
+	t.Run("should only work for a value", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Unaries!
+			Today I learned how to decrement a value!
+			Did you know that Spike is the word "Apples"?
+			Spike got one more.
+			I said Spike!
+			That's all about how to decrement a value.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{ Error: true })
+	})
+}
+
 func TestArray(t *testing.T) {
 	t.Run("should create an empty array", func(t *testing.T) {
 		source :=

@@ -173,6 +173,30 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
+
+		if statement.Type() == node.TYPE_UNARYEXPRESSION {
+			unaryNode := statement.(*nodes.UnaryExpressionNode)
+
+			if !i.Variables.Has(unaryNode.Identifier, true) {
+				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", unaryNode.Identifier), i.source)
+			}
+			variable := i.Variables.Get(unaryNode.Identifier, true)
+
+			if variable.GetType() != vartype.NUMBER {
+				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", variable.GetType()), i.source)
+			}
+			if variable.Constant {
+				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
+			}
+
+			if unaryNode.Increment {
+				variable.SetValueNumber( variable.GetValueNumber() + 1 )
+			} else {
+				variable.SetValueNumber( variable.GetValueNumber() - 1 )
+			}
+			continue
+		}
+
 		if statement.Type() == node.TYPE_FUNCTION_CALL {
 			callNode := statement.(*nodes.FunctionCallNode)
 

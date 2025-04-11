@@ -25,23 +25,23 @@ func (s *StatementsNode) ToNode() Node {
 	}
 }
 
-func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
+func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
 	statements := &StatementsNode{}
 
 	for {
-		if ast.CheckType(expectedEndType...) {
+		if curAST.CheckType(expectedEndType...) {
 			break
 		}
-		if ast.CheckType(token.TokenType_EndOfFile) {
-			return nil, ast.Peek().CreateError(token.TokenType_FunctionFooter.Message("Could not find %s"), ast.Source)
+		if curAST.CheckType(token.TokenType_EndOfFile) {
+			return nil, curAST.Peek().CreateError(token.TokenType_FunctionFooter.Message("Could not find %s"), curAST.Source)
 		}
 
-		if ast.CheckType(token.TokenType_NewLine) {
+		if curAST.CheckType(token.TokenType_NewLine) {
 			continue
 		}
 
-		if ast.CheckType(token.TokenType_Print) || ast.CheckType(token.TokenType_PrintNewline) {
-			node, err := ParsePrintNode(ast)
+		if curAST.CheckType(token.TokenType_Print) || curAST.CheckType(token.TokenType_PrintNewline) {
+			node, err := ParsePrintNode(curAST)
 			if err != nil {
 				return nil, err
 			}
@@ -49,18 +49,8 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			statements.Statements = append(statements.Statements, node)
 			continue
 		}
-		if ast.CheckType(token.TokenType_Prompt) {
-			node, err := ParsePromptNode(ast)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if ast.CheckType(token.TokenType_Declaration) {
-			node, err := ParseVariableDeclarationNode(ast)
+		if curAST.CheckType(token.TokenType_Prompt) {
+			node, err := ParsePromptNode(curAST)
 			if err != nil {
 				return nil, err
 			}
@@ -69,8 +59,8 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		if ast.Peek().Type == token.TokenType_Identifier && ast.PeekNext().Type == token.TokenType_Modify {
-			node, err := ParseVariableModifyNode(ast)
+		if curAST.CheckType(token.TokenType_Declaration) {
+			node, err := ParseVariableDeclarationNode(curAST)
 			if err != nil {
 				return nil, err
 			}
@@ -79,8 +69,8 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		if ast.Peek().Type == token.TokenType_FunctionCall {
-			node, err := ParseFunctionCallNode(ast)
+		if curAST.Peek().Type == token.TokenType_Identifier && curAST.PeekNext().Type == token.TokenType_Modify {
+			node, err := ParseVariableModifyNode(curAST)
 			if err != nil {
 				return nil, err
 			}
@@ -89,8 +79,8 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		if ast.Peek().Type == token.TokenType_KeywordReturn {
-			node, err := ParseFunctionReturnNode(ast)
+		if curAST.Peek().Type == token.TokenType_FunctionCall {
+			node, err := ParseFunctionCallNode(curAST)
 			if err != nil {
 				return nil, err
 			}
@@ -99,7 +89,42 @@ func ParseStatementsNode(ast *ast.AST, expectedEndType ...token.TokenType) (*Sta
 			continue
 		}
 
-		return nil, ast.Peek().CreateError(fmt.Sprintf("Unsupported statement token: %s", ast.Peek().Type), ast.Source)
+		if curAST.CheckType(token.TokenType_UnaryIncrementPrefix, token.TokenType_UnaryDecrementPrefix) {
+			if curAST.PeekNext().Type == token.TokenType_Identifier {
+				node, err := ParsePrefixUnary(curAST)
+				if err != nil {
+					return nil, err
+				}
+
+				statements.Statements = append(statements.Statements, node)
+				continue
+			}
+		}
+
+		if curAST.Peek().Type == token.TokenType_Identifier {
+			if ( curAST.PeekNext().Type == token.TokenType_UnaryIncrementPostfix ||
+			curAST.PeekNext().Type == token.TokenType_UnaryDecrementPostfix ) {
+				node, err := ParsePostfixUnary(curAST)
+				if err != nil {
+					return nil, err
+				}
+
+				statements.Statements = append(statements.Statements, node)
+				continue
+			}
+		}
+
+		if curAST.Peek().Type == token.TokenType_KeywordReturn {
+			node, err := ParseFunctionReturnNode(curAST)
+			if err != nil {
+				return nil, err
+			}
+
+			statements.Statements = append(statements.Statements, node)
+			continue
+		}
+
+		return nil, curAST.Peek().CreateError(fmt.Sprintf("Unsupported statement token: %s", curAST.Peek().Type), curAST.Source)
 	}
 
 	return statements, nil
