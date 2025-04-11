@@ -64,6 +64,10 @@ func (a *AST) CheckType(tokenTypes ...token.TokenType) bool {
 	current := a.Peek()
 	return slices.Contains(tokenTypes, current.Type)
 }
+func (a *AST) CheckNextType(tokenTypes ...token.TokenType) bool {
+	current := a.PeekNext()
+	return slices.Contains(tokenTypes, current.Type)
+}
 
 func (a *AST) Contains(tokenType token.TokenType) bool {
 	for idx := a.PeekIndex(); idx < len(a.Tokens); idx++ {

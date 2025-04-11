@@ -102,8 +102,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 		}
 
 		if curAST.Peek().Type == token.TokenType_Identifier {
-			if ( curAST.PeekNext().Type == token.TokenType_UnaryIncrementPostfix ||
-			curAST.PeekNext().Type == token.TokenType_UnaryDecrementPostfix ) {
+			if curAST.CheckNextType(token.TokenType_UnaryIncrementPostfix, token.TokenType_UnaryDecrementPostfix) {
 				node, err := ParsePostfixUnary(curAST)
 				if err != nil {
 					return nil, err
