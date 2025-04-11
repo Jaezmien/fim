@@ -44,7 +44,7 @@ func GetErrorOrigin(source string, index int) ErrorOrigin {
 		Line:   len(lines),
 		Column: len(lines[len(lines)-1]),
 
-		lineContent: strings.ReplaceAll(strings.Split(source, "\n")[len(lines) - 1], "\t", " "),
+		lineContent: strings.ReplaceAll(strings.Split(source, "\n")[len(lines)-1], "\t", " "),
 	}
 }
 
@@ -66,7 +66,7 @@ func (e ParseError) GetErrorLine() string {
 
 	trimmedContent := strings.TrimLeft(e.lineContent, "\t ")
 	sb.WriteString(fmt.Sprintf("%s\n", trimmedContent))
-	sb.WriteString(fmt.Sprintf("%s^", strings.Repeat(" ", e.Column - 1 - (len(e.lineContent) - len(trimmedContent)))))
+	sb.WriteString(fmt.Sprintf("%s^", strings.Repeat(" ", e.Column-1-(len(e.lineContent)-len(trimmedContent)))))
 
 	return sb.String()
 }

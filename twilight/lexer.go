@@ -6,10 +6,10 @@ import (
 	"strings"
 
 	"git.jaezmien.com/Jaezmien/fim/luna/queue"
+	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 	"git.jaezmien.com/Jaezmien/fim/twilight/parsers"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 	"git.jaezmien.com/Jaezmien/fim/twilight/utilities"
-	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
 // Assign basic TokenTypes to partial tokens.

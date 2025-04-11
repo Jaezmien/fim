@@ -82,7 +82,7 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 
 				if ast.Peek().Type == token.TokenType_Punctuation {
 					if ast.Peek().Value == "," {
-						ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected '%s'"))		
+						ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected '%s'"))
 						isExpectingComma = false
 						continue
 					}
@@ -105,12 +105,12 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 					return nil, err
 				}
 
-				if idx := slices.IndexFunc(function.Parameters, func(p FunctionNodeParameter) bool { return p.Name == literalIdentifier.Value} ); idx != -1 {
+				if idx := slices.IndexFunc(function.Parameters, func(p FunctionNodeParameter) bool { return p.Name == literalIdentifier.Value }); idx != -1 {
 					return nil, literalIdentifier.CreateError("Parameter already exists", ast.Source)
 				}
 
 				function.Parameters = append(function.Parameters, FunctionNodeParameter{
-					Name:  literalIdentifier.Value,
+					Name:         literalIdentifier.Value,
 					VariableType: paramType,
 				})
 
@@ -216,7 +216,7 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 		for {
 			if ast.Peek().Type == token.TokenType_Punctuation {
 				if ast.Peek().Value == "," {
-					ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected '%s'"))		
+					ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected '%s'"))
 					isExpectingComma = false
 					continue
 				}

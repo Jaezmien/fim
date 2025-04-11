@@ -10,7 +10,7 @@ type UnaryExpressionNode struct {
 	Node
 
 	Identifier string
-	Increment bool
+	Increment  bool
 }
 
 func (b *UnaryExpressionNode) Type() NodeType {

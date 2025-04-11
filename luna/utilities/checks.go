@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-var	booleanTrueStrings = [...]string{"yes", "true", "right", "correct"}
-var	booleanFalseStrings = [...]string{"no", "false", "wrong", "incorrect"}
+var booleanTrueStrings = [...]string{"yes", "true", "right", "correct"}
+var booleanFalseStrings = [...]string{"no", "false", "wrong", "incorrect"}
 
 func AsBooleanValue(str string) (bool, bool) {
 	if slices.Contains(booleanTrueStrings[:], str) {
@@ -30,16 +30,16 @@ func AsCharacterValue(str string) (string, bool) {
 		}
 
 		switch str[1] {
-			case '0':
-				return string(byte(0)), true
-			case 'r':
-				return "\r", true
-			case 'n':
-				return "\n", true
-			case 't':
-				return "\t", true
-			default:
-				return string(str[1]), true
+		case '0':
+			return string(byte(0)), true
+		case 'r':
+			return "\r", true
+		case 'n':
+			return "\n", true
+		case 't':
+			return "\t", true
+		default:
+			return string(str[1]), true
 		}
 	}
 

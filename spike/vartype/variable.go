@@ -3,8 +3,8 @@ package vartype
 import (
 	"strconv"
 
-	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
+	"git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type DynamicVariable struct {

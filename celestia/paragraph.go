@@ -38,7 +38,7 @@ func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.Dy
 			}
 
 			p.Interpreter.Variables.PushVariable(&Variable{
-				Name: expecting.Name,
+				Name:            expecting.Name,
 				DynamicVariable: received,
 			}, false)
 		} else {
@@ -49,14 +49,14 @@ func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.Dy
 
 			defaultVariable := vartype.FromValueType(value, expecting.VariableType)
 			p.Interpreter.Variables.PushVariable(&Variable{
-				Name: expecting.Name,
+				Name:            expecting.Name,
 				DynamicVariable: defaultVariable,
 			}, false)
 		}
 	}
 	if len(p.FunctionNode.Parameters) > 0 {
 		for i := range min(len(p.FunctionNode.Parameters), len(parameters)) {
-			expecting := p.FunctionNode.Parameters[i]	
+			expecting := p.FunctionNode.Parameters[i]
 			received := parameters[i]
 
 			if received.GetType() != expecting.VariableType {
@@ -64,7 +64,7 @@ func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.Dy
 			}
 
 			p.Interpreter.Variables.PushVariable(&Variable{
-				Name: expecting.Name,
+				Name:            expecting.Name,
 				DynamicVariable: received,
 			}, false)
 		}

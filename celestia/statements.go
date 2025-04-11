@@ -190,9 +190,9 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 
 			if unaryNode.Increment {
-				variable.SetValueNumber( variable.GetValueNumber() + 1 )
+				variable.SetValueNumber(variable.GetValueNumber() + 1)
 			} else {
-				variable.SetValueNumber( variable.GetValueNumber() - 1 )
+				variable.SetValueNumber(variable.GetValueNumber() - 1)
 			}
 			continue
 		}
