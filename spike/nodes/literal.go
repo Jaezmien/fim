@@ -26,7 +26,8 @@ func (l *LiteralNode) ToNode() Node {
 type LiteralDictionaryNode struct {
 	Node
 
-	*vartype.DynamicVariable
+	ArrayType vartype.VariableType
+	Values map[int]INode
 }
 
 func (l *LiteralDictionaryNode) Type() NodeType {

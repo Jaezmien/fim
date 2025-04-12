@@ -19,13 +19,14 @@ type CreateValueNodeOptions struct {
 	intoArray        bool
 }
 
-func wrapAsDictionaryNode(n INode, arrayType *vartype.VariableType, start int, length int) INode {
-	variable := vartype.NewDictionaryVariable(*arrayType)
-	variable.GetValueDictionary()[1] = &n
+func wrapAsDictionaryNode(n INode, arrayType vartype.VariableType, start int, length int) INode {
+	values := make(map[int]INode, 0)
+	values[1] = n
 
 	dictionaryNode := &LiteralDictionaryNode{
-		Node:            *NewNode(start, length),
-		DynamicVariable: variable,
+		Node:   *NewNode(start, length),
+		Values: values,
+		ArrayType: arrayType,
 	}
 
 	return dictionaryNode
@@ -90,7 +91,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			}
 
 			if options.possibleNullType != nil && options.possibleNullType.IsArray() {
-				arrayNode := wrapAsDictionaryNode(node, options.possibleNullType, t.Start, t.Length)
+				arrayNode := wrapAsDictionaryNode(node, *options.possibleNullType, t.Start, t.Length)
 				return arrayNode, nil
 			}
 
@@ -113,7 +114,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			literalNode.Length = t.Length
 
 			if options.possibleNullType != nil && options.possibleNullType.IsArray() {
-				arrayNode := wrapAsDictionaryNode(literalNode, options.possibleNullType, t.Start, t.Length)
+				arrayNode := wrapAsDictionaryNode(literalNode, *options.possibleNullType, t.Start, t.Length)
 				return arrayNode, nil
 			}
 
@@ -224,7 +225,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			}
 
 			baseType := options.possibleNullType.AsBaseType()
-			variable := vartype.NewDictionaryVariable(*options.possibleNullType)
+			values := make(map[int]INode, 0)
 
 			lastSeenIndex := 0
 			currentPairIndex := 1
@@ -247,7 +248,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 					return nil, err
 				}
 
-				variable.GetValueDictionary()[currentPairIndex] = &value
+				values[currentPairIndex] = value
 
 				if nextIndex == -1 {
 					break
@@ -260,8 +261,9 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			endToken := tokens[len(tokens)-1]
 
 			dictionaryNode := &LiteralDictionaryNode{
-				Node:            *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
-				DynamicVariable: variable,
+				Node:   *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
+				Values: values,
+				ArrayType: *options.possibleNullType,
 			}
 
 			return dictionaryNode, nil

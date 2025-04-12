@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
-	"git.jaezmien.com/Jaezmien/fim/spike/node"
 )
 
 type DynamicVariable struct {
@@ -76,7 +75,7 @@ func NewBooleanVariable(value bool) *DynamicVariable {
 }
 func NewDictionaryVariable(t VariableType) *DynamicVariable {
 	return &DynamicVariable{
-		value:     make(map[int]*node.INode, 0),
+		value:     make(map[int]*DynamicVariable, 0),
 		valueType: t,
 	}
 }
@@ -152,12 +151,12 @@ func (v *DynamicVariable) SetValueNumber(value float64) {
 	v.value = value
 }
 
-func (v *DynamicVariable) GetValueDictionary() map[int]*node.INode {
+func (v *DynamicVariable) GetValueDictionary() map[int]*DynamicVariable {
 	if !v.valueType.IsArray() {
 		panic("Called DynamicVariable@GetValueDictionary on a non-dictionary variable")
 	}
 
-	return v.value.(map[int]*node.INode)
+	return v.value.(map[int]*DynamicVariable)
 }
 
 func (v *DynamicVariable) GetType() VariableType {

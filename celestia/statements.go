@@ -1,7 +1,6 @@
 package celestia
 
 import (
-	"errors"
 	"fmt"
 	"slices"
 	"strconv"
@@ -248,7 +247,17 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 	if n.Type() == node.TYPE_LITERAL_DICTIONARY {
 		literalNode := n.(*nodes.LiteralDictionaryNode)
 
-		return literalNode.DynamicVariable, nil
+		dictionary := vartype.NewDictionaryVariable(literalNode.ArrayType)
+		for idx, value := range literalNode.Values {
+			evaluatedValue, err := i.EvaluateValueNode(value, local)
+			if err != nil {
+				return nil, err
+			}
+
+			dictionary.GetValueDictionary()[idx] = evaluatedValue
+		}
+
+		return dictionary, nil
 	}
 
 	if n.Type() == node.TYPE_IDENTIFIER {
@@ -303,45 +312,24 @@ func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.Dyna
 			value := variable.GetValueString()[indexAsInteger-1]
 			return vartype.NewRawCharacterVariable(string(value)), nil
 		case vartype.STRING_ARRAY:
-			preValue := variable.GetValueDictionary()[indexAsInteger]
-			if preValue == nil {
+			value := variable.GetValueDictionary()[indexAsInteger]
+			if value == nil {
 				defaultValue, _ := vartype.STRING.GetDefaultValue()
 				return vartype.FromValueType(defaultValue, vartype.STRING), nil
 			}
-			value, err := i.EvaluateValueNode(*preValue, local)
-			if err != nil {
-				return nil, err
-			}
-			if value.GetType() != vartype.STRING {
-				return nil, errors.New(fmt.Sprintf("Expected string"))
-			}
 			return value, nil
 		case vartype.BOOLEAN_ARRAY:
-			preValue := variable.GetValueDictionary()[indexAsInteger]
-			if preValue == nil {
+			value := variable.GetValueDictionary()[indexAsInteger]
+			if value == nil {
 				defaultValue, _ := vartype.BOOLEAN.GetDefaultValue()
 				return vartype.FromValueType(defaultValue, vartype.BOOLEAN), nil
 			}
-			value, err := i.EvaluateValueNode(*preValue, local)
-			if err != nil {
-				return nil, err
-			}
-			if value.GetType() != vartype.BOOLEAN {
-				return nil, errors.New(fmt.Sprintf("Expected boolean"))
-			}
 			return value, nil
 		case vartype.NUMBER_ARRAY:
-			preValue := variable.GetValueDictionary()[indexAsInteger]
-			if preValue == nil {
+			value := variable.GetValueDictionary()[indexAsInteger]
+			if value == nil {
 				defaultValue, _ := vartype.NUMBER.GetDefaultValue()
 				return vartype.FromValueType(defaultValue, vartype.NUMBER), nil
-			}
-			value, err := i.EvaluateValueNode(*preValue, local)
-			if err != nil {
-				return nil, err
-			}
-			if value.GetType() != vartype.NUMBER {
-				return nil, errors.New(fmt.Sprintf("Expected number"))
 			}
 			return value, nil
 
