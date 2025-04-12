@@ -1,20 +1,37 @@
 package utilities
 
-import "git.jaezmien.com/Jaezmien/fim/twilight/token"
-import "git.jaezmien.com/Jaezmien/fim/luna/queue"
+import (
+	"strings"
+
+	"git.jaezmien.com/Jaezmien/fim/luna/queue"
+	"git.jaezmien.com/Jaezmien/fim/twilight/token"
+)
 
 func IsStringNumber(value string) bool {
+	// XXX: "Why not use strconv?"
+	// Well, not exactly handing hexadecimal/octal notation right now.
+	// So, we're making exactly sure that what we're getting is an actual decimal.
+
 	if len(value) == 0 {
 		return false
 	}
 
-	for _, r := range value {
+	isNegative := strings.HasPrefix(value, "-")
+	hasNumber := false
+
+	for idx, r := range value {
+		if isNegative && idx == 0 {
+			continue
+		}
+
 		if r < '0' || r > '9' {
 			return false
 		}
+
+		hasNumber = true
 	}
 
-	return true
+	return hasNumber
 }
 func IsIndentCharacter(r rune) bool {
 	return r == ' ' || r == '\t'

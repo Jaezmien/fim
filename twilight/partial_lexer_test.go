@@ -95,6 +95,22 @@ func TestPartialMerging(t *testing.T) {
 		token = l.Dequeue().Value
 		assert.Equal(t, "1.0", token.Value, "Expected '1.0'")
 	})
+	t.Run("should merge negative decimals", func(t *testing.T) {
+		source := "-1.0"
+
+		l := createPartialTokens(source)
+		assert.Equal(t, "-1", l.Peek(0).Value.Value, "Should be '-1'")
+		assert.Equal(t, ".", l.Peek(1).Value.Value, "Should be '.'")
+		assert.Equal(t, "0", l.Peek(2).Value.Value, "Should be '0'")
+
+		l = mergePartialTokens(l)
+
+		assert.Equal(t, 1, l.Len(), "Should be one token")
+
+		var token *token.Token
+		token = l.Dequeue().Value
+		assert.Equal(t, "-1.0", token.Value, "Expected '-1.0'")
+	})
 	t.Run("should merge string", func(t *testing.T) {
 		source := "\"hello world\""
 
