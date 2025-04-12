@@ -123,7 +123,7 @@ func checkDecimalTokens(tokens *queue.Queue[*token.Token]) int {
 	}
 
 	right := tokens.Peek(2)
-	if !utilities.IsStringNumber(right.Value.Value) {
+	if !utilities.IsStringPositiveNumber(right.Value.Value) {
 		return 0
 	}
 

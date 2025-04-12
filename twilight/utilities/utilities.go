@@ -33,6 +33,9 @@ func IsStringNumber(value string) bool {
 
 	return hasNumber
 }
+func IsStringPositiveNumber(value string) bool {
+	return !strings.HasPrefix(value, "-") && IsStringNumber(value)
+}
 func IsIndentCharacter(r rune) bool {
 	return r == ' ' || r == '\t'
 }
