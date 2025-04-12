@@ -123,6 +123,17 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			continue
 		}
 
+		if curAST.ContainsWithStop(token.TokenType_KeywordOf, token.TokenType_EndOfFile, token.TokenType_NewLine) &&
+			curAST.ContainsWithStop(token.TokenType_OperatorEq, token.TokenType_EndOfFile, token.TokenType_NewLine) {
+			node, err := ParseArrayModifyNode(curAST)
+			if err != nil {
+				return nil, err
+			}
+
+			statements.Statements = append(statements.Statements, node)
+			continue
+		}
+
 		return nil, curAST.Peek().CreateError(fmt.Sprintf("Unsupported statement token: %s", curAST.Peek().Type), curAST.Source)
 	}
 

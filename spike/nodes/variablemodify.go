@@ -69,3 +69,81 @@ func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 
 	return node, nil
 }
+
+type ArrayModifyNode struct {
+	Node
+
+	Identifier string
+
+	Index INode
+
+	Value             INode
+	ReinforcementType vartype.VariableType
+}
+
+func (d *ArrayModifyNode) Type() NodeType {
+	return TYPE_ARRAY_MODIFY
+}
+func (f *ArrayModifyNode) ToNode() Node {
+	return Node{
+		Start:  f.Start,
+		Length: f.Length,
+	}
+}
+
+func ParseArrayModifyNode(ast *ast.AST) (*ArrayModifyNode, error) {
+	node := &ArrayModifyNode{}
+
+	indexTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_KeywordOf, token.TokenType_KeywordOf.Message("Could not find %s"))
+	if err != nil {
+		return nil, err
+	}
+	node.Index, err = CreateValueNode(indexTokens, CreateValueNodeOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = ast.ConsumeToken(token.TokenType_KeywordOf, token.TokenType_KeywordOf .Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
+
+	identifierToken, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
+	node.Identifier = identifierToken.Value
+
+	_, err = ast.ConsumeToken(token.TokenType_OperatorEq, token.TokenType_OperatorEq.Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
+
+	possibleTypeToken := ast.Peek()
+	possibleType := vartype.FromTokenTypeHint(possibleTypeToken.Type)
+	if possibleType != vartype.UNKNOWN && !possibleType.IsArray() {
+		node.ReinforcementType = vartype.UNKNOWN
+		ast.Next()
+	} else {
+		node.ReinforcementType = vartype.UNKNOWN
+	}
+
+	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
+	if err != nil {
+		return nil, err
+	}
+	node.Value, err = CreateValueNode(valueTokens, CreateValueNodeOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
+
+	node.Start = node.Index.ToNode().Start
+	node.Length = endToken.Start + endToken.Length - node.Index.ToNode().Start
+
+	return node, nil
+}

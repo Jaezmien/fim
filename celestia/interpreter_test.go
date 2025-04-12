@@ -584,6 +584,24 @@ func TestArray(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Gala\n\n"})
 	})
+	t.Run("should modify at index", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arrays!
+			Today I learned how to modify arrays!
+			Did you know that Apples has the words "Gala", "Red Delicious", "Mcintosh", "Honeycrisp"?
+			I said 1 of Apples!
+			1 of Apples is "Gala!".
+			I said 1 of Apples!
+
+			Did you know that Applebloom is the number 1?
+			Applebloom of Apples is "Gala".
+			I said Applebloom of Apples.
+			That's all about how to modify arrays.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Gala\nGala!\nGala\n"})
+	})
 }
 
 func TestFunctions(t *testing.T) {

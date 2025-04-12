@@ -173,6 +173,57 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
+		if statement.Type() == node.TYPE_ARRAY_MODIFY {
+			modifyNode := statement.(*nodes.ArrayModifyNode)
+
+			if !i.Variables.Has(modifyNode.Identifier, true) {
+				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
+			}
+			variable := i.Variables.Get(modifyNode.Identifier, true)
+
+			if !variable.GetType().IsArray() {
+				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Invalid non-array variable."), i.source)
+			}
+
+			if modifyNode.ReinforcementType != vartype.UNKNOWN {
+				if variable.GetType().AsBaseType() != modifyNode.ReinforcementType {
+					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, variable.GetType()), i.source)
+				}
+			}
+
+			index, err := i.EvaluateValueNode(modifyNode.Index, true)
+			if err != nil {
+				return nil, err
+			}
+			if index.GetType() != vartype.NUMBER {
+				return nil, modifyNode.Index.ToNode().CreateError(fmt.Sprintf("Expected a numeric index, got type %s", modifyNode.Index.Type()), i.source)
+			}
+
+			value, err := i.EvaluateValueNode(modifyNode.Value, true)
+			if err != nil {
+				return nil, err
+			}
+
+			if value.GetType() == vartype.UNKNOWN {
+				defaultValue, ok := variable.GetType().AsBaseType().GetDefaultValue()
+				if !ok {
+					panic("Intepreter@EvaluateStatementsNode could not get default value.")
+				}
+				value = vartype.FromValueType(defaultValue, variable.GetType())
+			}
+			if value.GetType().IsArray() {
+				return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Cannot insert an array value"), i.source)
+			}
+
+			if variable.GetType().AsBaseType() != value.GetType() {
+				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", variable.GetType().AsBaseType(), value.GetType()), i.source)
+			}
+
+			variable.GetValueDictionary()[int(index.GetValueNumber())] = value
+
+			continue
+		}
+
 		if statement.Type() == node.TYPE_UNARYEXPRESSION {
 			unaryNode := statement.(*nodes.UnaryExpressionNode)
 
