@@ -69,15 +69,13 @@ func ExecuteBasicReport(t *testing.T, source string, options BasicReportOptions)
 		return
 	}
 
-	if options.Expects != "" {
-		data, err := io.ReadAll(buffer)
-		if !assert.NoError(t, err) {
-			return
-		}
+	data, err := io.ReadAll(buffer)
+	if !assert.NoError(t, err) {
+		return
+	}
 
-		if !assert.Equal(t, options.Expects, string(data)) {
-			return
-		}
+	if !assert.Equal(t, options.Expects, string(data)) {
+		return
 	}
 }
 
