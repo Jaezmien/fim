@@ -69,7 +69,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			continue
 		}
 
-		if curAST.Peek().Type == token.TokenType_Identifier && curAST.PeekNext().Type == token.TokenType_Modify {
+		if curAST.CheckType(token.TokenType_Identifier) && curAST.CheckNextType(token.TokenType_Modify) {
 			node, err := ParseVariableModifyNode(curAST)
 			if err != nil {
 				return nil, err
@@ -79,7 +79,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			continue
 		}
 
-		if curAST.Peek().Type == token.TokenType_FunctionCall {
+		if curAST.CheckType(token.TokenType_FunctionCall) {
 			node, err := ParseFunctionCallNode(curAST)
 			if err != nil {
 				return nil, err
@@ -90,7 +90,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 		}
 
 		if curAST.CheckType(token.TokenType_UnaryIncrementPrefix, token.TokenType_UnaryDecrementPrefix) {
-			if curAST.PeekNext().Type == token.TokenType_Identifier {
+			if curAST.CheckNextType(token.TokenType_Identifier) {
 				node, err := ParsePrefixUnary(curAST)
 				if err != nil {
 					return nil, err
@@ -101,7 +101,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			}
 		}
 
-		if curAST.Peek().Type == token.TokenType_Identifier {
+		if curAST.CheckType(token.TokenType_Identifier) {
 			if curAST.CheckNextType(token.TokenType_UnaryIncrementPostfix, token.TokenType_UnaryDecrementPostfix) {
 				node, err := ParsePostfixUnary(curAST)
 				if err != nil {
@@ -113,7 +113,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			}
 		}
 
-		if curAST.Peek().Type == token.TokenType_KeywordReturn {
+		if curAST.CheckType(token.TokenType_KeywordReturn) {
 			node, err := ParseFunctionReturnNode(curAST)
 			if err != nil {
 				return nil, err
