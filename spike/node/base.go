@@ -21,6 +21,7 @@ const (
 	TYPE_FUNCTION_RETURN
 
 	TYPE_STATEMENTS
+	TYPE_STATEMENTS_CONDITION
 	TYPE_PRINT
 	TYPE_PROMPT
 
@@ -35,6 +36,8 @@ const (
 	TYPE_ARRAY_MODIFY
 
 	TYPE_UNARYEXPRESSION
+
+	TYPE_STATEMENTS_IF
 )
 
 var nodeTypeFriendlyName = map[NodeType]string{
@@ -58,6 +61,8 @@ var nodeTypeFriendlyName = map[NodeType]string{
 	TYPE_ARRAY_MODIFY:         "ARRAY_MODIFY",
 	 
 	TYPE_UNARYEXPRESSION:      "UNARYEXPRESSION",
+
+	TYPE_STATEMENTS_IF: "STATEMENTS(IF)",
 }
 
 func (t NodeType) String() string {

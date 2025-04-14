@@ -224,6 +224,34 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
+		if statement.Type() == node.TYPE_STATEMENTS_IF {
+			ifNode := statement.(*nodes.IfStatementNode)
+
+			for _, branch := range ifNode.Conditions {
+				check := true
+
+				if branch.Condition != nil {
+					branchCheck, err := i.EvaluateValueNode(*branch.Condition, true)
+					if err != nil {
+						return nil, err
+					}
+
+					if branchCheck.GetType() != vartype.BOOLEAN {
+						return nil, branch.ToNode().CreateError(fmt.Sprintf("Expected condition to result in type %s, got %s", vartype.BOOLEAN, branchCheck.GetType()), i.source)
+					}
+
+					check = branchCheck.GetValueBoolean()
+				}
+
+				if check {
+					result, err := i.EvaluateStatementsNode(&branch.StatementsNode)
+					return result, err
+				}
+			}
+
+			continue
+		}
+
 		if statement.Type() == node.TYPE_UNARYEXPRESSION {
 			unaryNode := statement.(*nodes.UnaryExpressionNode)
 

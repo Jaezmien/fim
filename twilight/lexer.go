@@ -120,6 +120,10 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 
 		{condition: parsers.CheckPostscript, result: token.TokenType_CommentPostScript},
 
+		{condition: parsers.CheckIfKeyword, result: token.TokenType_IfClause},
+		{condition: parsers.CheckElseKeyword, result: token.TokenType_ElseClause},
+		{condition: parsers.CheckIfEndKeyword, result: token.TokenType_IfEndClause},
+
 		{condition: parsers.CheckInfixAddition, result: token.TokenType_OperatorAddInfix},
 		{condition: parsers.CheckPrefixAddition, result: token.TokenType_OperatorAddPrefix},
 		{condition: parsers.CheckInfixSubtraction, result: token.TokenType_OperatorSubInfix},
@@ -143,6 +147,7 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 
 		{condition: parsers.CheckReturnKeyword, result: token.TokenType_KeywordReturn},
 		{condition: parsers.CheckConstantKeyword, result: token.TokenType_KeywordConst},
+		{condition: parsers.CheckThenKeyword, result: token.TokenType_KeywordThen},
 		{condition: parsers.CheckAndKeyword, result: token.TokenType_KeywordAnd},
 		{condition: parsers.CheckOrKeyword, result: token.TokenType_KeywordOr},
 		{condition: parsers.CheckOfKeyword, result: token.TokenType_KeywordOf},
