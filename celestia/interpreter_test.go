@@ -143,11 +143,13 @@ func TestIO(t *testing.T) {
 			`Dear Princess Celestia: Newline Outputs!
 			Today I learned how to output in the same line!
 			I quickly said 1!
+			I quickly said 2!
+			I said 3!
 			That's all about how to output in the same line.
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1"})
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "123\n"})
 	})
 
 	t.Run("should prompt", func(t *testing.T) {
