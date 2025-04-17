@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 
-	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
 )
 
@@ -52,8 +51,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 	}
 
 	for _, n := range interpreter.reportNode.Body {
-		if n.Type() == node.TYPE_FUNCTION {
-			funcNode := n.(*nodes.FunctionNode)
+		if funcNode, ok := n.(*nodes.FunctionNode); ok {
 			paragraph := NewParagraph(interpreter, funcNode)
 
 			for _, p := range interpreter.Paragraphs {
@@ -66,9 +64,8 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 
 			continue
 		}
-		if n.Type() == node.TYPE_VARIABLE_DECLARATION {
-			variableNode := n.(*nodes.VariableDeclarationNode)
 
+		if variableNode, ok := n.(*nodes.VariableDeclarationNode); ok {
 			value, err := interpreter.EvaluateValueNode(variableNode.Value, false)
 			if err != nil {
 				return nil, err
@@ -85,7 +82,7 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 			continue
 		}
 
-		return nil, n.ToNode().CreateError(fmt.Sprintf("Unsupported node type: %s", n.Type()), interpreter.source)
+		return nil, n.ToNode().CreateError("Unsupported report body node", interpreter.source)
 	}
 
 	return interpreter, nil

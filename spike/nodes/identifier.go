@@ -10,17 +10,9 @@ type IdentifierNode struct {
 	Identifier string
 }
 
-func (i *IdentifierNode) Type() NodeType {
-	return TYPE_IDENTIFIER
-}
-
 type DictionaryIdentifierNode struct {
 	Node
 
 	Identifier string
 	Index      DynamicNode
-}
-
-func (i *DictionaryIdentifierNode) Type() NodeType {
-	return TYPE_IDENTIFIER_DICTIONARY
 }

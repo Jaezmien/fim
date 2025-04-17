@@ -27,9 +27,6 @@ type FunctionNodeParameter struct {
 	Name         string
 	VariableType variable.VariableType
 }
-func (f *FunctionNode) Type() NodeType {
-	return TYPE_FUNCTION
-}
 
 func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 	function := &FunctionNode{
@@ -179,10 +176,6 @@ type FunctionCallNode struct {
 	Parameters []DynamicNode
 }
 
-func (f *FunctionCallNode) Type() NodeType {
-	return TYPE_FUNCTION_CALL
-}
-
 func (f *FunctionCallNode) ToNode() Node {
 	return Node{
 		Start:  f.Start,
@@ -261,10 +254,6 @@ type FunctionReturnNode struct {
 	Node
 
 	Value DynamicNode
-}
-
-func (f *FunctionReturnNode) Type() NodeType {
-	return TYPE_FUNCTION_RETURN
 }
 
 func (f *FunctionReturnNode) ToNode() Node {

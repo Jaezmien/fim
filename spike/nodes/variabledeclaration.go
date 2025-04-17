@@ -18,9 +18,6 @@ type VariableDeclarationNode struct {
 	ValueType variable.VariableType
 }
 
-func (d *VariableDeclarationNode) Type() NodeType {
-	return TYPE_VARIABLE_DECLARATION
-}
 
 func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error) {
 	node := &VariableDeclarationNode{}

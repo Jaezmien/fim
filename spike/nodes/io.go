@@ -13,9 +13,6 @@ type PrintNode struct {
 	NewLine bool
 	Value   DynamicNode
 }
-func (p *PrintNode) Type() NodeType {
-	return TYPE_PRINT
-}
 
 func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 	printNode := &PrintNode{}
@@ -56,9 +53,6 @@ type PromptNode struct {
 	Prompt     DynamicNode
 }
 
-func (p *PromptNode) Type() NodeType {
-	return TYPE_PROMPT
-}
 func (p *PromptNode) ToNode() Node {
 	return Node{
 		Start:  p.Start,

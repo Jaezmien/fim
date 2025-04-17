@@ -15,9 +15,7 @@ import (
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*variable.DynamicVariable, error) {
 	for _, statement := range statements.Statements {
-		if statement.Type() == node.TYPE_PRINT {
-			printNode := statement.(*nodes.PrintNode)
-
+		if printNode, ok := statement.(*nodes.PrintNode); ok {
 			value, err := i.EvaluateValueNode(printNode.Value, true)
 			if err != nil {
 				return nil, err
@@ -30,9 +28,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
-		if statement.Type() == node.TYPE_PROMPT {
-			promptNode := statement.(*nodes.PromptNode)
-
+		if promptNode, ok := statement.(*nodes.PromptNode); ok {
 			if !i.Variables.Has(promptNode.Identifier, true) {
 				return nil, promptNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier), i.source)
 			}
@@ -87,9 +83,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
-		if statement.Type() == node.TYPE_VARIABLE_DECLARATION {
-			variableNode := statement.(*nodes.VariableDeclarationNode)
-
+		if variableNode, ok := statement.(*nodes.VariableDeclarationNode); ok {
 			value, err := i.EvaluateValueNode(variableNode.Value, true)
 			if err != nil {
 				return nil, err
@@ -121,10 +115,8 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			continue
 		}
-		if statement.Type() == node.TYPE_VARIABLE_MODIFY {
-			modifyNode := statement.(*nodes.VariableModifyNode)
-
-			if !i.Variables.Has(modifyNode.Identifier, true) {
+		if modifyNode, ok := statement.(*nodes.VariableModifyNode); ok {
+		if !i.Variables.Has(modifyNode.Identifier, true) {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
 			}
 			v := i.Variables.Get(modifyNode.Identifier, true)
@@ -173,9 +165,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
-		if statement.Type() == node.TYPE_ARRAY_MODIFY {
-			modifyNode := statement.(*nodes.ArrayModifyNode)
-
+		if modifyNode, ok := statement.(*nodes.ArrayModifyNode); ok {
 			if !i.Variables.Has(modifyNode.Identifier, true) {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
 			}
@@ -196,7 +186,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return nil, err
 			}
 			if index.GetType() != variable.NUMBER {
-				return nil, modifyNode.Index.ToNode().CreateError(fmt.Sprintf("Expected a numeric index, got type %s", modifyNode.Index.Type()), i.source)
+				return nil, modifyNode.Index.ToNode().CreateError(fmt.Sprintf("Expected a numeric index, got type %s", index.GetType()), i.source)
 			}
 
 			value, err := i.EvaluateValueNode(modifyNode.Value, true)
@@ -224,9 +214,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
-		if statement.Type() == node.TYPE_STATEMENTS_IF {
-			ifNode := statement.(*nodes.IfStatementNode)
-
+		if ifNode, ok := statement.(*nodes.IfStatementNode); ok {
 			for _, branch := range ifNode.Conditions {
 				check := true
 
@@ -252,10 +240,8 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
-		if statement.Type() == node.TYPE_UNARYEXPRESSION {
-			unaryNode := statement.(*nodes.UnaryExpressionNode)
-
-			if !i.Variables.Has(unaryNode.Identifier, true) {
+		if unaryNode, ok := statement.(*nodes.UnaryExpressionNode); ok {
+		if !i.Variables.Has(unaryNode.Identifier, true) {
 				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", unaryNode.Identifier), i.source)
 			}
 			v := i.Variables.Get(unaryNode.Identifier, true)
@@ -275,9 +261,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
-		if statement.Type() == node.TYPE_FUNCTION_CALL {
-			callNode := statement.(*nodes.FunctionCallNode)
-
+		if callNode, ok := statement.(*nodes.FunctionCallNode); ok {
 			paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
 			if paragraphIndex == -1 {
 				return nil, statement.ToNode().CreateError(fmt.Sprintf("Paragraph '%s' not found", callNode.Identifier), i.source)
@@ -302,30 +286,24 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
-		if statement.Type() == node.TYPE_FUNCTION_RETURN {
-			returnNode := statement.(*nodes.FunctionReturnNode)
-
+		if returnNode, ok := statement.(*nodes.FunctionReturnNode); ok {
 			value, err := i.EvaluateValueNode(returnNode.Value, true)
 
 			return value, err
 		}
 
-		return nil, statement.ToNode().CreateError(fmt.Sprintf("Unsupported statement node: %s", statement.Type()), i.source)
+		return nil, statement.ToNode().CreateError("Unsupported statement node.", i.source)
 	}
 
 	return nil, nil
 }
 
 func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variable.DynamicVariable, error) {
-	if n.Type() == node.TYPE_LITERAL {
-		literalNode := n.(*nodes.LiteralNode)
-
+	if literalNode, ok := n.(*nodes.LiteralNode); ok {
 		return literalNode.DynamicVariable, nil
 	}
 
-	if n.Type() == node.TYPE_LITERAL_DICTIONARY {
-		literalNode := n.(*nodes.LiteralDictionaryNode)
-
+	if literalNode, ok := n.(*nodes.LiteralDictionaryNode); ok {
 		dictionary := variable.NewDictionaryVariable(literalNode.ArrayType)
 		for idx, value := range literalNode.Values {
 			evaluatedValue, err := i.EvaluateValueNode(value, local)
@@ -339,9 +317,7 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 		return dictionary, nil
 	}
 
-	if n.Type() == node.TYPE_IDENTIFIER {
-		identifierNode := n.(*nodes.IdentifierNode)
-
+	if identifierNode, ok := n.(*nodes.IdentifierNode); ok {
 		if variable := i.Variables.Get(identifierNode.Identifier, local); variable != nil {
 			return variable.DynamicVariable, nil
 		}
@@ -355,9 +331,7 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 		return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
 	}
 
-	if n.Type() == node.TYPE_FUNCTION_CALL {
-		callNode := n.(*nodes.FunctionCallNode)
-
+	if callNode, ok := n.(*nodes.FunctionCallNode); ok {
 		paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
 		if paragraphIndex != -1 {
 			paragraph := i.Paragraphs[paragraphIndex]
@@ -368,9 +342,7 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 		return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown paragraph (%s)", callNode.Identifier), i.source, callNode.Start)
 	}
 
-	if n.Type() == node.TYPE_IDENTIFIER_DICTIONARY {
-		identifierNode := n.(*nodes.DictionaryIdentifierNode)
-
+	if identifierNode, ok := n.(*nodes.DictionaryIdentifierNode); ok {
 		v := i.Variables.Get(identifierNode.Identifier, local)
 		if v == nil {
 			return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
@@ -415,9 +387,7 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 		}
 	}
 
-	if n.Type() == node.TYPE_BINARYEXPRESSION {
-		binaryNode := n.(*nodes.BinaryExpressionNode)
-
+	if binaryNode, ok := n.(*nodes.BinaryExpressionNode); ok {
 		left, err := i.EvaluateValueNode(binaryNode.Left, local)
 		if err != nil {
 			return nil, err

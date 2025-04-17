@@ -15,10 +15,6 @@ type ReportNode struct {
 	Body []DynamicNode
 }
 
-func (r *ReportNode) Type() NodeType {
-	return TYPE_REPORT
-}
-
 func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 	report := &ReportNode{}
 

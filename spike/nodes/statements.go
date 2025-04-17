@@ -15,10 +15,6 @@ type StatementsNode struct {
 	Statements []DynamicNode
 }
 
-func (s *StatementsNode) Type() NodeType {
-	return TYPE_STATEMENTS
-}
-
 func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
 	statements := &StatementsNode{}
 
@@ -151,9 +147,6 @@ type ConditionStatementNode struct {
 
 	Condition *DynamicNode
 }
-func (s *ConditionStatementNode) Type() NodeType {
-	return TYPE_STATEMENTS_CONDITION
-}
 func (s *ConditionStatementNode) ToNode() Node {
 	return Node{
 		Start:  s.Start,
@@ -169,9 +162,6 @@ type IfStatementNode struct {
 	Conditions []ConditionStatementNode
 }
 
-func (s *IfStatementNode) Type() NodeType {
-	return TYPE_STATEMENTS_IF
-}
 func (s *IfStatementNode) ToNode() Node {
 	return Node{
 		Start:  s.Start,

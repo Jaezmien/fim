@@ -17,10 +17,6 @@ type VariableModifyNode struct {
 	ReinforcementType variable.VariableType
 }
 
-func (d *VariableModifyNode) Type() NodeType {
-	return TYPE_VARIABLE_MODIFY
-}
-
 func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 	node := &VariableModifyNode{}
 
@@ -75,9 +71,6 @@ type ArrayModifyNode struct {
 	ReinforcementType variable.VariableType
 }
 
-func (d *ArrayModifyNode) Type() NodeType {
-	return TYPE_ARRAY_MODIFY
-}
 func (f *ArrayModifyNode) ToNode() Node {
 	return Node{
 		Start:  f.Start,

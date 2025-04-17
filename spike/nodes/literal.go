@@ -11,10 +11,6 @@ type LiteralNode struct {
 	*variable.DynamicVariable
 }
 
-func (l *LiteralNode) Type() NodeType {
-	return TYPE_LITERAL
-}
-
 // -- //
 
 type LiteralDictionaryNode struct {
@@ -22,8 +18,4 @@ type LiteralDictionaryNode struct {
 
 	ArrayType variable.VariableType
 	Values map[int]DynamicNode
-}
-
-func (l *LiteralDictionaryNode) Type() NodeType {
-	return TYPE_LITERAL_DICTIONARY
 }
