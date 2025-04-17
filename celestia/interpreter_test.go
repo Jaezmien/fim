@@ -347,14 +347,20 @@ func TestDeclaration(t *testing.T) {
 	t.Run("should create an empty variable", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Empties!
-			Today I learned how to output an empty variable!
+			Today I learned how to output empty variables!
 			Did you know that Spike is a word?
 			I said Spike!
-			That's all about how to output an empty variable.
+			Did you know that Owlowiscious is an argument?
+			I said Owlowiscious!
+			Did you know that Gummy is a number?
+			I said Gummy!
+			Did you know that Tank is a letter?
+			I said Tank!
+			That's all about how to output empty variables.
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "\n"})
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "\nfalse\n0\n\x00\n"})
 	})
 	t.Run("should create an explicit empty variable", func(t *testing.T) {
 		source :=
@@ -362,11 +368,17 @@ func TestDeclaration(t *testing.T) {
 			Today I learned how to output an empty variable!
 			Did you know that Spike is the word nothing?
 			I said Spike!
+			Did you know that Owlowiscious is the argument nothing?
+			I said Owlowiscious!
+			Did you know that Gummy is the number nothing?
+			I said Gummy!
+			Did you know that Tank is the letter nothing?
+			I said Tank!
 			That's all about how to output an empty variable.
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "\n"})
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "\nfalse\n0\n\x00\n"})
 	})
 	t.Run("should create variable from another variable", func(t *testing.T) {
 		source :=
