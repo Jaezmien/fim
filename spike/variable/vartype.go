@@ -1,4 +1,4 @@
-package vartype
+package variable
 
 import (
 	"fmt"
@@ -79,7 +79,7 @@ func (t VariableType) AsBaseType() VariableType {
 	}
 }
 
-// Converts a token.TokenType literal to its respective vartype.VariableType
+// Converts a token.TokenType literal to its respective variable.VariableType
 //
 // This function does not handle arrays type
 func FromTokenType(t token.TokenType) VariableType {
@@ -97,7 +97,7 @@ func FromTokenType(t token.TokenType) VariableType {
 	}
 }
 
-// Converts a token.TokenType type hint to its respective vartype.VariableType
+// Converts a token.TokenType type hint to its respective variable.VariableType
 func FromTokenTypeHint(t token.TokenType) VariableType {
 	switch t {
 	case token.TokenType_TypeBoolean:

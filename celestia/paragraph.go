@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 )
 
 type Paragraph struct {
@@ -26,7 +26,7 @@ func NewParagraph(interpreter *Interpreter, node *nodes.FunctionNode) *Paragraph
 	return p
 }
 
-func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.DynamicVariable, error) {
+func (p *Paragraph) Execute(parameters ...*variable.DynamicVariable) (*variable.DynamicVariable, error) {
 	p.Interpreter.Variables.PushScope()
 
 	for idx, expecting := range p.FunctionNode.Parameters {
@@ -47,7 +47,7 @@ func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.Dy
 				return nil, p.FunctionNode.ToNode().CreateError(fmt.Sprintf("Could not get default value of %s (type %s)", expecting.Name, expecting.VariableType), p.Interpreter.source)
 			}
 
-			defaultVariable := vartype.FromValueType(value, expecting.VariableType)
+			defaultVariable := variable.FromValueType(value, expecting.VariableType)
 			p.Interpreter.Variables.PushVariable(&Variable{
 				Name:            expecting.Name,
 				DynamicVariable: defaultVariable,
@@ -73,7 +73,7 @@ func (p *Paragraph) Execute(parameters ...*vartype.DynamicVariable) (*vartype.Dy
 	value, err := p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
 	p.Interpreter.Variables.PopScope()
 
-	if value != nil && p.FunctionNode.ReturnType == vartype.UNKNOWN {
+	if value != nil && p.FunctionNode.ReturnType == variable.UNKNOWN {
 		return nil, p.FunctionNode.Node.CreateError(fmt.Sprintf("Paragraph '%s' with no return type returned a value", p.Name), p.Interpreter.source)
 	}
 	if value != nil && value.GetType() != p.FunctionNode.ReturnType {

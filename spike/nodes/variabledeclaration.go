@@ -2,7 +2,7 @@ package nodes
 
 import (
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 
 	. "git.jaezmien.com/Jaezmien/fim/spike/node"
@@ -15,7 +15,7 @@ type VariableDeclarationNode struct {
 	Constant   bool
 
 	Value     DynamicNode
-	ValueType vartype.VariableType
+	ValueType variable.VariableType
 }
 
 func (d *VariableDeclarationNode) Type() NodeType {
@@ -47,8 +47,8 @@ func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error
 	}
 
 	typeToken := ast.Peek()
-	node.ValueType = vartype.FromTokenTypeHint(typeToken.Type)
-	if node.ValueType == vartype.UNKNOWN {
+	node.ValueType = variable.FromTokenTypeHint(typeToken.Type)
+	if node.ValueType == variable.UNKNOWN {
 		return nil, typeToken.CreateError("Expected variable type hint", ast.Source)
 	}
 	ast.Next()

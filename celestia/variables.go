@@ -2,13 +2,13 @@ package celestia
 
 import (
 	"git.jaezmien.com/Jaezmien/fim/luna/stack"
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 )
 
 type Variable struct {
 	Name string
 
-	*vartype.DynamicVariable
+	*variable.DynamicVariable
 
 	Constant bool
 }

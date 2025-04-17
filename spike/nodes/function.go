@@ -5,7 +5,7 @@ import (
 	"slices"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 
 	. "git.jaezmien.com/Jaezmien/fim/spike/node"
@@ -20,12 +20,12 @@ type FunctionNode struct {
 	Body *StatementsNode
 
 	Parameters []FunctionNodeParameter
-	ReturnType vartype.VariableType
+	ReturnType variable.VariableType
 }
 
 type FunctionNodeParameter struct {
 	Name         string
-	VariableType vartype.VariableType
+	VariableType variable.VariableType
 }
 func (f *FunctionNode) Type() NodeType {
 	return TYPE_FUNCTION
@@ -86,8 +86,8 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 				}
 
 				paramTypeToken := ast.Peek()
-				paramType := vartype.FromTokenTypeHint(paramTypeToken.Type)
-				if paramType == vartype.UNKNOWN {
+				paramType := variable.FromTokenTypeHint(paramTypeToken.Type)
+				if paramType == variable.UNKNOWN {
 					return nil, paramTypeToken.CreateError("Expected variable type", ast.Source)
 				}
 				ast.Next()
@@ -114,13 +114,13 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 		if ast.CheckType(token.TokenType_FunctionReturn) {
 			returnToken, _ := ast.ConsumeToken(token.TokenType_FunctionReturn, token.TokenType_FunctionReturn.Message("Expected %s"))
 
-			if function.ReturnType != vartype.UNKNOWN {
+			if function.ReturnType != variable.UNKNOWN {
 				return nil, returnToken.CreateError("Return type already exists", ast.Source)
 			}
 
 			returnTypeHintToken := ast.Peek()
-			possibleTypeHint := vartype.FromTokenTypeHint(returnTypeHintToken.Type)
-			if possibleTypeHint == vartype.UNKNOWN {
+			possibleTypeHint := variable.FromTokenTypeHint(returnTypeHintToken.Type)
+			if possibleTypeHint == variable.UNKNOWN {
 				return nil, returnTypeHintToken.CreateError("Expected variable type hint", ast.Source)
 			}
 			function.ReturnType = possibleTypeHint
@@ -220,8 +220,8 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 			}
 
 			paramTypeToken := ast.Peek()
-			paramType := vartype.FromTokenTypeHint(paramTypeToken.Type)
-			if paramType != vartype.UNKNOWN {
+			paramType := variable.FromTokenTypeHint(paramTypeToken.Type)
+			if paramType != variable.UNKNOWN {
 				// TODO: Add type safety?
 				ast.Next()
 			}

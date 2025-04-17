@@ -2,7 +2,7 @@ package nodes
 
 import (
 	"git.jaezmien.com/Jaezmien/fim/spike/ast"
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 
 	. "git.jaezmien.com/Jaezmien/fim/spike/node"
@@ -14,7 +14,7 @@ type VariableModifyNode struct {
 	Identifier string
 
 	Value             DynamicNode
-	ReinforcementType vartype.VariableType
+	ReinforcementType variable.VariableType
 }
 
 func (d *VariableModifyNode) Type() NodeType {
@@ -36,12 +36,12 @@ func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 	}
 
 	possibleTypeToken := ast.Peek()
-	possibleType := vartype.FromTokenTypeHint(possibleTypeToken.Type)
-	if possibleType != vartype.UNKNOWN && !possibleType.IsArray() {
-		node.ReinforcementType = vartype.UNKNOWN
+	possibleType := variable.FromTokenTypeHint(possibleTypeToken.Type)
+	if possibleType != variable.UNKNOWN && !possibleType.IsArray() {
+		node.ReinforcementType = variable.UNKNOWN
 		ast.Next()
 	} else {
-		node.ReinforcementType = vartype.UNKNOWN
+		node.ReinforcementType = variable.UNKNOWN
 	}
 
 	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
@@ -72,7 +72,7 @@ type ArrayModifyNode struct {
 	Index DynamicNode
 
 	Value             DynamicNode
-	ReinforcementType vartype.VariableType
+	ReinforcementType variable.VariableType
 }
 
 func (d *ArrayModifyNode) Type() NodeType {
@@ -114,12 +114,12 @@ func ParseArrayModifyNode(ast *ast.AST) (*ArrayModifyNode, error) {
 	}
 
 	possibleTypeToken := ast.Peek()
-	possibleType := vartype.FromTokenTypeHint(possibleTypeToken.Type)
-	if possibleType != vartype.UNKNOWN && !possibleType.IsArray() {
-		node.ReinforcementType = vartype.UNKNOWN
+	possibleType := variable.FromTokenTypeHint(possibleTypeToken.Type)
+	if possibleType != variable.UNKNOWN && !possibleType.IsArray() {
+		node.ReinforcementType = variable.UNKNOWN
 		ast.Next()
 	} else {
-		node.ReinforcementType = vartype.UNKNOWN
+		node.ReinforcementType = variable.UNKNOWN
 	}
 
 	valueTokens, err := ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))

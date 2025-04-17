@@ -1,4 +1,4 @@
-package vartype
+package variable
 
 import (
 	"strconv"

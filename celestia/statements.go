@@ -7,13 +7,13 @@ import (
 
 	"git.jaezmien.com/Jaezmien/fim/spike/node"
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 
 	lunaErrors "git.jaezmien.com/Jaezmien/fim/luna/errors"
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 )
 
-func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*vartype.DynamicVariable, error) {
+func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*variable.DynamicVariable, error) {
 	for _, statement := range statements.Statements {
 		if statement.Type() == node.TYPE_PRINT {
 			printNode := statement.(*nodes.PrintNode)
@@ -36,12 +36,12 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if !i.Variables.Has(promptNode.Identifier, true) {
 				return nil, promptNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier), i.source)
 			}
-			variable := i.Variables.Get(promptNode.Identifier, true)
-			if variable.Constant {
+			v := i.Variables.Get(promptNode.Identifier, true)
+			if v.Constant {
 				return nil, promptNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
 
-			if variable.DynamicVariable.GetType().IsArray() {
+			if v.DynamicVariable.GetType().IsArray() {
 				return nil, promptNode.ToNode().CreateError("Expected variable to be of non-array type", i.source)
 			}
 
@@ -49,7 +49,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if err != nil {
 				return nil, err
 			}
-			if value.GetType() != vartype.STRING {
+			if value.GetType() != variable.STRING {
 				return nil, promptNode.ToNode().CreateError("Expected prompt to be of type STRING", i.source)
 			}
 
@@ -58,30 +58,30 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return nil, err
 			}
 
-			switch variable.GetType() {
-			case vartype.STRING:
-				variable.DynamicVariable.SetValueString(response)
+			switch v.GetType() {
+			case variable.STRING:
+				v.DynamicVariable.SetValueString(response)
 				break
-			case vartype.CHARACTER:
+			case variable.CHARACTER:
 				value, ok := luna.AsCharacterValue(response)
 				if !ok {
 					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid character value: %s", response), i.source)
 				}
-				variable.DynamicVariable.SetValueCharacter(value)
+				v.DynamicVariable.SetValueCharacter(value)
 				break
-			case vartype.BOOLEAN:
+			case variable.BOOLEAN:
 				value, ok := luna.AsBooleanValue(response)
 				if !ok {
 					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid boolean value: %s", response), i.source)
 				}
-				variable.DynamicVariable.SetValueBoolean(value)
+				v.DynamicVariable.SetValueBoolean(value)
 				break
-			case vartype.NUMBER:
+			case variable.NUMBER:
 				value, err := strconv.ParseFloat(response, 64)
 				if err != nil {
 					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid number value: %s", response), i.source)
 				}
-				variable.DynamicVariable.SetValueNumber(value)
+				v.DynamicVariable.SetValueNumber(value)
 				break
 			}
 
@@ -95,15 +95,15 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return nil, err
 			}
 
-			if value.GetType() == vartype.UNKNOWN {
+			if value.GetType() == variable.UNKNOWN {
 				if variableNode.ValueType.IsArray() {
-					value = vartype.NewDictionaryVariable(variableNode.ValueType)
+					value = variable.NewDictionaryVariable(variableNode.ValueType)
 				} else {
 					defaultValue, ok := variableNode.ValueType.GetDefaultValue()
 					if !ok {
 						panic("Intepreter@EvaluateStatementsNode could not get default value.")
 					}
-					value = vartype.FromValueType(defaultValue, variableNode.ValueType)
+					value = variable.FromValueType(defaultValue, variableNode.ValueType)
 				}
 			}
 
@@ -127,18 +127,18 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if !i.Variables.Has(modifyNode.Identifier, true) {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
 			}
-			variable := i.Variables.Get(modifyNode.Identifier, true)
+			v := i.Variables.Get(modifyNode.Identifier, true)
 
-			if variable.GetType().IsArray() {
+			if v.GetType().IsArray() {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Cannot modify an array."), i.source)
 			}
-			if variable.Constant {
+			if v.Constant {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
 
-			if modifyNode.ReinforcementType != vartype.UNKNOWN {
-				if variable.GetType() != modifyNode.ReinforcementType {
-					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, variable.GetType()), i.source)
+			if modifyNode.ReinforcementType != variable.UNKNOWN {
+				if v.GetType() != modifyNode.ReinforcementType {
+					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, v.GetType()), i.source)
 				}
 			}
 
@@ -147,27 +147,27 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return nil, err
 			}
 
-			if value.GetType() == vartype.UNKNOWN {
-				defaultValue, ok := variable.GetType().GetDefaultValue()
+			if value.GetType() == variable.UNKNOWN {
+				defaultValue, ok := v.GetType().GetDefaultValue()
 				if !ok {
 					panic("Intepreter@EvaluateStatementsNode could not get default value.")
 				}
-				value = vartype.FromValueType(defaultValue, variable.GetType())
+				value = variable.FromValueType(defaultValue, v.GetType())
 			}
 
-			if variable.GetType() != value.GetType() && (variable.DynamicVariable.GetType() != vartype.STRING && !value.GetType().IsArray()) {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", variable.GetType(), value.GetType()), i.source)
+			if v.GetType() != value.GetType() && (v.DynamicVariable.GetType() != variable.STRING && !value.GetType().IsArray()) {
+				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", v.GetType(), value.GetType()), i.source)
 			}
 
-			switch variable.GetType() {
-			case vartype.STRING:
-				variable.SetValueString(value.GetValueString())
-			case vartype.CHARACTER:
-				variable.SetValueCharacter(value.GetValueCharacter())
-			case vartype.BOOLEAN:
-				variable.SetValueBoolean(value.GetValueBoolean())
-			case vartype.NUMBER:
-				variable.SetValueNumber(value.GetValueNumber())
+			switch v.GetType() {
+			case variable.STRING:
+				v.SetValueString(value.GetValueString())
+			case variable.CHARACTER:
+				v.SetValueCharacter(value.GetValueCharacter())
+			case variable.BOOLEAN:
+				v.SetValueBoolean(value.GetValueBoolean())
+			case variable.NUMBER:
+				v.SetValueNumber(value.GetValueNumber())
 			}
 
 			continue
@@ -179,15 +179,15 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if !i.Variables.Has(modifyNode.Identifier, true) {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
 			}
-			variable := i.Variables.Get(modifyNode.Identifier, true)
+			v := i.Variables.Get(modifyNode.Identifier, true)
 
-			if !variable.GetType().IsArray() {
+			if !v.GetType().IsArray() {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Invalid non-array variable."), i.source)
 			}
 
-			if modifyNode.ReinforcementType != vartype.UNKNOWN {
-				if variable.GetType().AsBaseType() != modifyNode.ReinforcementType {
-					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, variable.GetType()), i.source)
+			if modifyNode.ReinforcementType != variable.UNKNOWN {
+				if v.GetType().AsBaseType() != modifyNode.ReinforcementType {
+					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, v.GetType()), i.source)
 				}
 			}
 
@@ -195,7 +195,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if err != nil {
 				return nil, err
 			}
-			if index.GetType() != vartype.NUMBER {
+			if index.GetType() != variable.NUMBER {
 				return nil, modifyNode.Index.ToNode().CreateError(fmt.Sprintf("Expected a numeric index, got type %s", modifyNode.Index.Type()), i.source)
 			}
 
@@ -204,22 +204,22 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				return nil, err
 			}
 
-			if value.GetType() == vartype.UNKNOWN {
-				defaultValue, ok := variable.GetType().AsBaseType().GetDefaultValue()
+			if value.GetType() == variable.UNKNOWN {
+				defaultValue, ok := v.GetType().AsBaseType().GetDefaultValue()
 				if !ok {
 					panic("Intepreter@EvaluateStatementsNode could not get default value.")
 				}
-				value = vartype.FromValueType(defaultValue, variable.GetType())
+				value = variable.FromValueType(defaultValue, v.GetType())
 			}
 			if value.GetType().IsArray() {
 				return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Cannot insert an array value"), i.source)
 			}
 
-			if variable.GetType().AsBaseType() != value.GetType() {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", variable.GetType().AsBaseType(), value.GetType()), i.source)
+			if v.GetType().AsBaseType() != value.GetType() {
+				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", v.GetType().AsBaseType(), value.GetType()), i.source)
 			}
 
-			variable.GetValueDictionary()[int(index.GetValueNumber())] = value
+			v.GetValueDictionary()[int(index.GetValueNumber())] = value
 
 			continue
 		}
@@ -236,8 +236,8 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 						return nil, err
 					}
 
-					if branchCheck.GetType() != vartype.BOOLEAN {
-						return nil, branch.ToNode().CreateError(fmt.Sprintf("Expected condition to result in type %s, got %s", vartype.BOOLEAN, branchCheck.GetType()), i.source)
+					if branchCheck.GetType() != variable.BOOLEAN {
+						return nil, branch.ToNode().CreateError(fmt.Sprintf("Expected condition to result in type %s, got %s", variable.BOOLEAN, branchCheck.GetType()), i.source)
 					}
 
 					check = branchCheck.GetValueBoolean()
@@ -258,19 +258,19 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if !i.Variables.Has(unaryNode.Identifier, true) {
 				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", unaryNode.Identifier), i.source)
 			}
-			variable := i.Variables.Get(unaryNode.Identifier, true)
+			v := i.Variables.Get(unaryNode.Identifier, true)
 
-			if variable.GetType() != vartype.NUMBER {
-				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", variable.GetType()), i.source)
+			if v.GetType() != variable.NUMBER {
+				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", v.GetType()), i.source)
 			}
-			if variable.Constant {
+			if v.Constant {
 				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
 
 			if unaryNode.Increment {
-				variable.SetValueNumber(variable.GetValueNumber() + 1)
+				v.SetValueNumber(v.GetValueNumber() + 1)
 			} else {
-				variable.SetValueNumber(variable.GetValueNumber() - 1)
+				v.SetValueNumber(v.GetValueNumber() - 1)
 			}
 			continue
 		}
@@ -285,7 +285,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 			paragraph := i.Paragraphs[paragraphIndex]
 
-			parameters := make([]*vartype.DynamicVariable, 0)
+			parameters := make([]*variable.DynamicVariable, 0)
 			for _, parameter := range callNode.Parameters {
 				valueNode, err := i.EvaluateValueNode(parameter, true)
 				if err != nil {
@@ -316,7 +316,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 	return nil, nil
 }
 
-func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*vartype.DynamicVariable, error) {
+func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variable.DynamicVariable, error) {
 	if n.Type() == node.TYPE_LITERAL {
 		literalNode := n.(*nodes.LiteralNode)
 
@@ -326,7 +326,7 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*vartyp
 	if n.Type() == node.TYPE_LITERAL_DICTIONARY {
 		literalNode := n.(*nodes.LiteralDictionaryNode)
 
-		dictionary := vartype.NewDictionaryVariable(literalNode.ArrayType)
+		dictionary := variable.NewDictionaryVariable(literalNode.ArrayType)
 		for idx, value := range literalNode.Values {
 			evaluatedValue, err := i.EvaluateValueNode(value, local)
 			if err != nil {
@@ -371,44 +371,44 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*vartyp
 	if n.Type() == node.TYPE_IDENTIFIER_DICTIONARY {
 		identifierNode := n.(*nodes.DictionaryIdentifierNode)
 
-		variable := i.Variables.Get(identifierNode.Identifier, local)
-		if variable == nil {
+		v := i.Variables.Get(identifierNode.Identifier, local)
+		if v == nil {
 			return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
 		}
-		if !variable.GetType().IsArray() && variable.GetType() != vartype.STRING {
+		if !v.GetType().IsArray() && v.GetType() != variable.STRING {
 			return nil, lunaErrors.NewParseError(fmt.Sprintf("Invalid non-dicionary identifier (%s)", identifierNode.Identifier), i.source, identifierNode.Start)
 		}
 
 		index, _ := i.EvaluateValueNode(identifierNode.Index, local)
-		if index.GetType() != vartype.NUMBER {
+		if index.GetType() != variable.NUMBER {
 			return nil, lunaErrors.NewParseError(fmt.Sprintf("Expected numeric index, got type %s", index.GetType()), i.source, identifierNode.Index.ToNode().Start)
 		}
 
 		indexAsInteger := int(index.GetValueNumber())
 
-		switch variable.GetType() {
-		case vartype.STRING:
-			value := variable.GetValueString()[indexAsInteger-1]
-			return vartype.NewRawCharacterVariable(string(value)), nil
-		case vartype.STRING_ARRAY:
-			value := variable.GetValueDictionary()[indexAsInteger]
+		switch v.GetType() {
+		case variable.STRING:
+			value := v.GetValueString()[indexAsInteger-1]
+			return variable.NewRawCharacterVariable(string(value)), nil
+		case variable.STRING_ARRAY:
+			value := v.GetValueDictionary()[indexAsInteger]
 			if value == nil {
-				defaultValue, _ := vartype.STRING.GetDefaultValue()
-				return vartype.FromValueType(defaultValue, vartype.STRING), nil
+				defaultValue, _ := variable.STRING.GetDefaultValue()
+				return variable.FromValueType(defaultValue, variable.STRING), nil
 			}
 			return value, nil
-		case vartype.BOOLEAN_ARRAY:
-			value := variable.GetValueDictionary()[indexAsInteger]
+		case variable.BOOLEAN_ARRAY:
+			value := v.GetValueDictionary()[indexAsInteger]
 			if value == nil {
-				defaultValue, _ := vartype.BOOLEAN.GetDefaultValue()
-				return vartype.FromValueType(defaultValue, vartype.BOOLEAN), nil
+				defaultValue, _ := variable.BOOLEAN.GetDefaultValue()
+				return variable.FromValueType(defaultValue, variable.BOOLEAN), nil
 			}
 			return value, nil
-		case vartype.NUMBER_ARRAY:
-			value := variable.GetValueDictionary()[indexAsInteger]
+		case variable.NUMBER_ARRAY:
+			value := v.GetValueDictionary()[indexAsInteger]
 			if value == nil {
-				defaultValue, _ := vartype.NUMBER.GetDefaultValue()
-				return vartype.FromValueType(defaultValue, vartype.NUMBER), nil
+				defaultValue, _ := variable.NUMBER.GetDefaultValue()
+				return variable.FromValueType(defaultValue, variable.NUMBER), nil
 			}
 			return value, nil
 
@@ -428,8 +428,8 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*vartyp
 		}
 
 		if binaryNode.Operator == nodes.BINARYOPERATOR_ADD {
-			if left.GetType() == vartype.STRING || right.GetType() == vartype.STRING {
-				variable := vartype.NewRawStringVariable(left.GetValueString() + right.GetValueString())
+			if left.GetType() == variable.STRING || right.GetType() == variable.STRING {
+				variable := variable.NewRawStringVariable(left.GetValueString() + right.GetValueString())
 				return variable, nil
 			}
 		}
@@ -438,32 +438,32 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*vartyp
 
 		switch binaryNode.Operator {
 		case nodes.BINARYOPERATOR_ADD:
-			return vartype.NewNumberVariable(left.GetValueNumber() + right.GetValueNumber()), nil
+			return variable.NewNumberVariable(left.GetValueNumber() + right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_SUB:
-			return vartype.NewNumberVariable(left.GetValueNumber() - right.GetValueNumber()), nil
+			return variable.NewNumberVariable(left.GetValueNumber() - right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_MUL:
-			return vartype.NewNumberVariable(left.GetValueNumber() * right.GetValueNumber()), nil
+			return variable.NewNumberVariable(left.GetValueNumber() * right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_DIV:
-			return vartype.NewNumberVariable(left.GetValueNumber() / right.GetValueNumber()), nil
+			return variable.NewNumberVariable(left.GetValueNumber() / right.GetValueNumber()), nil
 
 		case nodes.BINARYOPERATOR_AND:
-			return vartype.NewBooleanVariable(left.GetValueBoolean() && right.GetValueBoolean()), nil
+			return variable.NewBooleanVariable(left.GetValueBoolean() && right.GetValueBoolean()), nil
 		case nodes.BINARYOPERATOR_OR:
-			return vartype.NewBooleanVariable(left.GetValueBoolean() || right.GetValueBoolean()), nil
+			return variable.NewBooleanVariable(left.GetValueBoolean() || right.GetValueBoolean()), nil
 
 		case nodes.BINARYOPERATOR_GTE:
-			return vartype.NewBooleanVariable(left.GetValueNumber() >= right.GetValueNumber()), nil
+			return variable.NewBooleanVariable(left.GetValueNumber() >= right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_LTE:
-			return vartype.NewBooleanVariable(left.GetValueNumber() <= right.GetValueNumber()), nil
+			return variable.NewBooleanVariable(left.GetValueNumber() <= right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_GT:
-			return vartype.NewBooleanVariable(left.GetValueNumber() > right.GetValueNumber()), nil
+			return variable.NewBooleanVariable(left.GetValueNumber() > right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_LT:
-			return vartype.NewBooleanVariable(left.GetValueNumber() < right.GetValueNumber()), nil
+			return variable.NewBooleanVariable(left.GetValueNumber() < right.GetValueNumber()), nil
 
 		case nodes.BINARYOPERATOR_NEQ:
-			return vartype.NewBooleanVariable(left.GetValueString() != right.GetValueString()), nil
+			return variable.NewBooleanVariable(left.GetValueString() != right.GetValueString()), nil
 		case nodes.BINARYOPERATOR_EQ:
-			return vartype.NewBooleanVariable(left.GetValueString() == right.GetValueString()), nil
+			return variable.NewBooleanVariable(left.GetValueString() == right.GetValueString()), nil
 		}
 	}
 

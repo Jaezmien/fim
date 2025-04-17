@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"git.jaezmien.com/Jaezmien/fim/spike/vartype"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
 
 	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
@@ -15,11 +15,11 @@ import (
 )
 
 type CreateValueNodeOptions struct {
-	possibleNullType *vartype.VariableType
+	possibleNullType *variable.VariableType
 	intoArray        bool
 }
 
-func wrapAsDictionaryNode(n DynamicNode, arrayType vartype.VariableType, start int, length int) DynamicNode {
+func wrapAsDictionaryNode(n DynamicNode, arrayType variable.VariableType, start int, length int) DynamicNode {
 	values := make(map[int]DynamicNode, 0)
 	values[1] = n
 
@@ -40,7 +40,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 					Start:  0,
 					Length: 0,
 				},
-				DynamicVariable: vartype.NewDictionaryVariable(*options.possibleNullType),
+				DynamicVariable: variable.NewDictionaryVariable(*options.possibleNullType),
 			}
 
 			return literalNode, nil
@@ -56,7 +56,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 				Start:  0,
 				Length: 0,
 			},
-			DynamicVariable: vartype.FromValueType(defaultValue, *options.possibleNullType),
+			DynamicVariable: variable.FromValueType(defaultValue, *options.possibleNullType),
 		}
 
 		return literalNode, nil
@@ -75,7 +75,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 					Start:  0,
 					Length: 0,
 				},
-				DynamicVariable: vartype.NewUnknownVariable(),
+				DynamicVariable: variable.NewUnknownVariable(),
 			}
 
 			return nullNode, nil
@@ -98,7 +98,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			return node, nil
 		}
 
-		defaultType := vartype.FromTokenType(t.Type)
+		defaultType := variable.FromTokenType(t.Type)
 
 		literalNode := &LiteralNode{
 			Node: Node{
@@ -107,8 +107,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			},
 		}
 
-		if defaultType != vartype.UNKNOWN {
-			literalNode.DynamicVariable = vartype.FromValueType(t.Value, defaultType)
+		if defaultType != variable.UNKNOWN {
+			literalNode.DynamicVariable = variable.FromValueType(t.Value, defaultType)
 
 			literalNode.Start = t.Start
 			literalNode.Length = t.Length
@@ -126,7 +126,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 				panic("AST@CreateValueNode (possibly unknown type?)")
 			}
 
-			literalNode.DynamicVariable = vartype.FromValueType(
+			literalNode.DynamicVariable = variable.FromValueType(
 				defaultValue,
 				*options.possibleNullType,
 			)
