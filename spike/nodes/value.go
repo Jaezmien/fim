@@ -24,8 +24,8 @@ func wrapAsDictionaryNode(n DynamicNode, arrayType variable.VariableType, start 
 	values[1] = n
 
 	dictionaryNode := &LiteralDictionaryNode{
-		Node:   *NewNode(start, length),
-		Values: values,
+		Node:      *NewNode(start, length),
+		Values:    values,
 		ArrayType: arrayType,
 	}
 
@@ -261,8 +261,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			endToken := tokens[len(tokens)-1]
 
 			dictionaryNode := &LiteralDictionaryNode{
-				Node:   *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
-				Values: values,
+				Node:      *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
+				Values:    values,
 				ArrayType: *options.possibleNullType,
 			}
 

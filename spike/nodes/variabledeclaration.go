@@ -18,7 +18,6 @@ type VariableDeclarationNode struct {
 	ValueType variable.VariableType
 }
 
-
 func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error) {
 	node := &VariableDeclarationNode{}
 

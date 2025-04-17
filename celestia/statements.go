@@ -116,7 +116,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 		if modifyNode, ok := statement.(*nodes.VariableModifyNode); ok {
-		if !i.Variables.Has(modifyNode.Identifier, true) {
+			if !i.Variables.Has(modifyNode.Identifier, true) {
 				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
 			}
 			v := i.Variables.Get(modifyNode.Identifier, true)
@@ -241,7 +241,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 		}
 
 		if unaryNode, ok := statement.(*nodes.UnaryExpressionNode); ok {
-		if !i.Variables.Has(unaryNode.Identifier, true) {
+			if !i.Variables.Has(unaryNode.Identifier, true) {
 				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", unaryNode.Identifier), i.source)
 			}
 			v := i.Variables.Get(unaryNode.Identifier, true)

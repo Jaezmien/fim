@@ -6,6 +6,7 @@ type Node struct {
 	Start  int
 	Length int
 }
+
 func (n Node) ToNode() Node {
 	return *NewNode(n.Start, n.Length)
 }

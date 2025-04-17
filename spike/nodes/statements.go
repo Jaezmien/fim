@@ -147,6 +147,7 @@ type ConditionStatementNode struct {
 
 	Condition *DynamicNode
 }
+
 func (s *ConditionStatementNode) ToNode() Node {
 	return Node{
 		Start:  s.Start,
@@ -204,7 +205,7 @@ func ParseIfStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) 
 		return nil, err
 	}
 	node.Conditions = append(node.Conditions, ConditionStatementNode{
-		Condition: &conditionNode,
+		Condition:      &conditionNode,
 		StatementsNode: *statements,
 	})
 

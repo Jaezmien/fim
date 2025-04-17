@@ -90,7 +90,7 @@ func ParseArrayModifyNode(ast *ast.AST) (*ArrayModifyNode, error) {
 		return nil, err
 	}
 
-	_, err = ast.ConsumeToken(token.TokenType_KeywordOf, token.TokenType_KeywordOf .Message("Expected %s"))
+	_, err = ast.ConsumeToken(token.TokenType_KeywordOf, token.TokenType_KeywordOf.Message("Expected %s"))
 	if err != nil {
 		return nil, err
 	}

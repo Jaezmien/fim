@@ -17,5 +17,5 @@ type LiteralDictionaryNode struct {
 	Node
 
 	ArrayType variable.VariableType
-	Values map[int]DynamicNode
+	Values    map[int]DynamicNode
 }
