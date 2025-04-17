@@ -12,7 +12,7 @@ import (
 type StatementsNode struct {
 	Node
 
-	Statements []INode
+	Statements []DynamicNode
 }
 
 func (s *StatementsNode) Type() NodeType {
@@ -149,7 +149,7 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 type ConditionStatementNode struct {
 	StatementsNode
 
-	Condition *INode
+	Condition *DynamicNode
 }
 func (s *ConditionStatementNode) Type() NodeType {
 	return TYPE_STATEMENTS_CONDITION

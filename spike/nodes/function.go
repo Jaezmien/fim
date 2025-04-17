@@ -176,7 +176,7 @@ type FunctionCallNode struct {
 	Node
 
 	Identifier string
-	Parameters []INode
+	Parameters []DynamicNode
 }
 
 func (f *FunctionCallNode) Type() NodeType {
@@ -260,7 +260,7 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 type FunctionReturnNode struct {
 	Node
 
-	Value INode
+	Value DynamicNode
 }
 
 func (f *FunctionReturnNode) Type() NodeType {

@@ -11,7 +11,7 @@ type PrintNode struct {
 	Node
 
 	NewLine bool
-	Value   INode
+	Value   DynamicNode
 }
 func (p *PrintNode) Type() NodeType {
 	return TYPE_PRINT
@@ -53,7 +53,7 @@ type PromptNode struct {
 	Node
 
 	Identifier string
-	Prompt     INode
+	Prompt     DynamicNode
 }
 
 func (p *PromptNode) Type() NodeType {

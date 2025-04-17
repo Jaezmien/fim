@@ -14,7 +14,7 @@ type VariableDeclarationNode struct {
 	Identifier string
 	Constant   bool
 
-	Value     INode
+	Value     DynamicNode
 	ValueType vartype.VariableType
 }
 

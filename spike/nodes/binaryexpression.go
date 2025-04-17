@@ -37,9 +37,9 @@ const (
 type BinaryExpressionNode struct {
 	Node
 
-	Left     INode
+	Left     DynamicNode
 	Operator BinaryExpressionOperator
-	Right    INode
+	Right    DynamicNode
 
 	BinaryType BinaryExpressionType
 }

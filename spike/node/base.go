@@ -78,7 +78,7 @@ func (n Node) CreateError(msg string, source string) error {
 	return errors.NewParseError(msg, source, n.Start)
 }
 
-type INode interface {
+type DynamicNode interface {
 	Type() NodeType
 	ToNode() Node
 }

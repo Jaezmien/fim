@@ -12,7 +12,7 @@ type ReportNode struct {
 	Title  string
 	Author string
 
-	Body []INode
+	Body []DynamicNode
 }
 
 func (r *ReportNode) Type() NodeType {

@@ -13,7 +13,7 @@ type VariableModifyNode struct {
 
 	Identifier string
 
-	Value             INode
+	Value             DynamicNode
 	ReinforcementType vartype.VariableType
 }
 
@@ -69,9 +69,9 @@ type ArrayModifyNode struct {
 
 	Identifier string
 
-	Index INode
+	Index DynamicNode
 
-	Value             INode
+	Value             DynamicNode
 	ReinforcementType vartype.VariableType
 }
 

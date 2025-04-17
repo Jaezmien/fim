@@ -316,7 +316,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 	return nil, nil
 }
 
-func (i *Interpreter) EvaluateValueNode(n node.INode, local bool) (*vartype.DynamicVariable, error) {
+func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*vartype.DynamicVariable, error) {
 	if n.Type() == node.TYPE_LITERAL {
 		literalNode := n.(*nodes.LiteralNode)
 

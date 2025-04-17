@@ -19,8 +19,8 @@ type CreateValueNodeOptions struct {
 	intoArray        bool
 }
 
-func wrapAsDictionaryNode(n INode, arrayType vartype.VariableType, start int, length int) INode {
-	values := make(map[int]INode, 0)
+func wrapAsDictionaryNode(n DynamicNode, arrayType vartype.VariableType, start int, length int) DynamicNode {
+	values := make(map[int]DynamicNode, 0)
 	values[1] = n
 
 	dictionaryNode := &LiteralDictionaryNode{
@@ -32,7 +32,7 @@ func wrapAsDictionaryNode(n INode, arrayType vartype.VariableType, start int, le
 	return dictionaryNode
 }
 
-func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INode, error) {
+func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (DynamicNode, error) {
 	if len(tokens) == 0 && options.possibleNullType != nil {
 		if options.possibleNullType != nil && options.possibleNullType.IsArray() {
 			literalNode := &LiteralNode{
@@ -225,7 +225,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (INo
 			}
 
 			baseType := options.possibleNullType.AsBaseType()
-			values := make(map[int]INode, 0)
+			values := make(map[int]DynamicNode, 0)
 
 			lastSeenIndex := 0
 			currentPairIndex := 1
