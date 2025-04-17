@@ -18,7 +18,7 @@
 
 -   fim is just a personal hobby project, seeing as FiM++ has never been updated for quite some time now.
 
--   The syntax used here will follow a modified `Sparkle 1.0` syntax, unlike what [fimpp](https://github.com/KarolS/fimpp) uses. Please refer to the sample reports to see the differences.
+-   The syntax used here will follow a modified `Sparkle 1.0` syntax, unlike what [fimpp](https://github.com/KarolS/fimpp) uses. Please refer to the [sample reports](./samples) to see the differences.
 
 # Structure
 
