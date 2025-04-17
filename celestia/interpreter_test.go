@@ -380,6 +380,20 @@ func TestDeclaration(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "\nfalse\n0\n\x00\n"})
 	})
+	t.Run("should unset a variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Empties!
+			Today I learned how to output an empty variable!
+			Did you know that Spike is the number 1?
+			I said Spike!
+			Spike became the number nothing.
+			I said Spike!
+			That's all about how to output an empty variable.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1\n0\n"})
+	})
 	t.Run("should create variable from another variable", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Variables!
