@@ -47,12 +47,6 @@ type BinaryExpressionNode struct {
 func (b *BinaryExpressionNode) Type() NodeType {
 	return TYPE_BINARYEXPRESSION
 }
-func (b *BinaryExpressionNode) ToNode() Node {
-	return Node{
-		Start:  b.Start,
-		Length: b.Length,
-	}
-}
 
 func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator BinaryExpressionOperator, binaryType BinaryExpressionType) (*BinaryExpressionNode, error) {
 	index := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == tokenType })

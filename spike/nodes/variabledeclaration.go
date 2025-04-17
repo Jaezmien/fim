@@ -21,12 +21,6 @@ type VariableDeclarationNode struct {
 func (d *VariableDeclarationNode) Type() NodeType {
 	return TYPE_VARIABLE_DECLARATION
 }
-func (f *VariableDeclarationNode) ToNode() Node {
-	return Node{
-		Start:  f.Start,
-		Length: f.Length,
-	}
-}
 
 func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error) {
 	node := &VariableDeclarationNode{}

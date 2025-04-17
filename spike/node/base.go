@@ -2,19 +2,11 @@ package node
 
 import "git.jaezmien.com/Jaezmien/fim/luna/errors"
 
-type Node struct {
-	Start  int
-	Length int
-}
-
-func (n Node) CreateError(msg string, source string) error {
-	return errors.NewParseError(msg, source, n.Start)
-}
-
 type NodeType uint
 
 const (
-	TYPE_REPORT NodeType = iota
+	TYPE_UNKNOWN NodeType = iota
+	TYPE_REPORT
 
 	TYPE_FUNCTION
 	TYPE_FUNCTION_CALL
@@ -41,6 +33,8 @@ const (
 )
 
 var nodeTypeFriendlyName = map[NodeType]string{
+	TYPE_UNKNOWN:          "UNKNOWN",
+
 	TYPE_REPORT:          "REPORT",
 	TYPE_FUNCTION:        "FUNCTION",
 	TYPE_FUNCTION_CALL:   "FUNCTION(CALL)",
@@ -67,6 +61,21 @@ var nodeTypeFriendlyName = map[NodeType]string{
 
 func (t NodeType) String() string {
 	return nodeTypeFriendlyName[t]
+}
+
+type Node struct {
+	Start  int
+	Length int
+}
+func (n Node) Type() NodeType {
+	return TYPE_UNKNOWN
+}
+func (n Node) ToNode() Node {
+	return *NewNode(n.Start, n.Length)
+}
+
+func (n Node) CreateError(msg string, source string) error {
+	return errors.NewParseError(msg, source, n.Start)
 }
 
 type INode interface {

@@ -14,12 +14,6 @@ type LiteralNode struct {
 func (l *LiteralNode) Type() NodeType {
 	return TYPE_LITERAL
 }
-func (l *LiteralNode) ToNode() Node {
-	return Node{
-		Start:  l.Start,
-		Length: l.Length,
-	}
-}
 
 // -- //
 
@@ -32,10 +26,4 @@ type LiteralDictionaryNode struct {
 
 func (l *LiteralDictionaryNode) Type() NodeType {
 	return TYPE_LITERAL_DICTIONARY
-}
-func (l *LiteralDictionaryNode) ToNode() Node {
-	return Node{
-		Start:  l.Start,
-		Length: l.Length,
-	}
 }

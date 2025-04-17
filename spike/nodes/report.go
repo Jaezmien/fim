@@ -18,12 +18,6 @@ type ReportNode struct {
 func (r *ReportNode) Type() NodeType {
 	return TYPE_REPORT
 }
-func (r *ReportNode) ToNode() Node {
-	return Node{
-		Start:  r.Start,
-		Length: r.Length,
-	}
-}
 
 func ParseReportNode(ast *ast.AST) (*ReportNode, error) {
 	report := &ReportNode{}

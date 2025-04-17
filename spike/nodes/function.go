@@ -27,16 +27,8 @@ type FunctionNodeParameter struct {
 	Name         string
 	VariableType vartype.VariableType
 }
-
 func (f *FunctionNode) Type() NodeType {
 	return TYPE_FUNCTION
-}
-
-func (f *FunctionNode) ToNode() Node {
-	return Node{
-		Start:  f.Start,
-		Length: f.Length,
-	}
 }
 
 func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {

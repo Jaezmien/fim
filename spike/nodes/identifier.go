@@ -14,13 +14,6 @@ func (i *IdentifierNode) Type() NodeType {
 	return TYPE_IDENTIFIER
 }
 
-func (i *IdentifierNode) ToNode() Node {
-	return Node{
-		Start:  i.Start,
-		Length: i.Length,
-	}
-}
-
 type DictionaryIdentifierNode struct {
 	Node
 
@@ -30,11 +23,4 @@ type DictionaryIdentifierNode struct {
 
 func (i *DictionaryIdentifierNode) Type() NodeType {
 	return TYPE_IDENTIFIER_DICTIONARY
-}
-
-func (i *DictionaryIdentifierNode) ToNode() Node {
-	return Node{
-		Start:  i.Start,
-		Length: i.Length,
-	}
 }

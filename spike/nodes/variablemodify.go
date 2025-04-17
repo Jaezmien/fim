@@ -20,12 +20,6 @@ type VariableModifyNode struct {
 func (d *VariableModifyNode) Type() NodeType {
 	return TYPE_VARIABLE_MODIFY
 }
-func (f *VariableModifyNode) ToNode() Node {
-	return Node{
-		Start:  f.Start,
-		Length: f.Length,
-	}
-}
 
 func ParseVariableModifyNode(ast *ast.AST) (*VariableModifyNode, error) {
 	node := &VariableModifyNode{}

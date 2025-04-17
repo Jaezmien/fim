@@ -16,12 +16,6 @@ type UnaryExpressionNode struct {
 func (b *UnaryExpressionNode) Type() NodeType {
 	return TYPE_UNARYEXPRESSION
 }
-func (b *UnaryExpressionNode) ToNode() Node {
-	return Node{
-		Start:  b.Start,
-		Length: b.Length,
-	}
-}
 
 func ParsePrefixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 	unaryNode := &UnaryExpressionNode{}
