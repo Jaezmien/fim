@@ -404,7 +404,9 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 			}
 		}
 
-		// TODO: Add type checks
+		// TODO: Add type checks for the following operators below
+		// Right now we're just letting it panic if the GetValue[Type]
+		// doesn't match.
 
 		switch binaryNode.Operator {
 		case nodes.BINARYOPERATOR_ADD:

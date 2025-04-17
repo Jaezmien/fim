@@ -135,7 +135,6 @@ func ParseFunctionNode(ast *ast.AST) (*FunctionNode, error) {
 		return nil, err
 	}
 
-	// TODO: Body check
 	bodyStatement, err := ParseStatementsNode(ast, token.TokenType_FunctionFooter)
 	if err != nil {
 		return nil, err
@@ -215,7 +214,8 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 			paramTypeToken := ast.Peek()
 			paramType := variable.FromTokenTypeHint(paramTypeToken.Type)
 			if paramType != variable.UNKNOWN {
-				// TODO: Add type safety?
+				// TODO: Maybe also store the type hint that we will compare against
+				// the evaluated valueNode as a safety type hint.
 				ast.Next()
 			}
 

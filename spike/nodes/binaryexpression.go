@@ -45,13 +45,14 @@ type BinaryExpressionNode struct {
 }
 
 func CreateExpression(tokens []*token.Token, tokenType token.TokenType, operator BinaryExpressionOperator, binaryType BinaryExpressionType) (*BinaryExpressionNode, error) {
+	// XXX: In FiMSharp, I used .FindLastIndex for the BinaryExpressionNode.
+	// Do I really need to do the same in this instance? I still have to check.
 	index := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == tokenType })
 
 	if index == -1 {
 		return nil, nil
 	}
 
-	// XXX: Do I really need .FindLastIndex on this?
 	leftNode, err := CreateValueNode(tokens[:index], CreateValueNodeOptions{})
 	if err != nil {
 		return nil, err

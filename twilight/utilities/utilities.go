@@ -8,7 +8,7 @@ import (
 )
 
 func IsStringNumber(value string) bool {
-	// XXX: "Why not use strconv?"
+	// NOTE: "Why not use strconv?"
 	// Well, not exactly handing hexadecimal/octal notation right now.
 	// So, we're making exactly sure that what we're getting is an actual decimal.
 
