@@ -417,31 +417,9 @@ func TestDeclaration(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		tokens := twilight.Parse(source)
-		report, err := spike.CreateReport(tokens, source)
-		if !assert.NoError(t, err) {
-			return
-		}
-		interpreter, err := NewInterpreter(report, source)
-		if !assert.NoError(t, err) {
-			return
-		}
-
-		var mainParagraph *Paragraph
-		for _, paragraph := range interpreter.Paragraphs {
-			if paragraph.Main {
-				mainParagraph = paragraph
-				break
-			}
-		}
-		if !assert.NotNil(t, mainParagraph) {
-			return
-		}
-
-		_, err = mainParagraph.Execute()
-		if !assert.Error(t, err) {
-			return
-		}
+		ExecuteBasicReport(t, source, BasicReportOptions{
+			Error: true,
+		})
 	})
 }
 
