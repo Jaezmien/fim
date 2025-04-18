@@ -91,8 +91,7 @@ func TestPartialMerging(t *testing.T) {
 
 		assert.Equal(t, 1, l.Len(), "Should be one token")
 
-		var token *token.Token
-		token = l.Dequeue().Value
+		token := l.Dequeue().Value
 		assert.Equal(t, "1.0", token.Value, "Expected '1.0'")
 	})
 	t.Run("should merge negative decimals", func(t *testing.T) {
@@ -107,8 +106,7 @@ func TestPartialMerging(t *testing.T) {
 
 		assert.Equal(t, 1, l.Len(), "Should be one token")
 
-		var token *token.Token
-		token = l.Dequeue().Value
+		token := l.Dequeue().Value
 		assert.Equal(t, "-1.0", token.Value, "Expected '-1.0'")
 	})
 	t.Run("should merge string", func(t *testing.T) {
@@ -125,8 +123,7 @@ func TestPartialMerging(t *testing.T) {
 
 		assert.Equal(t, 1, l.Len(), "Should be one token")
 
-		var token *token.Token
-		token = l.Dequeue().Value
+		token := l.Dequeue().Value
 		assert.Equal(t, "\"hello world\"", token.Value, "Expected '\"hello world\"'")
 	})
 	t.Run("should merge escaped string", func(t *testing.T) {
@@ -147,8 +144,7 @@ func TestPartialMerging(t *testing.T) {
 
 		assert.Equal(t, 1, l.Len(), "Should be one token")
 
-		var token *token.Token
-		token = l.Dequeue().Value
+		token := l.Dequeue().Value
 		assert.Equal(t, `"hello \"world\""`, token.Value, `Expected '"hello \"world\""'`)
 	})
 	t.Run("should merge character", func(t *testing.T) {
@@ -163,8 +159,7 @@ func TestPartialMerging(t *testing.T) {
 
 		assert.Equal(t, 1, l.Len(), "Should be one token")
 
-		var token *token.Token
-		token = l.Dequeue().Value
+		token := l.Dequeue().Value
 		assert.Equal(t, "'a'", token.Value, "Expected ''a''")
 	})
 	t.Run("should merge delimeters", func(t *testing.T) {
@@ -181,8 +176,7 @@ func TestPartialMerging(t *testing.T) {
 
 		assert.Equal(t, 1, l.Len(), "Should be one token")
 
-		var token *token.Token
-		token = l.Dequeue().Value
+		token := l.Dequeue().Value
 		assert.Equal(t, "(hello world)", token.Value, "Expected '(hello world)'")
 	})
 }

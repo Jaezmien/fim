@@ -22,23 +22,17 @@ func UnsanitizeString(value string, trim bool) string {
 		switch nextChar {
 		case "0":
 			sb.WriteByte(byte(rune(0)))
-			break
 		case "r":
 			sb.WriteByte('\r')
-			break
 		case "n":
 			sb.WriteByte('\n')
-			break
 		case "t":
 			sb.WriteByte('\t')
-			break
 		case "\"":
 			sb.WriteByte('"')
-			break
 		default:
 			sb.WriteByte(value[idx])
 			sb.WriteByte(value[idx+1])
-			break
 		}
 		idx++
 	}

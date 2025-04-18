@@ -39,7 +39,7 @@ func main() {
 
 	tokens := twilight.Parse(source)
 
-	if *tokenDisplayFlag == true {
+	if *tokenDisplayFlag {
 		for idx, token := range tokens {
 			fmt.Printf(
 				"%d.\t%d:%d\t-> %s (%s)\n",
@@ -65,7 +65,7 @@ func main() {
 		return
 	}
 
-	if *prettyFlag == true {
+	if *prettyFlag {
 		fmt.Printf("┌─ fim (v0.0.0-alpha)\n")
 		fmt.Printf("├─ Report Name: %s\n", interpreter.ReportTitle())
 		fmt.Printf("└─ Report Author: %s\n", interpreter.ReportAuthor())

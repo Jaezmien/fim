@@ -186,6 +186,9 @@ func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 	call := &FunctionCallNode{}
 
 	startToken, err := ast.ConsumeToken(token.TokenType_FunctionCall, token.TokenType_FunctionCall.Message("Expected %s"))
+	if err != nil {
+		return nil, err
+	}
 
 	nameToken, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
 	if err != nil {

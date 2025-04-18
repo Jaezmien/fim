@@ -19,6 +19,9 @@ func ParsePrefixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 	startToken, err := ast.ConsumeFunc(func(t *token.Token) bool {
 		return t.Type == token.TokenType_UnaryIncrementPrefix || t.Type == token.TokenType_UnaryDecrementPrefix
 	}, "Expected unary prefix token")
+	if err != nil {
+		return nil, err
+	}
 	unaryNode.Increment = startToken.Type == token.TokenType_UnaryIncrementPrefix
 
 	identifierNode, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
@@ -50,6 +53,9 @@ func ParsePostfixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 	postfixToken, err := ast.ConsumeFunc(func(t *token.Token) bool {
 		return t.Type == token.TokenType_UnaryIncrementPostfix || t.Type == token.TokenType_UnaryDecrementPostfix
 	}, "Expected unary postfix token")
+	if err != nil {
+		return nil, err
+	}
 	unaryNode.Increment = postfixToken.Type == token.TokenType_UnaryIncrementPostfix
 
 	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))

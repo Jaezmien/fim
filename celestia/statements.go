@@ -57,28 +57,24 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			switch v.GetType() {
 			case variable.STRING:
 				v.DynamicVariable.SetValueString(response)
-				break
 			case variable.CHARACTER:
 				value, ok := luna.AsCharacterValue(response)
 				if !ok {
 					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid character value: %s", response), i.source)
 				}
 				v.DynamicVariable.SetValueCharacter(value)
-				break
 			case variable.BOOLEAN:
 				value, ok := luna.AsBooleanValue(response)
 				if !ok {
 					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid boolean value: %s", response), i.source)
 				}
 				v.DynamicVariable.SetValueBoolean(value)
-				break
 			case variable.NUMBER:
 				value, err := strconv.ParseFloat(response, 64)
 				if err != nil {
 					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid number value: %s", response), i.source)
 				}
 				v.DynamicVariable.SetValueNumber(value)
-				break
 			}
 
 			continue

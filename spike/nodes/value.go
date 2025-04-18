@@ -305,5 +305,5 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 	for _, token := range tokens {
 		unknownToken.WriteString(token.Value)
 	}
-	return nil, errors.New(fmt.Sprintf("Encountered unknown value token: '%s'", unknownToken.String()))
+	return nil, fmt.Errorf("Encountered unknown value token: '%s'", unknownToken.String())
 }
