@@ -114,6 +114,59 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 	}
 
 	if tempAST.Length() > 1 {
+		// FunctionCallNode
+		if tempAST.Peek().Type == token.TokenType_Identifier && tempAST.PeekNext().Type == token.TokenType_FunctionParameter {
+			identifier := tempAST.Consume()
+			tempAST.Consume()
+
+			callNode := &FunctionCallNode{
+				Node: *NewNode(identifier.Start, tempAST.End().Start+tempAST.End().Length-identifier.Start),
+				Identifier: identifier.Value,
+				Parameters: make([]DynamicNode, 0),
+			}
+
+			isExpectingComma := false
+			for tempAST.PeekIndex() < tempAST.Length() {
+				if tempAST.CheckType(token.TokenType_Punctuation) {
+					if tempAST.Peek().Value == "," {
+						tempAST.Consume()
+						isExpectingComma = false
+						continue
+					}
+					break
+				}
+
+				if isExpectingComma {
+					return nil, errors.New("Expecting parameters separated by comma")
+				}
+
+				paramTypeToken := tempAST.Peek()
+				paramType := variable.FromTokenTypeHint(paramTypeToken.Type)
+				if paramType != variable.UNKNOWN {
+					// TODO: Maybe also store the type hint that we will compare against
+					// the evaluated valueNode as a safety type hint.
+					tempAST.Next()
+				}
+
+				valueTokens, err := tempAST.ConsumeUntilFuncMatch(func(t *token.Token) bool {
+					return t.Type == token.TokenType_Punctuation
+				}, token.TokenType_Punctuation.Message("Could not find %s"))
+				if err != nil {
+					return nil, err
+				}
+
+				valueNode, err := CreateValueNode(valueTokens, CreateValueNodeOptions{})
+				if err != nil {
+					return nil, err
+				}
+
+				callNode.Parameters = append(callNode.Parameters, valueNode)
+
+				isExpectingComma = true
+			}
+
+			return callNode, nil
+		}
 		expressions := []struct {
 			tokenType  token.TokenType
 			operator   BinaryExpressionOperator

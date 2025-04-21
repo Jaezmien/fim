@@ -331,7 +331,18 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 		paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
 		if paragraphIndex != -1 {
 			paragraph := i.Paragraphs[paragraphIndex]
-			value, err := paragraph.Execute()
+
+			parameters := make([]*variable.DynamicVariable, 0)
+			for _, param := range callNode.Parameters {
+				value, err := i.EvaluateValueNode(param, local)
+				if err != nil {
+					return nil, err
+				}
+
+				parameters = append( parameters, value )
+			}
+			 
+			value, err := paragraph.Execute(parameters...)
 			return value, err
 		}
 
