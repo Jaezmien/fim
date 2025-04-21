@@ -3,13 +3,11 @@ package nodes
 import (
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 
+	"git.jaezmien.com/Jaezmien/fim/spike/ast"
 	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 	"git.jaezmien.com/Jaezmien/fim/twilight/token"
-
-	luna "git.jaezmien.com/Jaezmien/fim/luna/utilities"
 
 	. "git.jaezmien.com/Jaezmien/fim/spike/node"
 )
@@ -33,60 +31,44 @@ func wrapAsDictionaryNode(n DynamicNode, arrayType variable.VariableType, start 
 }
 
 func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (DynamicNode, error) {
-	if len(tokens) == 0 && options.possibleNullType != nil {
-		if options.possibleNullType != nil && options.possibleNullType.IsArray() {
-			literalNode := &LiteralNode{
-				Node: Node{
-					Start:  0,
-					Length: 0,
-				},
-				DynamicVariable: variable.NewDictionaryVariable(*options.possibleNullType),
-			}
+	tempAST := ast.NewAST(tokens, "")
 
-			return literalNode, nil
+	if tempAST.Length() == 0 && options.possibleNullType != nil {
+		if options.possibleNullType != nil && options.possibleNullType.IsArray() {
+			return NewLiteralNode(
+				0, 0,
+				variable.NewDictionaryVariable(*options.possibleNullType),
+			), nil
 		}
 
 		defaultValue, ok := options.possibleNullType.GetDefaultValue()
 		if !ok {
-			panic("AST@CreateValueNode (len 0, possibly unknown type?)")
+			panic("AST@CreateValueNode called with no tokens, and unknown possibleNullType")
 		}
 
-		literalNode := &LiteralNode{
-			Node: Node{
-				Start:  0,
-				Length: 0,
-			},
-			DynamicVariable: variable.FromValueType(defaultValue, *options.possibleNullType),
-		}
-
-		return literalNode, nil
+		return NewLiteralNode(
+			0, 0,
+			variable.FromValueType(defaultValue, *options.possibleNullType),
+		), nil
 	}
 
-	if len(tokens) == 0 {
+	if tempAST.Length() == 0 {
 		panic("AST@CreateValueNode called without any tokens")
 	}
 
-	if len(tokens) == 1 {
-		t := tokens[0]
-
-		if t.Value == "nothing" {
-			nullNode := &LiteralNode{
-				Node: Node{
-					Start:  0,
-					Length: 0,
-				},
-				DynamicVariable: variable.NewUnknownVariable(),
-			}
-
-			return nullNode, nil
+	if tempAST.Length() == 1 {
+		if tempAST.Peek().Value == "nothing" {
+			return NewLiteralNode(
+				0, 0,
+				variable.NewUnknownVariable(),
+			), nil
 		}
 
-		if t.Type == token.TokenType_Identifier {
+		if tempAST.CheckType(token.TokenType_Identifier) {
+			t := tempAST.Consume()
+
 			node := &IdentifierNode{
-				Node: Node{
-					Start:  t.Start,
-					Length: t.Length,
-				},
+				Node:       *NewNode(t.Start, t.Length),
 				Identifier: t.Value,
 			}
 
@@ -98,15 +80,10 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			return node, nil
 		}
 
+		literalNode := NewLiteralNode(0, 0, nil)
+		t := tempAST.Consume()
+
 		defaultType := variable.FromTokenType(t.Type)
-
-		literalNode := &LiteralNode{
-			Node: Node{
-				Start:  0,
-				Length: 0,
-			},
-		}
-
 		if defaultType != variable.UNKNOWN {
 			literalNode.DynamicVariable = variable.FromValueType(t.Value, defaultType)
 
@@ -120,10 +97,11 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 
 			return literalNode, nil
 		}
+
 		if t.Type == token.TokenType_Null && options.possibleNullType != nil {
 			defaultValue, ok := options.possibleNullType.GetDefaultValue()
 			if !ok {
-				panic("AST@CreateValueNode (possibly unknown type?)")
+				panic("AST@CreateValueNode literal null called with no possible default value")
 			}
 
 			literalNode.DynamicVariable = variable.FromValueType(
@@ -135,7 +113,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 		}
 	}
 
-	if len(tokens) > 1 {
+	if tempAST.Length() > 1 {
 		expressions := []struct {
 			tokenType  token.TokenType
 			operator   BinaryExpressionOperator
@@ -208,7 +186,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 		}
 
 		for _, expression := range expressions {
-			expressionNode, err := CreateExpression(tokens, expression.tokenType, expression.operator, expression.binaryType)
+			expressionNode, err := CreateExpression(tempAST.Tokens, expression.tokenType, expression.operator, expression.binaryType)
 			if err != nil {
 				return nil, err
 			}
@@ -219,46 +197,49 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 		}
 
 		// LiteralDictionaryNode
-		if luna.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == token.TokenType_Punctuation && t.Value == "," }, 0) != -1 {
+		if tempAST.ContainsFunc(func(t *token.Token) bool {
+			return t.Type == token.TokenType_Punctuation && t.Value == ","
+		}) {
 			if options.possibleNullType == nil || !options.possibleNullType.IsArray() {
 				panic("AST@CreateValueNode LiteralDictionaryNode with invalid options.possibleNullType")
 			}
 
 			baseType := options.possibleNullType.AsBaseType()
 			values := make(map[int]DynamicNode, 0)
+			currentIndex := 1
 
-			lastSeenIndex := 0
-			currentPairIndex := 1
+			for tempAST.PeekIndex() < tempAST.Length() {
+				if currentIndex != 1 {
+					_, err := tempAST.ConsumeFunc(func(t *token.Token) bool {
+						return t.Type == token.TokenType_Punctuation && t.Value == ","
+					}, token.TokenType_Punctuation.Message("Expected '%s' (Comma)"))
 
-			for {
-				nextIndex := luna.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == token.TokenType_Punctuation && t.Value == "," }, lastSeenIndex)
-
-				count := 0
-				if nextIndex == -1 {
-					count = len(tokens)
-				} else {
-					count = nextIndex
+					if err != nil {
+						return nil, err 
+					}
 				}
-				count -= lastSeenIndex
 
-				value, err := CreateValueNode(tokens[lastSeenIndex:lastSeenIndex+count], CreateValueNodeOptions{
+				ts, _ := tempAST.ConsumeUntilFuncMatch(func(t *token.Token) bool {
+					return t.Type == token.TokenType_Punctuation && t.Value == ","
+				}, "")
+
+				if len(ts) == 0 {
+					break
+				}
+
+				value, err := CreateValueNode(ts, CreateValueNodeOptions{
 					possibleNullType: &baseType,
 				})
 				if err != nil {
 					return nil, err
 				}
 
-				values[currentPairIndex] = value
-
-				if nextIndex == -1 {
-					break
-				}
-				lastSeenIndex = nextIndex + 1
-				currentPairIndex += 1
+				values[currentIndex] = value
+				currentIndex += 1
 			}
 
-			startToken := tokens[0]
-			endToken := tokens[len(tokens)-1]
+			startToken := tempAST.Start()
+			endToken := tempAST.End()
 
 			dictionaryNode := &LiteralDictionaryNode{
 				Node:      *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
@@ -270,10 +251,10 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 		}
 
 		// DictionaryIdentifierNode
-		dinOfIndex := slices.IndexFunc(tokens, func(t *token.Token) bool { return t.Type == token.TokenType_KeywordOf })
-		if dinOfIndex != -1 && dinOfIndex < len(tokens)-1 {
-			indexTokens := tokens[:dinOfIndex]
-			identifierTokens := tokens[dinOfIndex+1:]
+		if tempAST.ContainsToken(token.TokenType_KeywordOf) && tempAST.End().Type != token.TokenType_KeywordOf {
+			indexTokens, _ := tempAST.ConsumeUntilTokenMatch(token.TokenType_KeywordOf, "")
+			tempAST.Consume()
+			identifierTokens := tempAST.ConsumeRemaining()
 
 			if len(indexTokens) < 1 {
 				return nil, errors.New("Expected dictionary identifier index")
@@ -288,8 +269,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 				return nil, errors.New("Expected dictionary identifier")
 			}
 
-			startToken := tokens[0]
-			endToken := tokens[len(tokens)-1]
+			startToken := tempAST.Start()
+			endToken := tempAST.End()
 
 			identifierNode := &DictionaryIdentifierNode{
 				Node:       *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),

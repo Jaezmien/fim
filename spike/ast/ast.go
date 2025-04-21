@@ -21,6 +21,10 @@ func NewAST(tokens []*token.Token, source string) *AST {
 	}
 }
 
+func (a *AST) Length() int {
+	return len(a.Tokens)
+}
+
 func (a *AST) PeekAt(index int) *token.Token {
 	if index < 0 || index >= len(a.Tokens) {
 		return &token.Token{
@@ -31,6 +35,14 @@ func (a *AST) PeekAt(index int) *token.Token {
 	}
 	return a.Tokens[index]
 }
+
+func (a *AST) Start() *token.Token {
+	return a.PeekAt(0)
+}
+func (a *AST) End() *token.Token {
+	return a.PeekAt(a.Length() - 1)
+}
+
 func (a *AST) Peek() *token.Token {
 	return a.PeekAt(a.TokenIndex)
 }
@@ -69,16 +81,20 @@ func (a *AST) CheckNextType(tokenTypes ...token.TokenType) bool {
 	return slices.Contains(tokenTypes, current.Type)
 }
 
-func (a *AST) Contains(tokenType token.TokenType) bool {
-	for idx := a.PeekIndex(); idx < len(a.Tokens); idx++ {
-		if a.PeekAt(idx).Type == tokenType {
+func (a *AST) ContainsFunc(predicate func(*token.Token) bool) bool {
+	for idx := a.PeekIndex(); idx < a.Length(); idx++ {
+		if predicate(a.PeekAt(idx)) {
 			return true
 		}
 	}
 	return false
 }
+func (a *AST) ContainsToken(tokenType token.TokenType) bool {
+	return a.ContainsFunc(func(t *token.Token) bool { return t.Type == tokenType })
+}
+
 func (a *AST) ContainsWithStop(tokenType token.TokenType, stopTokens ...token.TokenType) bool {
-	for idx := a.PeekIndex(); idx < len(a.Tokens); idx++ {
+	for idx := a.PeekIndex(); idx < a.Length(); idx++ {
 		current := a.PeekAt(idx)
 
 		if slices.Contains(stopTokens, current.Type) {
@@ -91,6 +107,10 @@ func (a *AST) ContainsWithStop(tokenType token.TokenType, stopTokens ...token.To
 	return false
 }
 
+func (a *AST) Consume() (*token.Token) {
+	a.Next()
+	return a.PeekPrevious()
+}
 func (a *AST) ConsumeFunc(predicate func(*token.Token) bool, errorMessage string) (*token.Token, error) {
 	current := a.Peek()
 
@@ -98,9 +118,7 @@ func (a *AST) ConsumeFunc(predicate func(*token.Token) bool, errorMessage string
 		return nil, current.CreateError(errorMessage, a.Source)
 	}
 
-	a.Next()
-
-	return a.PeekPrevious(), nil
+	return a.Consume(), nil
 }
 func (a *AST) ConsumeToken(tokenType token.TokenType, errorMessage string) (*token.Token, error) {
 	return a.ConsumeFunc(func(t *token.Token) bool {
@@ -111,7 +129,7 @@ func (a *AST) ConsumeToken(tokenType token.TokenType, errorMessage string) (*tok
 func (a *AST) ConsumeUntilFuncMatch(predicate func(*token.Token) bool, errorMessage string) ([]*token.Token, error) {
 	tokens := make([]*token.Token, 0)
 
-	for {
+	for a.PeekIndex() < a.Length() {
 		current := a.Peek()
 
 		if a.EndOfFile() {
@@ -132,4 +150,17 @@ func (a *AST) ConsumeUntilTokenMatch(tokenType token.TokenType, errorMessage str
 	return a.ConsumeUntilFuncMatch(func(t *token.Token) bool {
 		return t.Type == tokenType
 	}, errorMessage)
+}
+
+func (a *AST) ConsumeRemaining() ([]*token.Token) {
+	tokens := make([]*token.Token, 0)
+
+	for a.PeekIndex() < a.Length() {
+		current := a.Peek()
+
+		tokens = append(tokens, current)
+		a.Next()
+	}
+
+	return tokens
 }

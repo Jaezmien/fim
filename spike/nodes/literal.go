@@ -11,6 +11,13 @@ type LiteralNode struct {
 	*variable.DynamicVariable
 }
 
+func NewLiteralNode(start int, length int, v *variable.DynamicVariable) *LiteralNode {
+	return &LiteralNode{
+		Node: *NewNode(start, length),
+		DynamicVariable: v,
+	}
+}
+
 // -- //
 
 type LiteralDictionaryNode struct {
