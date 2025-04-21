@@ -10,15 +10,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func CreateReport(t *testing.T, source string) (*Interpreter, bool) {
+type BasicReportOptions struct {
+	Expects string
+	Error   bool
+	Prompt  func(prompt string) (string, error)
+}
+
+
+func CreateReport(t *testing.T, source string, options BasicReportOptions) (*Interpreter, bool) {
 	tokens := twilight.Parse(source)
 	report, err := spike.CreateReport(tokens, source)
-	if !assert.NoError(t, err, "handled by spike") {
-		return nil, false
+
+	if err != nil {
+		if options.Error {
+			return nil, false
+		}
+
+		return nil, assert.Error(t, err, "handled by spike")
 	}
+
 	interpreter, err := NewInterpreter(report, source)
-	if !assert.NoError(t, err, "handled pre-celestia") {
-		return nil, false
+
+	if err != nil {
+		if options.Error {
+			return nil, false
+		}
+
+		return nil, assert.Error(t, err, "handled pre-celestia")
 	}
 
 	return interpreter, true
@@ -38,14 +56,8 @@ func GetMainParagraph(t *testing.T, interpreter *Interpreter) (*Paragraph, bool)
 	return mainParagraph, true
 }
 
-type BasicReportOptions struct {
-	Expects string
-	Error   bool
-	Prompt  func(prompt string) (string, error)
-}
-
 func ExecuteBasicReport(t *testing.T, source string, options BasicReportOptions) {
-	interpreter, ok := CreateReport(t, source)
+	interpreter, ok := CreateReport(t, source, options)
 	if !ok {
 		return
 	}
@@ -758,5 +770,23 @@ func TestIfStatements(t *testing.T) {
 			`
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello Ponyville\n"})
+	})
+	t.Run("should error on multiple else statements", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Statements!
+			Today I learned how to branch statements!
+			Did you know that Spike is the number 2?
+			If Spike is equal to 1,
+				I said "Nope! Not this one.".
+			Otherwise,
+				I said "Well that isn't right!".
+			Otherwise,
+				I said "This isn't right either!".
+			That's what I would do.
+			That's all about how to branch statements.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Error: true})
 	})
 }

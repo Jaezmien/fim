@@ -208,10 +208,11 @@ func ParseIfStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) 
 		Condition:      &conditionNode,
 		StatementsNode: *statements,
 	})
+	hasElseClause := false
 
 	// Optional: ELSE clause
 	for curAST.CheckType(token.TokenType_ElseClause) {
-		_, err := curAST.ConsumeToken(token.TokenType_ElseClause, token.TokenType_ElseClause.Message("Expected %s"))
+		elseToken, err := curAST.ConsumeToken(token.TokenType_ElseClause, token.TokenType_ElseClause.Message("Expected %s"))
 		if err != nil {
 			return nil, err
 		}
@@ -234,6 +235,12 @@ func ParseIfStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) 
 			}
 
 			clause.Condition = &conditionNode
+		} else {
+			if hasElseClause {
+				return nil, elseToken.CreateError("Else condition already exists", curAST.Source)
+			}
+
+			hasElseClause = true
 		}
 
 		if curAST.CheckType(token.TokenType_KeywordThen) {
