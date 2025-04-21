@@ -9,13 +9,17 @@ import (
 )
 
 func CheckInfixAddition(tokens *queue.Queue[*token.Token]) int {
-	SingleTokens := []string{"plus", "added"}
-
-	if !slices.Contains(SingleTokens, tokens.First().Value.Value) {
-		return 0
+	SingleTokens := []string{"plus"}
+	if slices.Contains(SingleTokens, tokens.First().Value.Value) {
+		return 1
 	}
 
-	return 1
+	ExpectedTokens := []string{"added", " ", "to"}
+	if utilities.CheckTokenSequence(tokens, ExpectedTokens) {
+		return len(ExpectedTokens)
+	}
+
+	return 0
 }
 
 func CheckPrefixAddition(tokens *queue.Queue[*token.Token]) int {
