@@ -15,8 +15,10 @@ import (
 )
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*variable.DynamicVariable, error) {
-	i.Variables.PushScope()
-	defer i.Variables.PopScope()
+	newVariableCount := 0
+	defer func()  {
+		i.Variables.PopVariableAmount(false, newVariableCount)
+	}()
 
 	for _, statement := range statements.Statements {
 		if printNode, ok := statement.(*nodes.PrintNode); ok {
@@ -120,6 +122,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 
 			i.Variables.PushVariable(variable, false)
+			newVariableCount += 1
 
 			continue
 		}
