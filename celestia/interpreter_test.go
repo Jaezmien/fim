@@ -733,11 +733,12 @@ func TestIfStatements(t *testing.T) {
 			If Spike is equal to 1 then,
 				I said "Hello World".
 			That's what I would do.
+			I said "Hello Equestria!".
 			That's all about how to branch statements.
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello World\n"})
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello World\nHello Equestria!\n"})
 	})
 	t.Run("should ignore if statement", func(t *testing.T) {
 		source :=
@@ -747,11 +748,12 @@ func TestIfStatements(t *testing.T) {
 			If Spike is equal to 1,
 				I said "Hello World".
 			That's what I would do.
+			I said "Hello Equestria!".
 			That's all about how to branch statements.
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, BasicReportOptions{Expects: ""})
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello Equestria!\n"})
 	})
 	t.Run("should fallback to else statement", func(t *testing.T) {
 		source :=

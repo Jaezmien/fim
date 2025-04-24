@@ -229,7 +229,12 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 				if check {
 					result, err := i.EvaluateStatementsNode(&branch.StatementsNode)
-					return result, err
+
+					if result != nil || err != nil {
+						return result, err
+					}
+					
+					break
 				}
 			}
 
