@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"git.jaezmien.com/Jaezmien/fim/spike/nodes"
+	"git.jaezmien.com/Jaezmien/fim/spike/variable"
 )
 
 type Interpreter struct {
@@ -66,9 +67,29 @@ func NewInterpreter(reportNode *nodes.ReportNode, source string) (*Interpreter, 
 		}
 
 		if variableNode, ok := n.(*nodes.VariableDeclarationNode); ok {
+			if interpreter.Variables.Get(variableNode.Identifier, true) != nil {
+				return nil, variableNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", variableNode.Identifier), interpreter.source)
+			}
+
 			value, err := interpreter.EvaluateValueNode(variableNode.Value, false)
 			if err != nil {
 				return nil, err
+			}
+
+			if value.GetType() == variable.UNKNOWN {
+				if variableNode.ValueType.IsArray() {
+					value = variable.NewDictionaryVariable(variableNode.ValueType)
+				} else {
+					defaultValue, ok := variableNode.ValueType.GetDefaultValue()
+					if !ok {
+						panic("Intepreter@EvaluateStatementsNode could not get default value.")
+					}
+					value = variable.FromValueType(defaultValue, variableNode.ValueType)
+				}
+			}
+
+			if !variableNode.ValueType.IsArray() {
+				value = value.Clone()
 			}
 
 			variable := &Variable{
