@@ -79,6 +79,9 @@ const (
 	TokenType_OperatorDivInfix
 	TokenType_OperatorDivPrefix
 
+	TokenType_OperatorModInfix
+	TokenType_OperatorModPrefix
+
 	TokenType_KeywordOr
 	TokenType_KeywordAnd
 	TokenType_KeywordConst
@@ -164,6 +167,9 @@ var tokenTypeFriendlyName = map[TokenType]string{
 
 	TokenType_OperatorDivInfix:  "OPERATOR(DIV_INFIX)",
 	TokenType_OperatorDivPrefix: "OPERATOR(DIV_PREFIX)",
+
+	TokenType_OperatorModInfix:  "OPERATOR(MOD_INFIX)",
+	TokenType_OperatorModPrefix: "OPERATOR(MOD_PREFIX)",
 
 	TokenType_KeywordOr:           "OR",
 	TokenType_KeywordAnd:          "AND",

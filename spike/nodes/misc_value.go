@@ -167,12 +167,18 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 
 			return callNode, nil
 		}
+
 		expressions := []struct {
 			tokenType  token.TokenType
 			operator   BinaryExpressionOperator
 			binaryType BinaryExpressionType
 		}{
 			// Arithmetic
+			{
+				tokenType:  token.TokenType_OperatorModInfix,
+				operator:   BINARYOPERATOR_MOD,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
 			{
 				tokenType:  token.TokenType_OperatorMulInfix,
 				operator:   BINARYOPERATOR_MUL,

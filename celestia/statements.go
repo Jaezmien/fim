@@ -2,6 +2,7 @@ package celestia
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 
@@ -456,6 +457,8 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 			return variable.NewNumberVariable(left.GetValueNumber() * right.GetValueNumber()), nil
 		case nodes.BINARYOPERATOR_DIV:
 			return variable.NewNumberVariable(left.GetValueNumber() / right.GetValueNumber()), nil
+		case nodes.BINARYOPERATOR_MOD:
+			return variable.NewNumberVariable(math.Mod(left.GetValueNumber(), right.GetValueNumber())), nil
 
 		case nodes.BINARYOPERATOR_AND:
 			return variable.NewBooleanVariable(left.GetValueBoolean() && right.GetValueBoolean()), nil

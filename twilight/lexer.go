@@ -136,6 +136,9 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		{condition: parsers.CheckInfixDivision, result: token.TokenType_OperatorDivInfix},
 		{condition: parsers.CheckPrefixDivision, result: token.TokenType_OperatorDivPrefix},
 
+		{condition: parsers.CheckPrefixModulo, result: token.TokenType_OperatorModPrefix},
+		{condition: parsers.CheckInfixModulo, result: token.TokenType_OperatorModInfix},
+
 		{condition: parsers.CheckLessThanEqualOperator, result: token.TokenType_OperatorLte},
 		{condition: parsers.CheckGreaterThanEqualOperator, result: token.TokenType_OperatorGte},
 		{condition: parsers.CheckGreaterThanOperator, result: token.TokenType_OperatorGt},
