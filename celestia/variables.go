@@ -105,12 +105,14 @@ func (m *VariableManager) Get(name string, local bool) *Variable {
 	}
 
 	if local && m.ScopeDepth() > 0 {
-		current := m.Locals.Peek()
+		for scopeIdx := m.ScopeDepth() - 1; scopeIdx > 0; scopeIdx -= 1 {
+			scope := m.Locals.PeekAt(scopeIdx)
 
-		for idx := 0; idx < current.Len(); idx += 1 {
-			variable := current.PeekAt(idx)
-			if variable.Name == name {
-				return variable
+			for idx := 0; idx < scope.Len(); idx += 1 {
+				variable := scope.PeekAt(idx)
+				if variable.Name == name {
+					return variable
+				}
 			}
 		}
 	}

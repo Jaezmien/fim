@@ -15,6 +15,9 @@ import (
 )
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*variable.DynamicVariable, error) {
+	i.Variables.PushScope()
+	defer i.Variables.PopScope()
+
 	for _, statement := range statements.Statements {
 		if printNode, ok := statement.(*nodes.PrintNode); ok {
 			value, err := i.EvaluateValueNode(printNode.Value, true)
