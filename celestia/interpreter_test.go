@@ -26,7 +26,7 @@ func CreateReport(t *testing.T, source string, options BasicReportOptions) (*Int
 			return nil, false
 		}
 
-		return nil, assert.Error(t, err, "handled by spike")
+		return nil, assert.NoError(t, err, "handled by spike")
 	}
 
 	interpreter, err := NewInterpreter(report, source)
@@ -36,7 +36,7 @@ func CreateReport(t *testing.T, source string, options BasicReportOptions) (*Int
 			return nil, false
 		}
 
-		return nil, assert.Error(t, err, "handled pre-celestia")
+		return nil, assert.NoError(t, err, "handled pre-celestia") 
 	}
 
 	return interpreter, true
