@@ -84,6 +84,10 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 		if variableNode, ok := statement.(*nodes.VariableDeclarationNode); ok {
+			if i.Variables.Get(variableNode.Identifier, true) != nil {
+				return nil, variableNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", variableNode.Identifier), i.source)
+			}
+
 			value, err := i.EvaluateValueNode(variableNode.Value, true)
 			if err != nil {
 				return nil, err
