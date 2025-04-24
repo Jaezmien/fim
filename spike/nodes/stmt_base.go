@@ -27,6 +27,12 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 		}
 
 		if curAST.CheckType(token.TokenType_NewLine) {
+			curAST.Consume()
+			continue
+		}
+
+		if curAST.CheckType(token.TokenType_Punctuation) {
+			curAST.Consume()
 			continue
 		}
 

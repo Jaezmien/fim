@@ -137,6 +137,22 @@ func TestReport(t *testing.T) {
 	assert.Equal(t, "Hello World\n", string(data))
 }
 
+func TestCases(t *testing.T) {
+	t.Run("should accept empty lines", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Hello!
+			Today I learned how to run code!
+			I said "Hello World!".
+			...
+			I said "Goodbye!".
+			That's all about how to run code.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello World!\nGoodbye!\n"})
+	})
+}
+
 func TestIO(t *testing.T) {
 	t.Run("should print", func(t *testing.T) {
 		source :=
