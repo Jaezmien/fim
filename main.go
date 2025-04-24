@@ -49,6 +49,8 @@ func main() {
 				token.Type,
 			)
 		}
+
+		return
 	}
 
 	report, err := spike.CreateReport(tokens, source)
