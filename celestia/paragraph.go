@@ -73,11 +73,13 @@ func (p *Paragraph) Execute(parameters ...*variable.DynamicVariable) (*variable.
 	value, err := p.Interpreter.EvaluateStatementsNode(p.FunctionNode.Body)
 	p.Interpreter.Variables.PopScope()
 
-	if value != nil && p.FunctionNode.ReturnType == variable.UNKNOWN {
-		return nil, p.FunctionNode.Node.CreateError(fmt.Sprintf("Paragraph '%s' with no return type returned a value", p.Name), p.Interpreter.source)
-	}
-	if value != nil && value.GetType() != p.FunctionNode.ReturnType {
-		return nil, p.FunctionNode.Node.CreateError(fmt.Sprintf("Paragraph '%s' expected return value of type '%s', received '%s'", p.Name, p.FunctionNode.ReturnType, value.GetType()), p.Interpreter.source)
+	if value != nil && value.GetType() != variable.UNKNOWN {
+		if p.FunctionNode.ReturnType == variable.UNKNOWN {
+			return nil, p.FunctionNode.Node.CreateError(fmt.Sprintf("Paragraph '%s' with no return type returned a value", p.Name), p.Interpreter.source)
+		}
+		if value.GetType() != p.FunctionNode.ReturnType {
+			return nil, p.FunctionNode.Node.CreateError(fmt.Sprintf("Paragraph '%s' expected return value of type '%s', received '%s'", p.Name, p.FunctionNode.ReturnType, value.GetType()), p.Interpreter.source)
+		}
 	}
 
 	return value, err

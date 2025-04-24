@@ -838,4 +838,28 @@ func TestWhileStatements(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: ""})
 	})
+	t.Run("should skip while statement", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: While Loops!
+			I learned how to count!
+				Did you know that Spike is the number 1?
+				As long as Spike is no greater than 5...
+					I said Spike.
+
+					If Spike is equal to 4,
+						Then you get nothing!
+					That's what I would do.
+
+					Spike got one more.
+				That's what I did.
+			That's all about how to count.
+
+			Today I learned how to run loops!
+				I remembered how to count.
+			That's all about how to run loops.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1\n2\n3\n4\n"})
+	})
 }
