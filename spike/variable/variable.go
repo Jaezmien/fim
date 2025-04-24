@@ -162,3 +162,10 @@ func (v *DynamicVariable) GetValueDictionary() map[int]*DynamicVariable {
 func (v *DynamicVariable) GetType() VariableType {
 	return v.valueType
 }
+
+func (v *DynamicVariable) Clone() *DynamicVariable {
+	return &DynamicVariable{
+		value: v.value,
+		valueType: v.valueType,
+	}
+}
