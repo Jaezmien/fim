@@ -806,3 +806,36 @@ func TestIfStatements(t *testing.T) {
 		ExecuteBasicReport(t, source, BasicReportOptions{Error: true})
 	})
 }
+
+func TestWhileStatements(t *testing.T) {
+	t.Run("should run while statement", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: While Loops!
+			Today I learned how to run loops!
+				Did you know that Spike is the number 1?
+				As long as Spike is no greater than 5...
+					I said Spike.
+					Spike got one more.
+				That's what I did.
+			That's all about how to run loops.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1\n2\n3\n4\n5\n"})
+	})
+	t.Run("should ignore while statement", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: While Loops!
+			Today I learned how to run loops!
+				Did you know that Spike is the number 10?
+				As long as Spike is no greater than 5...
+					I said Spike.
+					Spike got one more.
+				That's what I did.
+			That's all about how to run loops.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: ""})
+	})
+}

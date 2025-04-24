@@ -124,6 +124,9 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		{condition: parsers.CheckElseKeyword, result: token.TokenType_ElseClause},
 		{condition: parsers.CheckIfEndKeyword, result: token.TokenType_IfEndClause},
 
+		{condition: parsers.CheckWhileKeyword, result: token.TokenType_WhileClause},
+		{condition: parsers.CheckStatementEndKeyword, result: token.TokenType_KeywordStatementEnd},
+
 		{condition: parsers.CheckInfixAddition, result: token.TokenType_OperatorAddInfix},
 		{condition: parsers.CheckPrefixAddition, result: token.TokenType_OperatorAddPrefix},
 		{condition: parsers.CheckInfixSubtraction, result: token.TokenType_OperatorSubInfix},

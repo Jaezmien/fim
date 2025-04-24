@@ -236,6 +236,33 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			continue
 		}
 
+		if whileNode, ok := statement.(*nodes.WhileStatementNode); ok {
+			for {
+				branchCheck, err := i.EvaluateValueNode(*whileNode.Condition, true)
+				if err != nil {
+					return nil, err
+				}
+
+				if branchCheck.GetType() != variable.BOOLEAN {
+					return nil, whileNode.ToNode().CreateError(fmt.Sprintf("Expected condition to result in type %s, got %s", variable.BOOLEAN, branchCheck.GetType()), i.source)
+				}
+
+				check := branchCheck.GetValueBoolean()
+
+				if !check {
+					break
+				}
+
+				result, err := i.EvaluateStatementsNode(&whileNode.StatementsNode)
+
+				if result != nil || err != nil {
+					return result, err
+				}
+			}
+
+			continue
+		}
+
 		if unaryNode, ok := statement.(*nodes.UnaryExpressionNode); ok {
 			if !i.Variables.Has(unaryNode.Identifier, true) {
 				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", unaryNode.Identifier), i.source)

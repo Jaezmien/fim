@@ -39,7 +39,7 @@ func CheckOfKeyword(tokens *queue.Queue[*token.Token]) int {
 }
 
 func CheckStatementEndKeyword(tokens *queue.Queue[*token.Token]) int {
-	ExpectedTokens := []string{"That", "'", "s", " ", "what", " ", "I", "did"}
+	ExpectedTokens := []string{"That", "'", "s", " ", "what", " ", "I", " ", "did"}
 
 	if !utilities.CheckTokenSequence(tokens, ExpectedTokens) {
 		return 0

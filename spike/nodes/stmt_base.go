@@ -95,6 +95,16 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			continue
 		}
 
+		if curAST.CheckType(token.TokenType_WhileClause) {
+			node, err := ParseWhileStatementNode(curAST)
+			if err != nil {
+				return nil, err
+			}
+
+			statements.Statements = append(statements.Statements, node)
+			continue
+		}
+
 		if curAST.CheckType(token.TokenType_UnaryIncrementPrefix, token.TokenType_UnaryDecrementPrefix) {
 			if curAST.CheckNextType(token.TokenType_Identifier) {
 				node, err := ParsePrefixUnary(curAST)
