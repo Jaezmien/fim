@@ -29,16 +29,25 @@ func CheckThenKeyword(tokens *queue.Queue[*token.Token]) int {
 }
 
 func CheckElseKeyword(tokens *queue.Queue[*token.Token]) int {
+	// HACK: This is the stupidest way of bypassing
+	// Otherwise If (because we're checking tokens instead of values)
+	ExpectedMultiTokens := [][]string{
+		{"Otherwise", " ", "if"},
+		{"Or", " ", "else", " ", "if"},
+		{"Or", " ", "else"},
+	}
+	for _, sequence := range ExpectedMultiTokens {
+		if utilities.CheckTokenSequence(tokens, sequence) {
+			return len(sequence)
+		}
+	}
+
 	SingleTokens := []string{"Otherwise"}
 
 	if slices.Contains(SingleTokens, tokens.First().Value.Value) {
 		return 1
 	}
 
-	ExpectedTokens := []string{"Or", " ", "else"}
-	if utilities.CheckTokenSequence(tokens, ExpectedTokens) {
-		return len(ExpectedTokens)
-	}
 
 	return 0
 }
