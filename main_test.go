@@ -183,7 +183,7 @@ func TestReports(t *testing.T) {
 		{
 			Name: "recursion.fim",
 			BasicReportOptions: BasicReportOptions{
-				Expects: "5\n4\n3\n2\n1",
+				Expects: "5\n4\n3\n2\n1\n",
 			},
 		},
 		{
