@@ -191,6 +191,41 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	return tokens
 }
 
+// This will turn specific tokens into literal tokens if conditions has not been met
+func smartLiteralToken(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
+	tokens := queue.New[*token.Token]()
+
+	isForEvery := false
+
+	for oldTokens.Len() > 0 {
+		t := oldTokens.Dequeue().Value
+
+		if t.Type == token.TokenType_ForEveryClause {
+			isForEvery = true
+		}
+
+		if !isForEvery {
+			if t.Type == token.TokenType_KeywordIn {
+				t.Type = token.TokenType_Identifier
+			}
+			if t.Type == token.TokenType_KeywordFrom {
+				t.Type = token.TokenType_Identifier
+			}
+			if t.Type == token.TokenType_KeywordTo {
+				t.Type = token.TokenType_Identifier
+			}
+		}
+	
+		if t.Type == token.TokenType_Punctuation || t.Type == token.TokenType_NewLine {
+			isForEvery = false
+		}
+
+		tokens.Queue(t)
+	}
+
+	return tokens
+}
+
 // Combine any literal tokens that are queued against one another into just one partial
 // token instead.
 func mergeLiterals(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
