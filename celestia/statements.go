@@ -16,43 +16,41 @@ import (
 
 func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (*variable.DynamicVariable, error) {
 	newVariableCount := 0
-	defer func()  {
+	defer func() {
 		i.Variables.PopVariableAmount(false, newVariableCount)
 	}()
 
 	for _, statement := range statements.Statements {
-		if printNode, ok := statement.(*nodes.PrintNode); ok {
-			value, err := i.EvaluateValueNode(printNode.Value, true)
+		switch n := statement.(type) {
+		case *nodes.PrintNode:
+			value, err := i.EvaluateValueNode(n.Value, true)
 			if err != nil {
 				return nil, err
 			}
 			i.Writer.Write([]byte(value.GetValueString()))
 
-			if printNode.NewLine {
+			if n.NewLine {
 				i.Writer.Write([]byte("\n"))
 			}
-
-			continue
-		}
-		if promptNode, ok := statement.(*nodes.PromptNode); ok {
-			if !i.Variables.Has(promptNode.Identifier, true) {
-				return nil, promptNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", promptNode.Identifier), i.source)
+		case *nodes.PromptNode:
+			if !i.Variables.Has(n.Identifier, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
 			}
-			v := i.Variables.Get(promptNode.Identifier, true)
+			v := i.Variables.Get(n.Identifier, true)
 			if v.Constant {
-				return nil, promptNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
 
 			if v.DynamicVariable.GetType().IsArray() {
-				return nil, promptNode.ToNode().CreateError("Expected variable to be of non-array type", i.source)
+				return nil, n.ToNode().CreateError("Expected variable to be of non-array type", i.source)
 			}
 
-			value, err := i.EvaluateValueNode(promptNode.Prompt, true)
+			value, err := i.EvaluateValueNode(n.Prompt, true)
 			if err != nil {
 				return nil, err
 			}
 			if value.GetType() != variable.STRING {
-				return nil, promptNode.ToNode().CreateError("Expected prompt to be of type STRING", i.source)
+				return nil, n.ToNode().CreateError("Expected prompt to be of type STRING", i.source)
 			}
 
 			response, err := i.Prompt(value.GetValueString())
@@ -66,86 +64,81 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			case variable.CHARACTER:
 				value, ok := luna.AsCharacterValue(response)
 				if !ok {
-					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid character value: %s", response), i.source)
+					return nil, n.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid character value: %s", response), i.source)
 				}
 				v.DynamicVariable.SetValueCharacter(value)
 			case variable.BOOLEAN:
 				value, ok := luna.AsBooleanValue(response)
 				if !ok {
-					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid boolean value: %s", response), i.source)
+					return nil, n.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid boolean value: %s", response), i.source)
 				}
 				v.DynamicVariable.SetValueBoolean(value)
 			case variable.NUMBER:
 				value, err := strconv.ParseFloat(response, 64)
 				if err != nil {
-					return nil, promptNode.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid number value: %s", response), i.source)
+					return nil, n.Prompt.ToNode().CreateError(fmt.Sprintf("Invalid number value: %s", response), i.source)
 				}
 				v.DynamicVariable.SetValueNumber(value)
 			}
-
-			continue
-		}
-		if variableNode, ok := statement.(*nodes.VariableDeclarationNode); ok {
-			if i.Variables.Get(variableNode.Identifier, true) != nil {
-				return nil, variableNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", variableNode.Identifier), i.source)
+		case *nodes.VariableDeclarationNode:
+			if i.Variables.Get(n.Identifier, true) != nil {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", n.Identifier), i.source)
 			}
 
-			value, err := i.EvaluateValueNode(variableNode.Value, true)
+			value, err := i.EvaluateValueNode(n.Value, true)
 			if err != nil {
 				return nil, err
 			}
 
 			if value.GetType() == variable.UNKNOWN {
-				if variableNode.ValueType.IsArray() {
-					value = variable.NewDictionaryVariable(variableNode.ValueType)
+				if n.ValueType.IsArray() {
+					value = variable.NewDictionaryVariable(n.ValueType)
 				} else {
-					defaultValue, ok := variableNode.ValueType.GetDefaultValue()
+					defaultValue, ok := n.ValueType.GetDefaultValue()
 					if !ok {
 						panic("Intepreter@EvaluateStatementsNode could not get default value.")
 					}
-					value = variable.FromValueType(defaultValue, variableNode.ValueType)
+					value = variable.FromValueType(defaultValue, n.ValueType)
 				}
 			}
 
-			if !variableNode.ValueType.IsArray() {
+			if !n.ValueType.IsArray() {
 				value = value.Clone()
 			}
 
-			if variableNode.ValueType != value.GetType() {
-				return nil, variableNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'", variableNode.ValueType, value.GetType()), i.source)
+			if n.ValueType != value.GetType() {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'", n.ValueType, value.GetType()), i.source)
 			}
 
 			variable := &Variable{
-				Name:            variableNode.Identifier,
+				Name:            n.Identifier,
 				DynamicVariable: value,
-				Constant:        variableNode.Constant,
+				Constant:        n.Constant,
 			}
 
 			i.Variables.PushVariable(variable, false)
 			newVariableCount += 1
 
-			continue
-		}
-		if modifyNode, ok := statement.(*nodes.VariableModifyNode); ok {
-			if !i.Variables.Has(modifyNode.Identifier, true) {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
+		case *nodes.VariableModifyNode:
+			if !i.Variables.Has(n.Identifier, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
 			}
-			v := i.Variables.Get(modifyNode.Identifier, true)
+			v := i.Variables.Get(n.Identifier, true)
 
 			if v.GetType().IsArray() {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Cannot modify an array."), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Cannot modify an array."), i.source)
 			}
 			if v.Constant {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
 
-			if modifyNode.ReinforcementType != variable.UNKNOWN {
-				if v.GetType() != modifyNode.ReinforcementType {
-					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, v.GetType()), i.source)
+			if n.ReinforcementType != variable.UNKNOWN {
+				if v.GetType() != n.ReinforcementType {
+					return nil, n.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", n.ReinforcementType, v.GetType()), i.source)
 				}
 			}
 
-			value, err := i.EvaluateValueNode(modifyNode.Value, true)
+			value, err := i.EvaluateValueNode(n.Value, true)
 			if err != nil {
 				return nil, err
 			}
@@ -159,7 +152,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 
 			if v.GetType() != value.GetType() && (v.DynamicVariable.GetType() != variable.STRING && !value.GetType().IsArray()) {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", v.GetType(), value.GetType()), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", v.GetType(), value.GetType()), i.source)
 			}
 
 			switch v.GetType() {
@@ -172,35 +165,31 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			case variable.NUMBER:
 				v.SetValueNumber(value.GetValueNumber())
 			}
-
-			continue
-		}
-
-		if modifyNode, ok := statement.(*nodes.ArrayModifyNode); ok {
-			if !i.Variables.Has(modifyNode.Identifier, true) {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", modifyNode.Identifier), i.source)
+		case *nodes.ArrayModifyNode:
+			if !i.Variables.Has(n.Identifier, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
 			}
-			v := i.Variables.Get(modifyNode.Identifier, true)
+			v := i.Variables.Get(n.Identifier, true)
 
 			if !v.GetType().IsArray() {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Invalid non-array variable."), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Invalid non-array variable."), i.source)
 			}
 
-			if modifyNode.ReinforcementType != variable.UNKNOWN {
-				if v.GetType().AsBaseType() != modifyNode.ReinforcementType {
-					return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", modifyNode.ReinforcementType, v.GetType()), i.source)
+			if n.ReinforcementType != variable.UNKNOWN {
+				if v.GetType().AsBaseType() != n.ReinforcementType {
+					return nil, n.Value.ToNode().CreateError(fmt.Sprintf("Got reinforcement type '%s' when expecting type '%s'", n.ReinforcementType, v.GetType()), i.source)
 				}
 			}
 
-			index, err := i.EvaluateValueNode(modifyNode.Index, true)
+			index, err := i.EvaluateValueNode(n.Index, true)
 			if err != nil {
 				return nil, err
 			}
 			if index.GetType() != variable.NUMBER {
-				return nil, modifyNode.Index.ToNode().CreateError(fmt.Sprintf("Expected a numeric index, got type %s", index.GetType()), i.source)
+				return nil, n.Index.ToNode().CreateError(fmt.Sprintf("Expected a numeric index, got type %s", index.GetType()), i.source)
 			}
 
-			value, err := i.EvaluateValueNode(modifyNode.Value, true)
+			value, err := i.EvaluateValueNode(n.Value, true)
 			if err != nil {
 				return nil, err
 			}
@@ -213,20 +202,16 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				value = variable.FromValueType(defaultValue, v.GetType())
 			}
 			if value.GetType().IsArray() {
-				return nil, modifyNode.Value.ToNode().CreateError(fmt.Sprintf("Cannot insert an array value"), i.source)
+				return nil, n.Value.ToNode().CreateError(fmt.Sprintf("Cannot insert an array value"), i.source)
 			}
 
 			if v.GetType().AsBaseType() != value.GetType() {
-				return nil, modifyNode.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", v.GetType().AsBaseType(), value.GetType()), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'.", v.GetType().AsBaseType(), value.GetType()), i.source)
 			}
 
 			v.GetValueDictionary()[int(index.GetValueNumber())] = value
-
-			continue
-		}
-
-		if ifNode, ok := statement.(*nodes.IfStatementNode); ok {
-			for _, branch := range ifNode.Conditions {
+		case *nodes.IfStatementNode:
+			for _, branch := range n.Conditions {
 				check := true
 
 				if branch.Condition != nil {
@@ -248,23 +233,19 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 					if result != nil || err != nil {
 						return result, err
 					}
-					
+
 					break
 				}
 			}
-
-			continue
-		}
-
-		if whileNode, ok := statement.(*nodes.WhileStatementNode); ok {
+		case *nodes.WhileStatementNode:
 			for {
-				branchCheck, err := i.EvaluateValueNode(*whileNode.Condition, true)
+				branchCheck, err := i.EvaluateValueNode(*n.Condition, true)
 				if err != nil {
 					return nil, err
 				}
 
 				if branchCheck.GetType() != variable.BOOLEAN {
-					return nil, whileNode.ToNode().CreateError(fmt.Sprintf("Expected condition to result in type %s, got %s", variable.BOOLEAN, branchCheck.GetType()), i.source)
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected condition to result in type %s, got %s", variable.BOOLEAN, branchCheck.GetType()), i.source)
 				}
 
 				check := branchCheck.GetValueBoolean()
@@ -273,47 +254,40 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 					break
 				}
 
-				result, err := i.EvaluateStatementsNode(&whileNode.StatementsNode)
+				result, err := i.EvaluateStatementsNode(&n.StatementsNode)
 
 				if result != nil || err != nil {
 					return result, err
 				}
 			}
-
-			continue
-		}
-
-		if unaryNode, ok := statement.(*nodes.UnaryExpressionNode); ok {
-			if !i.Variables.Has(unaryNode.Identifier, true) {
-				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", unaryNode.Identifier), i.source)
+		case *nodes.UnaryExpressionNode:
+			if !i.Variables.Has(n.Identifier, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
 			}
-			v := i.Variables.Get(unaryNode.Identifier, true)
+			v := i.Variables.Get(n.Identifier, true)
 
 			if v.GetType() != variable.NUMBER {
-				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", v.GetType()), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", v.GetType()), i.source)
 			}
 			if v.Constant {
-				return nil, unaryNode.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
 			}
 
-			if unaryNode.Increment {
+			if n.Increment {
 				v.SetValueNumber(v.GetValueNumber() + 1)
 			} else {
 				v.SetValueNumber(v.GetValueNumber() - 1)
 			}
-			continue
-		}
-
-		if callNode, ok := statement.(*nodes.FunctionCallNode); ok {
-			paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
+		case *nodes.FunctionCallNode:
+			paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == n.Identifier })
 			if paragraphIndex == -1 {
-				return nil, statement.ToNode().CreateError(fmt.Sprintf("Paragraph '%s' not found", callNode.Identifier), i.source)
+				return nil, statement.ToNode().CreateError(fmt.Sprintf("Paragraph '%s' not found", n.Identifier), i.source)
 			}
 
 			paragraph := i.Paragraphs[paragraphIndex]
 
 			parameters := make([]*variable.DynamicVariable, 0)
-			for _, parameter := range callNode.Parameters {
+			for _, parameter := range n.Parameters {
 				valueNode, err := i.EvaluateValueNode(parameter, true)
 				if err != nil {
 					return nil, err
@@ -325,17 +299,12 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if err != nil {
 				return nil, err
 			}
-
-			continue
-		}
-
-		if returnNode, ok := statement.(*nodes.FunctionReturnNode); ok {
-			value, err := i.EvaluateValueNode(returnNode.Value, true)
-
+		case *nodes.FunctionReturnNode:
+			value, err := i.EvaluateValueNode(n.Value, true)
 			return value, err
+		default:
+			return nil, statement.ToNode().CreateError("Unsupported statement node.", i.source)
 		}
-
-		return nil, statement.ToNode().CreateError("Unsupported statement node.", i.source)
 	}
 
 	return nil, nil
@@ -386,9 +355,9 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 					return nil, err
 				}
 
-				parameters = append( parameters, value )
+				parameters = append(parameters, value)
 			}
-			 
+
 			value, err := paragraph.Execute(parameters...)
 			return value, err
 		}
