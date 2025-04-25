@@ -40,6 +40,7 @@ func (p *Paragraph) Execute(parameters ...*variable.DynamicVariable) (*variable.
 			p.Interpreter.Variables.PushVariable(&Variable{
 				Name:            expecting.Name,
 				DynamicVariable: received,
+				Constant:        true,
 			}, false)
 		} else {
 			value, ok := expecting.VariableType.GetDefaultValue()
@@ -51,6 +52,7 @@ func (p *Paragraph) Execute(parameters ...*variable.DynamicVariable) (*variable.
 			p.Interpreter.Variables.PushVariable(&Variable{
 				Name:            expecting.Name,
 				DynamicVariable: defaultVariable,
+				Constant:        true,
 			}, false)
 		}
 	}

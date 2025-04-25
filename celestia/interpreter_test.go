@@ -721,6 +721,36 @@ func TestFunctions(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello\n0\n"})
 	})
+	t.Run("should forbid changing value", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to receive a text using the word x!
+			x became "World!".
+			That's all about how to receive a text.
+			Today I learned how to run a function!
+			I remembered how to receive a text using the word "Hello".
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Error: true})
+	})
+	t.Run("should allow changing value of array", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to receive a text using the words Apples!
+			1 of Apples is "Gala!".
+			That's all about how to receive a text.
+			Today I learned how to run a function!
+			Did you know that Apples has the words "Gala", "Red Delicious", "Mcintosh", "Honeycrisp"?
+			I remembered how to receive a text using Apples.
+			I said 1 of Apples.
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Gala!\n"})
+	})
 }
 
 func TestIfStatements(t *testing.T) {
