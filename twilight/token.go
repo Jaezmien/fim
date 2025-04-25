@@ -13,8 +13,8 @@ func Parse(source string) []*token.Token {
 
 	t = createTokens(t)
 	t = mergeMultiTokens(t)
-	t = smartLiteralToken(t)
-	t = mergeLiterals(t)
+	t = smartIdentifierTokens(t)
+	t = mergeIdentifiers(t)
 	t = cleanTokens(t)
 
 	return t.Flatten()

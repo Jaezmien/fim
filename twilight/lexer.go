@@ -191,8 +191,8 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 	return tokens
 }
 
-// This will turn specific tokens into literal tokens if conditions has not been met
-func smartLiteralToken(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
+// This will turn specific tokens into identifier tokens if conditions has not been met
+func smartIdentifierTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
 	isForEvery := false
@@ -226,43 +226,43 @@ func smartLiteralToken(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token
 	return tokens
 }
 
-// Combine any literal tokens that are queued against one another into just one partial
+// Combine any identifier tokens that are queued against one another into just one partial
 // token instead.
-func mergeLiterals(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
+func mergeIdentifiers(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.Token] {
 	tokens := queue.New[*token.Token]()
 
-	var literalToken *token.Token
+	var identifierToken *token.Token
 	for oldTokens.Len() > 0 {
 		t := oldTokens.Dequeue().Value
 
 		if t.Type != token.TokenType_Identifier {
-			if literalToken != nil &&
+			if identifierToken != nil &&
 				t.Type == token.TokenType_Whitespace &&
 				oldTokens.Len() >= 1 &&
 				oldTokens.First().Value.Type == token.TokenType_Identifier {
-				literalToken.Append(t)
+				identifierToken.Append(t)
 				continue
 			}
 
-			if literalToken != nil {
-				tokens.Queue(literalToken)
-				literalToken = nil
+			if identifierToken != nil {
+				tokens.Queue(identifierToken)
+				identifierToken = nil
 			}
 			tokens.Queue(t)
 			continue
 		}
 
-		if literalToken != nil {
-			literalToken.Append(t)
+		if identifierToken != nil {
+			identifierToken.Append(t)
 			continue
 		}
-		literalToken = t
+		identifierToken = t
 	}
 
 	// Flush remaining
-	if literalToken != nil {
-		tokens.Queue(literalToken)
-		literalToken = nil
+	if identifierToken != nil {
+		tokens.Queue(identifierToken)
+		identifierToken = nil
 	}
 
 	return tokens
