@@ -461,6 +461,10 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 				value := v.GetValueDictionary()[int(idx.GetValueNumber())]
 
+				if value == nil {
+					value = variable.NewNumberVariable(0)
+				}
+
 				if n.Increment {
 					value.SetValueNumber(value.GetValueNumber() + 1)
 				} else {
