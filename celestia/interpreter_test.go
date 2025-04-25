@@ -16,7 +16,6 @@ type BasicReportOptions struct {
 	Prompt  func(prompt string) (string, error)
 }
 
-
 func CreateReport(t *testing.T, source string, options BasicReportOptions) (*Interpreter, bool) {
 	tokens := twilight.Parse(source)
 	report, err := spike.CreateReport(tokens, source)
@@ -36,7 +35,7 @@ func CreateReport(t *testing.T, source string, options BasicReportOptions) (*Int
 			return nil, false
 		}
 
-		return nil, assert.NoError(t, err, "handled pre-celestia") 
+		return nil, assert.NoError(t, err, "handled pre-celestia")
 	}
 
 	return interpreter, true
@@ -892,5 +891,34 @@ func TestForEveryStatements(t *testing.T) {
 			`
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "5\n4\n3\n2\n1\n"})
+	})
+	t.Run("should run iterate through string", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Iteration!
+			Today I learned how to iterate!
+				Did you know that Applejack is the word "Apples"?
+				For every character c in Applejack...
+					I quickly said c.
+				That's what I did.
+			That's all about how to iterate.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Apples"})
+	})
+	t.Run("should run iterate through array", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Iteration!
+			Today I learned how to iterate!
+				Did you know that Apples has the words "Gala", "Red Delicious", "Mcintosh", "Honeycrisp"?
+
+				For every word type in Apples...
+					I said type.
+				That's what I did.
+			That's all about how to iterate.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Gala\nRed Delicious\nMcintosh\nHoneycrisp\n"})
 	})
 }

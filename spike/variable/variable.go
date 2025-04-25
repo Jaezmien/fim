@@ -36,15 +36,21 @@ func FromValueType(value string, t VariableType) *DynamicVariable {
 	}
 }
 
+// Used for creating string variables, where the string value is
+// surrounded by quotation marks
 func NewStringVariable(value string) *DynamicVariable {
 	return NewRawStringVariable(luna.UnsanitizeString(value, true))
 }
+// Used for creating string variables, where the string value is not
+// surrounded by quotation marks
 func NewRawStringVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
 		value:     value,
 		valueType: STRING,
 	}
 }
+// Used for creating string variables, where the character value is
+// surrounded by quote marks
 func NewCharacterVariable(value string) *DynamicVariable {
 	value = value[1 : len(value)-1]
 
@@ -55,6 +61,8 @@ func NewCharacterVariable(value string) *DynamicVariable {
 
 	return NewRawCharacterVariable(value)
 }
+// Used for creating string variables, where the character value is not
+// surrounded by quote marks
 func NewRawCharacterVariable(value string) *DynamicVariable {
 	return &DynamicVariable{
 		value:     value,

@@ -257,6 +257,111 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 					return result, err
 				}
 			}
+		case *nodes.ForEveryArrayStatementNode:
+			if !i.Variables.Has(n.Identifier, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
+			}
+
+			v := i.Variables.Get(n.Identifier, true)
+
+			if v.GetType().IsArray() {
+				if v.GetType().AsBaseType() != n.VariableType {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected loop variable to be type %s, got %s", v.GetType().AsBaseType(), n.VariableType), i.source)
+				}
+			} else if v.GetType() == variable.STRING {
+				if variable.CHARACTER != n.VariableType {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected loop variable to be type %s, got %s", variable.CHARACTER, n.VariableType), i.source)
+				}
+			} else {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected an array variable, got type %s", v.GetType()), i.source)
+			}
+
+			if i.Variables.Has(n.VariableName, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", n.VariableName), i.source)
+			}
+
+			if v.GetType() == variable.STRING {
+				for _, c := range v.GetValueString() {
+					variable := &Variable{
+						Name:            n.VariableName,
+						DynamicVariable: variable.NewRawCharacterVariable(string(c)),
+						Constant:        true,
+					}
+
+					i.Variables.PushVariable(variable, false)
+					result, err := i.EvaluateStatementsNode(&n.StatementsNode)
+					i.Variables.PopVariable(false)
+
+					if result != nil || err != nil {
+						return result, err
+					}
+				}
+				break
+			}
+
+			keys := make([]int, 0, len(v.GetValueDictionary()))
+			for k := range v.GetValueDictionary() {
+				keys = append(keys, k)
+			}
+			slices.Sort(keys)
+
+			switch v.GetType() {
+			case variable.STRING_ARRAY:
+				for _, k := range keys {
+					v := v.GetValueDictionary()[k]
+
+					variable := &Variable{
+						Name:            n.VariableName,
+						DynamicVariable: variable.NewRawStringVariable(v.GetValueString()),
+						Constant:        true,
+					}
+
+					i.Variables.PushVariable(variable, false)
+					result, err := i.EvaluateStatementsNode(&n.StatementsNode)
+					i.Variables.PopVariable(false)
+
+					if result != nil || err != nil {
+						return result, err
+					}
+				}
+			case variable.BOOLEAN_ARRAY:
+				for _, k := range keys {
+					v := v.GetValueDictionary()[k]
+
+					variable := &Variable{
+						Name:            n.VariableName,
+						DynamicVariable: variable.NewBooleanVariable(v.GetValueBoolean()),
+						Constant:        true,
+					}
+
+					i.Variables.PushVariable(variable, false)
+					result, err := i.EvaluateStatementsNode(&n.StatementsNode)
+					i.Variables.PopVariable(false)
+
+					if result != nil || err != nil {
+						return result, err
+					}
+				}
+			case variable.NUMBER_ARRAY:
+				for _, k := range keys {
+					v := v.GetValueDictionary()[k]
+
+					variable := &Variable{
+						Name:            n.VariableName,
+						DynamicVariable: variable.NewNumberVariable(v.GetValueNumber()),
+						Constant:        true,
+					}
+
+					i.Variables.PushVariable(variable, false)
+					result, err := i.EvaluateStatementsNode(&n.StatementsNode)
+					i.Variables.PopVariable(false)
+
+					if result != nil || err != nil {
+						return result, err
+					}
+				}
+			}
+
 		case *nodes.ForEveryRangeStatementNode:
 			if i.Variables.Has(n.VariableName, true) {
 				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", n.VariableName), i.source)

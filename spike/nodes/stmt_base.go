@@ -107,6 +107,15 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 		{
 			Check: func() bool {
 				return curAST.CheckType(token.TokenType_ForEveryClause) &&
+					curAST.ContainsWithStop(token.TokenType_KeywordIn, token.TokenType_EndOfFile, token.TokenType_NewLine)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseForEveryArrayStatementNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_ForEveryClause) &&
 					curAST.ContainsWithStop(token.TokenType_KeywordFrom, token.TokenType_EndOfFile, token.TokenType_NewLine) &&
 					curAST.ContainsWithStop(token.TokenType_KeywordTo, token.TokenType_EndOfFile, token.TokenType_NewLine)
 			},

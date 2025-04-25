@@ -173,6 +173,18 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			operator   BinaryExpressionOperator
 			binaryType BinaryExpressionType
 		}{
+			// Logical
+			{
+				tokenType:  token.TokenType_KeywordAnd,
+				operator:   BINARYOPERATOR_AND,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+			{
+				tokenType:  token.TokenType_KeywordOr,
+				operator:   BINARYOPERATOR_OR,
+				binaryType: BINARYTYPE_RELATIONAL,
+			},
+
 			// Relational
 			{
 				tokenType:  token.TokenType_OperatorGte,
@@ -202,17 +214,6 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			{
 				tokenType:  token.TokenType_OperatorEq,
 				operator:   BINARYOPERATOR_EQ,
-				binaryType: BINARYTYPE_RELATIONAL,
-			},
-
-			{
-				tokenType:  token.TokenType_KeywordAnd,
-				operator:   BINARYOPERATOR_AND,
-				binaryType: BINARYTYPE_RELATIONAL,
-			},
-			{
-				tokenType:  token.TokenType_KeywordOr,
-				operator:   BINARYOPERATOR_OR,
 				binaryType: BINARYTYPE_RELATIONAL,
 			},
 
