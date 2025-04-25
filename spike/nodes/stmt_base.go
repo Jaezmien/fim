@@ -18,6 +18,103 @@ type StatementsNode struct {
 func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*StatementsNode, error) {
 	statements := &StatementsNode{}
 
+	checks := []struct {
+		Check  func() bool
+		Parser func(ast *ast.AST) (DynamicNode, error)
+	}{
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_Print) || curAST.CheckType(token.TokenType_PrintNewline)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParsePrintNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_Prompt)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParsePromptNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_Declaration)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseVariableDeclarationNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_Identifier) && curAST.CheckNextType(token.TokenType_Modify)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseVariableModifyNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_FunctionCall)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseFunctionCallNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_IfClause)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseIfStatementsNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_WhileClause)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseWhileStatementNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_UnaryIncrementPrefix, token.TokenType_UnaryDecrementPrefix) &&
+					curAST.CheckNextType(token.TokenType_Identifier)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParsePrefixUnary(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_Identifier) &&
+					curAST.CheckNextType(token.TokenType_UnaryIncrementPostfix, token.TokenType_UnaryDecrementPostfix)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParsePostfixUnary(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.CheckType(token.TokenType_KeywordReturn)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseFunctionReturnNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.ContainsWithStop(token.TokenType_KeywordOf, token.TokenType_EndOfFile, token.TokenType_NewLine) &&
+					curAST.ContainsWithStop(token.TokenType_OperatorEq, token.TokenType_EndOfFile, token.TokenType_NewLine)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParseArrayModifyNode(ast)
+			},
+		},
+	}
+
 	for {
 		if curAST.CheckType(expectedEndType...) {
 			break
@@ -36,117 +133,20 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			continue
 		}
 
-		if curAST.CheckType(token.TokenType_Print) || curAST.CheckType(token.TokenType_PrintNewline) {
-			node, err := ParsePrintNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-		if curAST.CheckType(token.TokenType_Prompt) {
-			node, err := ParsePromptNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.CheckType(token.TokenType_Declaration) {
-			node, err := ParseVariableDeclarationNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.CheckType(token.TokenType_Identifier) && curAST.CheckNextType(token.TokenType_Modify) {
-			node, err := ParseVariableModifyNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.CheckType(token.TokenType_FunctionCall) {
-			node, err := ParseFunctionCallNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.CheckType(token.TokenType_IfClause) {
-			node, err := ParseIfStatementsNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.CheckType(token.TokenType_WhileClause) {
-			node, err := ParseWhileStatementNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.CheckType(token.TokenType_UnaryIncrementPrefix, token.TokenType_UnaryDecrementPrefix) {
-			if curAST.CheckNextType(token.TokenType_Identifier) {
-				node, err := ParsePrefixUnary(curAST)
+		foundStatement := false
+		for _, check := range checks {
+			if check.Check() {
+				node, err := check.Parser(curAST)
 				if err != nil {
 					return nil, err
 				}
-
 				statements.Statements = append(statements.Statements, node)
-				continue
+				foundStatement = true
+				break
 			}
 		}
 
-		if curAST.CheckType(token.TokenType_Identifier) {
-			if curAST.CheckNextType(token.TokenType_UnaryIncrementPostfix, token.TokenType_UnaryDecrementPostfix) {
-				node, err := ParsePostfixUnary(curAST)
-				if err != nil {
-					return nil, err
-				}
-
-				statements.Statements = append(statements.Statements, node)
-				continue
-			}
-		}
-
-		if curAST.CheckType(token.TokenType_KeywordReturn) {
-			node, err := ParseFunctionReturnNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
-			continue
-		}
-
-		if curAST.ContainsWithStop(token.TokenType_KeywordOf, token.TokenType_EndOfFile, token.TokenType_NewLine) &&
-			curAST.ContainsWithStop(token.TokenType_OperatorEq, token.TokenType_EndOfFile, token.TokenType_NewLine) {
-			node, err := ParseArrayModifyNode(curAST)
-			if err != nil {
-				return nil, err
-			}
-
-			statements.Statements = append(statements.Statements, node)
+		if foundStatement {
 			continue
 		}
 
