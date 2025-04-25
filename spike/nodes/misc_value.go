@@ -146,7 +146,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			tempAST.Consume()
 
 			callNode := &FunctionCallNode{
-				Node: *NewNode(identifier.Start, tempAST.End().Start+tempAST.End().Length-identifier.Start),
+				Node:       *NewNode(identifier.Start, tempAST.End().Start+tempAST.End().Length-identifier.Start),
 				Identifier: identifier.Value,
 				Parameters: make([]DynamicNode, 0),
 			}
