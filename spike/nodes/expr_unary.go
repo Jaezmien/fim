@@ -9,7 +9,7 @@ import (
 type UnaryExpressionNode struct {
 	Node
 
-	Identifier string
+	Identifier DynamicNode
 	Increment  bool
 }
 
@@ -24,11 +24,11 @@ func ParsePrefixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 	}
 	unaryNode.Increment = startToken.Type == token.TokenType_UnaryIncrementPrefix
 
-	identifierNode, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
+	identifierNode, err := ParseIdentifierNode(ast)
 	if err != nil {
 		return nil, err
 	}
-	unaryNode.Identifier = identifierNode.Value
+	unaryNode.Identifier = identifierNode
 
 	endToken, err := ast.ConsumeToken(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Expected %s"))
 	if err != nil {
@@ -44,11 +44,11 @@ func ParsePrefixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 func ParsePostfixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 	unaryNode := &UnaryExpressionNode{}
 
-	identifierNode, err := ast.ConsumeToken(token.TokenType_Identifier, token.TokenType_Identifier.Message("Expected %s"))
+	identifierNode, err := ParseIdentifierNode(ast)
 	if err != nil {
 		return nil, err
 	}
-	unaryNode.Identifier = identifierNode.Value
+	unaryNode.Identifier = identifierNode
 
 	postfixToken, err := ast.ConsumeFunc(func(t *token.Token) bool {
 		return t.Type == token.TokenType_UnaryIncrementPostfix || t.Type == token.TokenType_UnaryDecrementPostfix
@@ -63,8 +63,8 @@ func ParsePostfixUnary(ast *ast.AST) (*UnaryExpressionNode, error) {
 		return nil, err
 	}
 
-	unaryNode.Start = identifierNode.Start
-	unaryNode.Length = endToken.Start + endToken.Length - identifierNode.Start
+	unaryNode.Start = identifierNode.ToNode().Start
+	unaryNode.Length = endToken.Start + endToken.Length - identifierNode.ToNode().Start
 
 	return unaryNode, nil
 }

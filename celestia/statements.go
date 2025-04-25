@@ -197,7 +197,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				if !ok {
 					panic("Intepreter@EvaluateStatementsNode could not get default value.")
 				}
-				value = variable.FromValueType(defaultValue, v.GetType())
+				value = variable.FromValueType(defaultValue, v.GetType().AsBaseType())
 			}
 			if value.GetType().IsArray() {
 				return nil, n.Value.ToNode().CreateError(fmt.Sprintf("Cannot insert an array value"), i.source)
@@ -423,22 +423,51 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 
 		case *nodes.UnaryExpressionNode:
-			if !i.Variables.Has(n.Identifier, true) {
-				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
-			}
-			v := i.Variables.Get(n.Identifier, true)
+			if in, ok := n.Identifier.(*nodes.IdentifierNode); ok {
+				if !i.Variables.Has(in.Identifier, true) {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
+				}
+				v := i.Variables.Get(in.Identifier, true)
 
-			if v.GetType() != variable.NUMBER {
-				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", v.GetType()), i.source)
-			}
-			if v.Constant {
-				return nil, n.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
-			}
+				if v.GetType() != variable.NUMBER {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s.", v.GetType()), i.source)
+				}
+				if v.Constant {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Cannot modify a constant variable."), i.source)
+				}
 
-			if n.Increment {
-				v.SetValueNumber(v.GetValueNumber() + 1)
-			} else {
-				v.SetValueNumber(v.GetValueNumber() - 1)
+				if n.Increment {
+					v.SetValueNumber(v.GetValueNumber() + 1)
+				} else {
+					v.SetValueNumber(v.GetValueNumber() - 1)
+				}
+			} else if in, ok := n.Identifier.(*nodes.DictionaryIdentifierNode); ok {
+				if !i.Variables.Has(in.Identifier, true) {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)
+				}
+				v := i.Variables.Get(in.Identifier, true)
+
+				if v.GetType() != variable.NUMBER_ARRAY {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected a number array type for identifier, got %s.", v.GetType()), i.source)
+				}
+
+				idx, err := i.EvaluateValueNode(in.Index, true)
+				if err != nil {
+					return nil, err
+				}
+				if idx.GetType() != variable.NUMBER {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected a number type for index, got %s.", idx.GetType()), i.source)
+				}
+
+				value := v.GetValueDictionary()[int(idx.GetValueNumber())]
+
+				if n.Increment {
+					value.SetValueNumber(value.GetValueNumber() + 1)
+				} else {
+					value.SetValueNumber(value.GetValueNumber() - 1)
+				}
+
+				v.GetValueDictionary()[int(idx.GetValueNumber())] = value
 			}
 		case *nodes.FunctionCallNode:
 			paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == n.Identifier })

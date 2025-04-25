@@ -80,24 +80,6 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 		},
 		{
 			Check: func() bool {
-				return curAST.CheckType(token.TokenType_UnaryIncrementPrefix, token.TokenType_UnaryDecrementPrefix) &&
-					curAST.CheckNextType(token.TokenType_Identifier)
-			},
-			Parser: func(ast *ast.AST) (DynamicNode, error) {
-				return ParsePrefixUnary(ast)
-			},
-		},
-		{
-			Check: func() bool {
-				return curAST.CheckType(token.TokenType_Identifier) &&
-					curAST.CheckNextType(token.TokenType_UnaryIncrementPostfix, token.TokenType_UnaryDecrementPostfix)
-			},
-			Parser: func(ast *ast.AST) (DynamicNode, error) {
-				return ParsePostfixUnary(ast)
-			},
-		},
-		{
-			Check: func() bool {
 				return curAST.CheckType(token.TokenType_KeywordReturn)
 			},
 			Parser: func(ast *ast.AST) (DynamicNode, error) {
@@ -130,6 +112,24 @@ func ParseStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*
 			},
 			Parser: func(ast *ast.AST) (DynamicNode, error) {
 				return ParseArrayModifyNode(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.ContainsWithStop(token.TokenType_UnaryIncrementPrefix, token.TokenType_EndOfFile, token.TokenType_Punctuation) ||
+					curAST.ContainsWithStop(token.TokenType_UnaryDecrementPrefix, token.TokenType_EndOfFile, token.TokenType_Punctuation)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParsePrefixUnary(ast)
+			},
+		},
+		{
+			Check: func() bool {
+				return curAST.ContainsWithStop(token.TokenType_UnaryIncrementPostfix, token.TokenType_EndOfFile, token.TokenType_Punctuation) ||
+					curAST.ContainsWithStop(token.TokenType_UnaryDecrementPostfix, token.TokenType_EndOfFile, token.TokenType_Punctuation)
+			},
+			Parser: func(ast *ast.AST) (DynamicNode, error) {
+				return ParsePostfixUnary(ast)
 			},
 		},
 	}

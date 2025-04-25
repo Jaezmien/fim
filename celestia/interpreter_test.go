@@ -547,7 +547,24 @@ func TestUnary(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1\n"})
 	})
-	t.Run("should only work for a value", func(t *testing.T) {
+	t.Run("should increment array number", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Unaries!
+			Today I learned how to increment a value!
+			Did you know that Spike is the numbers 1, 2, 3?
+			1 of Spike got one more.
+			There was one more 2 of Spike.
+			I said 1 of Spike!
+			I said 2 of Spike!
+			I said 3 of Spike!
+			That's all about how to increment a value.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "2\n3\n3\n"})
+	})
+
+	t.Run("should only work for numbers", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Unaries!
 			Today I learned how to decrement a value!
