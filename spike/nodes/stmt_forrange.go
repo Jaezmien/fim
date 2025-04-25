@@ -12,7 +12,7 @@ type ForEveryRangeStatementNode struct {
 	ForEveryStatementNode
 
 	RangeStart DynamicNode
-	RangeEnd DynamicNode
+	RangeEnd   DynamicNode
 }
 
 func ParseForEveryRangeStatementNode(ast *ast.AST) (*ForEveryRangeStatementNode, error) {

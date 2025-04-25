@@ -215,7 +215,7 @@ func smartIdentifierTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*t
 				t.Type = token.TokenType_Identifier
 			}
 		}
-	
+
 		if t.Type == token.TokenType_Punctuation || t.Type == token.TokenType_NewLine {
 			isForEvery = false
 		}

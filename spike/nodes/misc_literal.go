@@ -13,7 +13,7 @@ type LiteralNode struct {
 
 func NewLiteralNode(start int, length int, v *variable.DynamicVariable) *LiteralNode {
 	return &LiteralNode{
-		Node: *NewNode(start, length),
+		Node:            *NewNode(start, length),
 		DynamicVariable: v,
 	}
 }

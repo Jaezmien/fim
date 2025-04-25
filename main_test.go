@@ -13,13 +13,12 @@ import (
 )
 
 type BasicReportOptions struct {
-	Expects string
+	Expects       string
 	IgnoreExpects bool
-	CompileOnly bool
-	Error   bool
-	Prompt  func(prompt string) (string, error)
+	CompileOnly   bool
+	Error         bool
+	Prompt        func(prompt string) (string, error)
 }
-
 
 func CreateReport(t *testing.T, source string, options BasicReportOptions) (*celestia.Interpreter, bool) {
 	tokens := twilight.Parse(source)
@@ -40,7 +39,7 @@ func CreateReport(t *testing.T, source string, options BasicReportOptions) (*cel
 			return nil, false
 		}
 
-		return nil, assert.NoError(t, err, "handled pre-celestia") 
+		return nil, assert.NoError(t, err, "handled pre-celestia")
 	}
 
 	return interpreter, true
@@ -104,7 +103,7 @@ func ExecuteBasicReport(t *testing.T, source string, options BasicReportOptions)
 }
 
 func TestReports(t *testing.T) {
-	reports := []struct{
+	reports := []struct {
 		BasicReportOptions
 		Name string
 	}{

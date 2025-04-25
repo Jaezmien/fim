@@ -24,7 +24,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if err != nil {
 				return nil, err
 			}
-			
+
 			if value.GetType().IsArray() {
 				return nil, n.ToNode().CreateError("Cannot print an array value", i.source)
 			}
@@ -414,7 +414,7 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				if result != nil || err != nil {
 					return result, err
 				}
-				
+
 				if isForwards {
 					currentValue += 1.0
 				} else {
@@ -471,4 +471,3 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 	return nil, nil
 }
-

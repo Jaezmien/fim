@@ -107,7 +107,7 @@ func (a *AST) ContainsWithStop(tokenType token.TokenType, stopTokens ...token.To
 	return false
 }
 
-func (a *AST) Consume() (*token.Token) {
+func (a *AST) Consume() *token.Token {
 	a.Next()
 	return a.PeekPrevious()
 }
@@ -152,7 +152,7 @@ func (a *AST) ConsumeUntilTokenMatch(tokenType token.TokenType, errorMessage str
 	}, errorMessage)
 }
 
-func (a *AST) ConsumeRemaining() ([]*token.Token) {
+func (a *AST) ConsumeRemaining() []*token.Token {
 	tokens := make([]*token.Token, 0)
 
 	for a.PeekIndex() < a.Length() {

@@ -41,6 +41,7 @@ func FromValueType(value string, t VariableType) *DynamicVariable {
 func NewStringVariable(value string) *DynamicVariable {
 	return NewRawStringVariable(luna.UnsanitizeString(value, true))
 }
+
 // Used for creating string variables, where the string value is not
 // surrounded by quotation marks
 func NewRawStringVariable(value string) *DynamicVariable {
@@ -49,6 +50,7 @@ func NewRawStringVariable(value string) *DynamicVariable {
 		valueType: STRING,
 	}
 }
+
 // Used for creating string variables, where the character value is
 // surrounded by quote marks
 func NewCharacterVariable(value string) *DynamicVariable {
@@ -61,6 +63,7 @@ func NewCharacterVariable(value string) *DynamicVariable {
 
 	return NewRawCharacterVariable(value)
 }
+
 // Used for creating string variables, where the character value is not
 // surrounded by quote marks
 func NewRawCharacterVariable(value string) *DynamicVariable {
@@ -173,7 +176,7 @@ func (v *DynamicVariable) GetType() VariableType {
 
 func (v *DynamicVariable) Clone() *DynamicVariable {
 	return &DynamicVariable{
-		value: v.value,
+		value:     v.value,
 		valueType: v.valueType,
 	}
 }

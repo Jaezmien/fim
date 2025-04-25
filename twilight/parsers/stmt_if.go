@@ -48,7 +48,6 @@ func CheckElseKeyword(tokens *queue.Queue[*token.Token]) int {
 		return 1
 	}
 
-
 	return 0
 }
 
