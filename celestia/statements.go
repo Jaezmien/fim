@@ -104,10 +104,6 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 				}
 			}
 
-			if !n.ValueType.IsArray() {
-				value = value.Clone()
-			}
-
 			if n.ValueType != value.GetType() {
 				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'", n.ValueType, value.GetType()), i.source)
 			}

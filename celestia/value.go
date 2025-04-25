@@ -14,7 +14,7 @@ import (
 
 func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variable.DynamicVariable, error) {
 	if literalNode, ok := n.(*nodes.LiteralNode); ok {
-		return literalNode.DynamicVariable, nil
+		return literalNode.DynamicVariable.Clone(), nil
 	}
 
 	if literalNode, ok := n.(*nodes.LiteralDictionaryNode); ok {
@@ -33,7 +33,7 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 
 	if identifierNode, ok := n.(*nodes.IdentifierNode); ok {
 		if variable := i.Variables.Get(identifierNode.Identifier, local); variable != nil {
-			return variable.DynamicVariable, nil
+			return variable.DynamicVariable.Clone(), nil
 		}
 
 		if paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == identifierNode.Identifier }); paragraphIndex != -1 {
@@ -93,21 +93,21 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 				defaultValue, _ := variable.STRING.GetDefaultValue()
 				return variable.FromValueType(defaultValue, variable.STRING), nil
 			}
-			return value, nil
+			return value.Clone(), nil
 		case variable.BOOLEAN_ARRAY:
 			value := v.GetValueDictionary()[indexAsInteger]
 			if value == nil {
 				defaultValue, _ := variable.BOOLEAN.GetDefaultValue()
 				return variable.FromValueType(defaultValue, variable.BOOLEAN), nil
 			}
-			return value, nil
+			return value.Clone(), nil
 		case variable.NUMBER_ARRAY:
 			value := v.GetValueDictionary()[indexAsInteger]
 			if value == nil {
 				defaultValue, _ := variable.NUMBER.GetDefaultValue()
 				return variable.FromValueType(defaultValue, variable.NUMBER), nil
 			}
-			return value, nil
+			return value.Clone(), nil
 
 		}
 	}

@@ -721,7 +721,7 @@ func TestFunctions(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello\n0\n"})
 	})
-	t.Run("should forbid changing value", func(t *testing.T) {
+	t.Run("should allow changing value", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Returns!
 			I learned how to receive a text using the word x!
@@ -733,7 +733,23 @@ func TestFunctions(t *testing.T) {
 			Your faithful student, Twilight Sparkle.
 			`
 
-		ExecuteBasicReport(t, source, BasicReportOptions{Error: true})
+		ExecuteBasicReport(t, source, BasicReportOptions{})
+	})
+	t.Run("should allow not change variable value", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to receive a text using the word x!
+			x became "World!".
+			That's all about how to receive a text.
+			Today I learned how to run a function!
+			Did you know that Spike is the word "Hello"?
+			I remembered how to receive a text using the word Spike.
+			I said Spike.
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello\n"})
 	})
 	t.Run("should allow changing value of array", func(t *testing.T) {
 		source :=
