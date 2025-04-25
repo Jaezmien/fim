@@ -114,6 +114,12 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "brainfuck.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "Hello World",
+			},
+		},
+		{
 			Name: "bubblesort.fim",
 			BasicReportOptions: BasicReportOptions{
 				Expects: "1\n2\n3\n4\n5\n7\n7\n",
@@ -128,7 +134,7 @@ func TestReports(t *testing.T) {
 		{
 			Name: "deadfish.fim",
 			BasicReportOptions: BasicReportOptions{
-				Expects: "Hello world\n",
+				Expects: "Hello world",
 			},
 		},
 		{
