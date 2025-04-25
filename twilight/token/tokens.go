@@ -86,6 +86,9 @@ const (
 	TokenType_KeywordAnd
 	TokenType_KeywordConst
 	TokenType_KeywordOf
+	TokenType_KeywordIn
+	TokenType_KeywordFrom
+	TokenType_KeywordTo
 	TokenType_KeywordThen
 	TokenType_KeywordStatementEnd
 	TokenType_KeywordReturn
@@ -95,6 +98,8 @@ const (
 	TokenType_IfEndClause
 
 	TokenType_WhileClause
+
+	TokenType_ForEveryClause
 )
 
 var tokenTypeFriendlyName = map[TokenType]string{
@@ -176,6 +181,9 @@ var tokenTypeFriendlyName = map[TokenType]string{
 	TokenType_KeywordConst:        "CONST",
 	TokenType_KeywordOf:           "OF",
 	TokenType_KeywordThen:         "THEN",
+	TokenType_KeywordIn:           "IN",
+	TokenType_KeywordFrom:         "FROM",
+	TokenType_KeywordTo:           "TO",
 	TokenType_KeywordStatementEnd: "STATEMENT(END)",
 	TokenType_KeywordReturn:       "RETURN",
 
@@ -184,6 +192,8 @@ var tokenTypeFriendlyName = map[TokenType]string{
 	TokenType_IfEndClause: "IF(END)",
 
 	TokenType_WhileClause: "WHILE",
+
+	TokenType_ForEveryClause: "FOREVERY",
 }
 
 func (t TokenType) String() string {

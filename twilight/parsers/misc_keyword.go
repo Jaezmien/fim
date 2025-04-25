@@ -38,6 +38,30 @@ func CheckOfKeyword(tokens *queue.Queue[*token.Token]) int {
 	return 1
 }
 
+func CheckInKeyword(tokens *queue.Queue[*token.Token]) int {
+	if tokens.First().Value.Value != "in" {
+		return 0
+	}
+
+	return 1
+}
+
+func CheckFromKeyword(tokens *queue.Queue[*token.Token]) int {
+	if tokens.First().Value.Value != "from" {
+		return 0
+	}
+
+	return 1
+}
+
+func CheckToKeyword(tokens *queue.Queue[*token.Token]) int {
+	if tokens.First().Value.Value != "to" {
+		return 0
+	}
+
+	return 1
+}
+
 func CheckStatementEndKeyword(tokens *queue.Queue[*token.Token]) int {
 	ExpectedTokens := []string{"That", "'", "s", " ", "what", " ", "I", " ", "did"}
 

@@ -125,6 +125,7 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		{condition: parsers.CheckIfEndKeyword, result: token.TokenType_IfEndClause},
 
 		{condition: parsers.CheckWhileKeyword, result: token.TokenType_WhileClause},
+		{condition: parsers.CheckForEveryKeyword, result: token.TokenType_ForEveryClause},
 		{condition: parsers.CheckStatementEndKeyword, result: token.TokenType_KeywordStatementEnd},
 
 		{condition: parsers.CheckInfixAddition, result: token.TokenType_OperatorAddInfix},
@@ -157,6 +158,9 @@ func mergeMultiTokens(oldTokens *queue.Queue[*token.Token]) *queue.Queue[*token.
 		{condition: parsers.CheckAndKeyword, result: token.TokenType_KeywordAnd},
 		{condition: parsers.CheckOrKeyword, result: token.TokenType_KeywordOr},
 		{condition: parsers.CheckOfKeyword, result: token.TokenType_KeywordOf},
+		{condition: parsers.CheckInKeyword, result: token.TokenType_KeywordIn},
+		{condition: parsers.CheckFromKeyword, result: token.TokenType_KeywordFrom},
+		{condition: parsers.CheckToKeyword, result: token.TokenType_KeywordTo},
 	}
 
 	for oldTokens.Len() > 0 {
