@@ -24,6 +24,11 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			if err != nil {
 				return nil, err
 			}
+			
+			if value.GetType().IsArray() {
+				return nil, n.ToNode().CreateError("Cannot print an array value", i.source)
+			}
+
 			i.Writer.Write([]byte(value.GetValueString()))
 
 			if n.NewLine {
