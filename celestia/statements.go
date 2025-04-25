@@ -386,10 +386,6 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			startValue := fromRange.GetValueNumber()
 			endValue := toRange.GetValueNumber()
 
-			if startValue == endValue {
-				break
-			}
-
 			currentValue := startValue
 
 			isForwards := true
