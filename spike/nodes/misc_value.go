@@ -193,39 +193,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 
 			return callNode, nil
 		}
-		
-		// DictionaryIdentifierNode
-		if tempAST.ContainsToken(token.TokenType_KeywordOf) && tempAST.End().Type != token.TokenType_KeywordOf {
-			indexTokens, _ := tempAST.ConsumeUntilTokenMatch(token.TokenType_KeywordOf, "")
-			tempAST.Consume()
-			identifierTokens := tempAST.ConsumeRemaining()
 
-			if len(indexTokens) < 1 {
-				return nil, errors.New("Expected dictionary identifier index")
-			}
-
-			index, err := CreateValueNode(indexTokens, CreateValueNodeOptions{})
-			if err != nil {
-				return nil, err
-			}
-
-			if len(identifierTokens) != 1 || identifierTokens[0].Type != token.TokenType_Identifier {
-				return nil, errors.New("Expected dictionary identifier")
-			}
-
-			startToken := tempAST.Start()
-			endToken := tempAST.End()
-
-			identifierNode := &DictionaryIdentifierNode{
-				Node:       *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
-				Identifier: identifierTokens[0].Value,
-				Index:      index,
-			}
-
-			return identifierNode, nil
-		}
-
-		expressions := []struct {
+		booleanExpressions := []struct {
 			tokenType  token.TokenType
 			operator   BinaryExpressionOperator
 			binaryType BinaryExpressionType
@@ -273,8 +242,55 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 				operator:   BINARYOPERATOR_EQ,
 				binaryType: BINARYTYPE_RELATIONAL,
 			},
+		}
 
-			// Arithmetic
+		for _, expression := range booleanExpressions {
+			expressionNode, err := CreateExpression(tempAST.Tokens, expression.tokenType, expression.operator, expression.binaryType)
+			if err != nil {
+				return nil, err
+			}
+
+			if expressionNode != nil {
+				return expressionNode, nil
+			}
+		}
+
+		// DictionaryIdentifierNode
+		if tempAST.ContainsToken(token.TokenType_KeywordOf) && tempAST.End().Type != token.TokenType_KeywordOf {
+			indexTokens, _ := tempAST.ConsumeUntilTokenMatch(token.TokenType_KeywordOf, "")
+			tempAST.Consume()
+			identifierTokens := tempAST.ConsumeRemaining()
+
+			if len(indexTokens) < 1 {
+				return nil, errors.New("Expected dictionary identifier index")
+			}
+
+			index, err := CreateValueNode(indexTokens, CreateValueNodeOptions{})
+			if err != nil {
+				return nil, err
+			}
+
+			if len(identifierTokens) != 1 || identifierTokens[0].Type != token.TokenType_Identifier {
+				return nil, errors.New("Expected dictionary identifier")
+			}
+
+			startToken := tempAST.Start()
+			endToken := tempAST.End()
+
+			identifierNode := &DictionaryIdentifierNode{
+				Node:       *NewNode(startToken.Start, endToken.Start+endToken.Length-startToken.Start),
+				Identifier: identifierTokens[0].Value,
+				Index:      index,
+			}
+
+			return identifierNode, nil
+		}
+
+		arithmeticExpressions := []struct {
+			tokenType  token.TokenType
+			operator   BinaryExpressionOperator
+			binaryType BinaryExpressionType
+		}{
 			{
 				tokenType:  token.TokenType_OperatorModInfix,
 				operator:   BINARYOPERATOR_MOD,
@@ -302,7 +318,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			},
 		}
 
-		for _, expression := range expressions {
+		for _, expression := range arithmeticExpressions {
 			expressionNode, err := CreateExpression(tempAST.Tokens, expression.tokenType, expression.operator, expression.binaryType)
 			if err != nil {
 				return nil, err
@@ -332,7 +348,7 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 					}, token.TokenType_Punctuation.Message("Expected '%s' (Comma)"))
 
 					if err != nil {
-						return nil, err 
+						return nil, err
 					}
 				}
 
