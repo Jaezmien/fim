@@ -7,7 +7,7 @@ import (
 )
 
 func TestQueue(t *testing.T) {
-	t.Run("should hold a singnular value", func(t *testing.T) {
+	t.Run("should hold a singular value", func(t *testing.T) {
 		q := New[int]()
 		assert.Equal(t, 0, q.Len(), "Should be empty")
 
