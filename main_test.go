@@ -115,9 +115,21 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "bubblesort.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "1\n2\n3\n4\n5\n7\n7\n",
+			},
+		},
+		{
 			Name: "cider.fim",
 			BasicReportOptions: BasicReportOptions{
 				IgnoreExpects: true,
+			},
+		},
+		{
+			Name: "deadfish.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "Hello world\n",
 			},
 		},
 		{
@@ -169,6 +181,12 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "insertionsort.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "1\n2\n3\n4\n5\n7\n7\n",
+			},
+		},
+		{
 			Name: "mississippis.fim",
 			BasicReportOptions: BasicReportOptions{
 				IgnoreExpects: true,
@@ -178,6 +196,12 @@ func TestReports(t *testing.T) {
 			Name: "parameters.fim",
 			BasicReportOptions: BasicReportOptions{
 				Expects: "x\n1\ny\n0\n",
+			},
+		},
+		{
+			Name: "quicksort.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "1\n2\n3\n4\n5\n7\n7\n",
 			},
 		},
 		{
