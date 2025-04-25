@@ -113,6 +113,32 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 		}
 	}
 
+	if tempAST.Length() == 2 {
+		possibleTypeToken := tempAST.Peek()
+		possibleType := variable.FromTokenTypeHint(possibleTypeToken.Type)
+		if possibleType != variable.UNKNOWN && !possibleType.IsArray() {
+			if tempAST.PeekNext().Type == token.TokenType_Null {
+				nullToken := tempAST.PeekNext()
+
+				defaultValue, ok := possibleType.GetDefaultValue()
+				if !ok {
+					panic("AST@CreateValueNode literal null called with no possible default value")
+				}
+
+				literalNode := NewLiteralNode(
+					possibleTypeToken.Start,
+					nullToken.Start+nullToken.Length-possibleTypeToken.Start,
+					variable.FromValueType(
+						defaultValue,
+						possibleType,
+					),
+				)
+
+				return literalNode, nil
+			}
+		}
+	}
+
 	if tempAST.Length() > 1 {
 		// FunctionCallNode
 		if tempAST.Peek().Type == token.TokenType_Identifier && tempAST.PeekNext().Type == token.TokenType_FunctionParameter {
