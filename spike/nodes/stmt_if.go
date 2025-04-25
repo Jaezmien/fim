@@ -13,13 +13,6 @@ type IfStatementNode struct {
 	Conditions []ConditionStatementNode
 }
 
-func (s *IfStatementNode) ToNode() Node {
-	return Node{
-		Start:  s.Start,
-		Length: s.Length,
-	}
-}
-
 func ParseIfStatementsNode(curAST *ast.AST, expectedEndType ...token.TokenType) (*IfStatementNode, error) {
 	node := &IfStatementNode{}
 	node.Conditions = make([]ConditionStatementNode, 0)

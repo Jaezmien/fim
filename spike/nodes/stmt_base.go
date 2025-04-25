@@ -163,10 +163,3 @@ type ConditionStatementNode struct {
 
 	Condition *DynamicNode
 }
-
-func (s *ConditionStatementNode) ToNode() Node {
-	return Node{
-		Start:  s.Start,
-		Length: s.Length,
-	}
-}

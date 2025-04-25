@@ -53,13 +53,6 @@ type PromptNode struct {
 	Prompt     DynamicNode
 }
 
-func (p *PromptNode) ToNode() Node {
-	return Node{
-		Start:  p.Start,
-		Length: p.Length,
-	}
-}
-
 func ParsePromptNode(ast *ast.AST) (*PromptNode, error) {
 	node := &PromptNode{}
 

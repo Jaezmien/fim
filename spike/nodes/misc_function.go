@@ -175,13 +175,6 @@ type FunctionCallNode struct {
 	Parameters []DynamicNode
 }
 
-func (f *FunctionCallNode) ToNode() Node {
-	return Node{
-		Start:  f.Start,
-		Length: f.Length,
-	}
-}
-
 func ParseFunctionCallNode(ast *ast.AST) (*FunctionCallNode, error) {
 	call := &FunctionCallNode{}
 
@@ -257,13 +250,6 @@ type FunctionReturnNode struct {
 	Node
 
 	Value DynamicNode
-}
-
-func (f *FunctionReturnNode) ToNode() Node {
-	return Node{
-		Start:  f.Start,
-		Length: f.Length,
-	}
 }
 
 func ParseFunctionReturnNode(ast *ast.AST) (*FunctionReturnNode, error) {
