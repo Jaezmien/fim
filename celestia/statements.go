@@ -257,6 +257,69 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 					return result, err
 				}
 			}
+		case *nodes.ForEveryRangeStatementNode:
+			if i.Variables.Has(n.VariableName, true) {
+				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' already exists.", n.VariableName), i.source)
+			}
+
+			fromRange, err := i.EvaluateValueNode(n.RangeStart, true)
+			if err != nil {
+				return nil, err
+			}
+			if fromRange.GetType() != variable.NUMBER {
+				return nil, n.RangeStart.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s", fromRange.GetType()), i.source)
+			}
+
+			toRange, err := i.EvaluateValueNode(n.RangeEnd, true)
+			if err != nil {
+				return nil, err
+			}
+			if toRange.GetType() != variable.NUMBER {
+				return nil, n.RangeEnd.ToNode().CreateError(fmt.Sprintf("Expected a number type, got %s", toRange.GetType()), i.source)
+			}
+
+			startValue := fromRange.GetValueNumber()
+			endValue := toRange.GetValueNumber()
+
+			if startValue == endValue {
+				break
+			}
+
+			currentValue := startValue
+
+			isForwards := true
+			if endValue < startValue {
+				isForwards = false
+			}
+
+			for {
+				if isForwards && currentValue > endValue {
+					break
+				} else if !isForwards && currentValue < endValue {
+					break
+				}
+
+				variable := &Variable{
+					Name:            n.VariableName,
+					DynamicVariable: variable.NewNumberVariable(currentValue),
+					Constant:        true,
+				}
+
+				i.Variables.PushVariable(variable, false)
+				result, err := i.EvaluateStatementsNode(&n.StatementsNode)
+				i.Variables.PopVariable(false)
+
+				if result != nil || err != nil {
+					return result, err
+				}
+				
+				if isForwards {
+					currentValue += 1.0
+				} else {
+					currentValue -= 1.0
+				}
+			}
+
 		case *nodes.UnaryExpressionNode:
 			if !i.Variables.Has(n.Identifier, true) {
 				return nil, n.ToNode().CreateError(fmt.Sprintf("Variable '%s' does not exist.", n.Identifier), i.source)

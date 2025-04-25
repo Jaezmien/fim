@@ -865,3 +865,32 @@ func TestWhileStatements(t *testing.T) {
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1\n2\n3\n4\n"})
 	})
 }
+
+func TestForEveryStatements(t *testing.T) {
+	t.Run("should run range statement forwards", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: For every number!
+			Today I learned how to count!
+				For every number Spike from 1 to 5,
+					I said Spike.
+				That's what I did.
+			That's all about how to count.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "1\n2\n3\n4\n5\n"})
+	})
+	t.Run("should run range statement backwards", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: For every number!
+			Today I learned how to count!
+				For every number Spike from 5 to 1,
+					I said Spike.
+				That's what I did.
+			That's all about how to count.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "5\n4\n3\n2\n1\n"})
+	})
+}
