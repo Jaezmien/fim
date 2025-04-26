@@ -12,8 +12,12 @@ I learned how to sing the drinking song using the number ciders.
     Did you know that cider is the number ciders?
 
     As long as cider had no less than 1.
-        I sang cider plus " jugs of cider on the wall, " plus cider plus " jugs of cider,".
-
+        When cider had more than 1,
+            I sang cider plus " jugs of cider on the wall, " plus cider plus " jugs of cider,".
+        Otherwise,
+            I sang cider plus " jug of cider on the wall, " plus cider plus " jug of cider,".
+        That's what I would do.
+        
         There was one less cider.
 
         When cider had more than 1,
