@@ -8,7 +8,7 @@
 
 <div>
 	<a href="https://git.jaezmien.com/Jaezmien/fim">
-		<img src="https://img.shields.io/badge/version-pre--alpha-red">
+		<img src="https://img.shields.io/badge/version-0.1.0--alpha-orange?style=for-the-badge">
 	</a>
 </div>
 
