@@ -47,24 +47,28 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 
 	if callNode, ok := n.(*nodes.FunctionCallNode); ok {
 		paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == callNode.Identifier })
-		if paragraphIndex != -1 {
-			paragraph := i.Paragraphs[paragraphIndex]
-
-			parameters := make([]*variable.DynamicVariable, 0)
-			for _, param := range callNode.Parameters {
-				value, err := i.EvaluateValueNode(param, local)
-				if err != nil {
-					return nil, err
-				}
-
-				parameters = append(parameters, value)
-			}
-
-			value, err := paragraph.Execute(parameters...)
-			return value, err
+		if paragraphIndex == -1 {
+			return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown paragraph (%s)", callNode.Identifier), i.source, callNode.Start)
 		}
 
-		return nil, lunaErrors.NewParseError(fmt.Sprintf("Unknown paragraph (%s)", callNode.Identifier), i.source, callNode.Start)
+		paragraph := i.Paragraphs[paragraphIndex]
+
+		if paragraph.FunctionNode.ReturnType == variable.UNKNOWN {
+			return nil, callNode.CreateError("Tried calling a function that doesn't return a value", i.source)
+		}
+
+		parameters := make([]*variable.DynamicVariable, 0)
+		for _, param := range callNode.Parameters {
+			value, err := i.EvaluateValueNode(param, local)
+			if err != nil {
+				return nil, err
+			}
+
+			parameters = append(parameters, value)
+		}
+
+		value, err := paragraph.Execute(parameters...)
+		return value, err
 	}
 
 	if identifierNode, ok := n.(*nodes.DictionaryIdentifierNode); ok {
