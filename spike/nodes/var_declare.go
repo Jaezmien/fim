@@ -50,7 +50,7 @@ func ParseVariableDeclarationNode(ast *ast.AST) (*VariableDeclarationNode, error
 	ast.Next()
 
 	var valueTokens []*token.Token
-	if node.ValueType.IsArray() {
+	if node.ValueType.IsArray() || ast.ContainsWithStop(token.TokenType_FunctionParameter, token.TokenType_EndOfFile, token.TokenType_Punctuation) {
 		valueTokens, err = ast.ConsumeUntilFuncMatch(func(t *token.Token) bool {
 			return t.Type == token.TokenType_Punctuation && t.Value != ","
 		}, token.TokenType_Punctuation.Message("Could not find %s"))

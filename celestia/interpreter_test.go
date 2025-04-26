@@ -747,6 +747,21 @@ func TestFunctions(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello World\n"})
 	})
+	t.Run("should handle multiple values to a variable", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Returns!
+			I learned how to give a text using the word x, the word y to get a word!
+			Then you get x plus " " plus y.
+			That's all about how to give a text.
+			Today I learned how to run a function!
+			Did you know that Spike is the word how to give a text using the word "Hello", "World".
+			I said Spike.
+			That's all about how to run a function.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello World\n"})
+	})
 	t.Run("should handle a default value", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Returns!
