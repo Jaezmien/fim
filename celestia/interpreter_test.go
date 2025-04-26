@@ -179,6 +179,30 @@ func TestIO(t *testing.T) {
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "123\n"})
 	})
 
+	t.Run("should print escaped character", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Outputs!
+			Today I learned how to output something!
+			I said "Hello \\ World"!
+			That's all about how to output something.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello \\ World\n"})
+	})
+	t.Run("should ignore escaped character", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Outputs!
+			Today I learned how to output something!
+			I said "Hello \e World"!
+			That's all about how to output something.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello \\e World\n"})
+	})
+
+
 	t.Run("should prompt", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Prompts!

@@ -30,6 +30,8 @@ func UnsanitizeString(value string, trim bool) string {
 			sb.WriteByte('\t')
 		case "\"":
 			sb.WriteByte('"')
+		case "\\":
+			sb.WriteByte('\\')
 		default:
 			sb.WriteByte(value[idx])
 			sb.WriteByte(value[idx+1])
