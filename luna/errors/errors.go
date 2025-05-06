@@ -41,8 +41,8 @@ func GetErrorOrigin(source string, index int) ErrorOrigin {
 	lines := strings.Split(content, "\n")
 
 	return ErrorOrigin{
-		Line:   len(lines),
-		Column: len(lines[len(lines)-1]),
+		Line:   len(lines) + 1,
+		Column: len(lines[len(lines)-1]) + 1,
 
 		lineContent: strings.ReplaceAll(strings.Split(source, "\n")[len(lines)-1], "\t", " "),
 	}

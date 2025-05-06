@@ -50,8 +50,8 @@ func main() {
 		for idx, token := range tokens {
 			epf.Add(
 				strconv.FormatInt(int64(idx + 1), 10) + ".",
-				strconv.FormatInt(int64(token.Start), 10) + ":" + 
-				strconv.FormatInt(int64(token.Start + token.Length), 10),
+				strconv.FormatInt(int64(token.Start + 1), 10) + ":" + 
+				strconv.FormatInt(int64(token.Start + 1 + token.Length), 10),
 				token.Value,
 				token.Type.String(),
 			)
