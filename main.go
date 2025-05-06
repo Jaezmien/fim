@@ -6,8 +6,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
 	"git.jaezmien.com/Jaezmien/fim/celestia"
+	"git.jaezmien.com/Jaezmien/fim/luna/aprint"
 	"git.jaezmien.com/Jaezmien/fim/spike"
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 )
@@ -40,15 +42,22 @@ func main() {
 	tokens := twilight.Parse(source)
 
 	if *tokenDisplayFlag {
+		epf := aprint.New(4, " ", aprint.LEFT_ALIGN)
+		epf.SetAlignment(0, aprint.RIGHT_ALIGN)
+		epf.SetAlignment(2, aprint.RIGHT_ALIGN)
+		epf.SetDelimeter(2, " -> ")
+
 		for idx, token := range tokens {
-			fmt.Printf(
-				"%d.\t%d:%d\t-> %s (%s)\n",
-				idx,
-				token.Start, token.Start+token.Length,
+			epf.Add(
+				strconv.FormatInt(int64(idx + 1), 10) + ".",
+				strconv.FormatInt(int64(token.Start), 10) + ":" + 
+				strconv.FormatInt(int64(token.Start + token.Length), 10),
 				token.Value,
-				token.Type,
+				token.Type.String(),
 			)
 		}
+
+		fmt.Println(epf.String())
 
 		return
 	}
