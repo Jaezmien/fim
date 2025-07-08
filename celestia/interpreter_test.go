@@ -202,7 +202,6 @@ func TestIO(t *testing.T) {
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "Hello \\e World\n"})
 	})
 
-
 	t.Run("should prompt", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Prompts!

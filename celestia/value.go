@@ -36,7 +36,9 @@ func (i *Interpreter) EvaluateValueNode(n node.DynamicNode, local bool) (*variab
 			return variable.DynamicVariable.Clone(), nil
 		}
 
-		if paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool { return p.Name == identifierNode.Identifier }); paragraphIndex != -1 {
+		if paragraphIndex := slices.IndexFunc(i.Paragraphs, func(p *Paragraph) bool {
+			return p.Name == identifierNode.Identifier
+		}); paragraphIndex != -1 {
 			paragraph := i.Paragraphs[paragraphIndex]
 			value, err := paragraph.Execute()
 			return value, err

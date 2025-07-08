@@ -10,16 +10,16 @@ type PrintAlign int
 
 const (
 	LEFT_ALIGN PrintAlign = iota
-	RIGHT_ALIGN 
+	RIGHT_ALIGN
 )
 
 func New(expectedColumns int, defaultDelimeter string, defaultAlign PrintAlign) *AlignedPrint {
 	pb := &AlignedPrint{
 		expectedColumns: expectedColumns,
-		maximumLines: make([]int, expectedColumns),
-		contents: make([][]string, 0),
-		delimeters: make([]string, expectedColumns - 1),
-		align: make([]PrintAlign, expectedColumns),
+		maximumLines:    make([]int, expectedColumns),
+		contents:        make([][]string, 0),
+		delimeters:      make([]string, expectedColumns-1),
+		align:           make([]PrintAlign, expectedColumns),
 	}
 
 	for idx := range expectedColumns {
@@ -34,10 +34,10 @@ func New(expectedColumns int, defaultDelimeter string, defaultAlign PrintAlign) 
 
 type AlignedPrint struct {
 	expectedColumns int
-	maximumLines []int
-	contents [][]string
-	delimeters []string
-	align []PrintAlign
+	maximumLines    []int
+	contents        [][]string
+	delimeters      []string
+	align           []PrintAlign
 }
 
 func (p *AlignedPrint) SetDelimeter(column int, delimeter string) {
@@ -79,7 +79,7 @@ func (p *AlignedPrint) String() string {
 					fmt.Sprintf("%+*s", p.maximumLines[col], content),
 				)
 			}
-			
+
 			if col+1 != len(line) {
 				sb.WriteString(p.delimeters[col])
 			}
