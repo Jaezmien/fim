@@ -228,6 +228,15 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "rot13.fim",
+			BasicReportOptions: BasicReportOptions{
+				Prompt: func(prompt string) (string, error) {
+					return "Hello World!", nil
+				},
+				Expects: "The ciphered text is: Uryyb Jbeyq!\nThe deciphered text is: Hello World!\n",
+			},
+		},
+		{
 			Name: "squareroot.fim",
 			BasicReportOptions: BasicReportOptions{
 				Prompt: func(prompt string) (string, error) {
