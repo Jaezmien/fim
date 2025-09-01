@@ -105,7 +105,11 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 			}
 
 			if n.ValueType != value.GetType() {
-				return nil, n.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'", n.ValueType, value.GetType()), i.source)
+				if n.ValueType == variable.STRING && !value.GetType().IsArray() {
+					value = variable.NewRawStringVariable(value.GetValueString())
+				} else {
+					return nil, n.ToNode().CreateError(fmt.Sprintf("Expected type '%s', got '%s'", n.ValueType, value.GetType()), i.source)
+				}
 			}
 
 			variable := &Variable{
