@@ -67,6 +67,9 @@ func (m *VariableManager) PopVariable(global bool) *Variable {
 		}
 
 		current := m.Locals.Peek()
+		if current.Len() == 0  {
+			panic("VariableManager@PopVarible called with an empty stack")
+		}
 		return *current.Pop()
 	}
 }
