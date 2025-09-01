@@ -52,17 +52,6 @@ That's all about the length regarding a string.
 
 I learned how to interpret brainfuck.
 
-	(HACK: Conversion from number to character)
-	Did you know that Owlowiscious is many words?
-	72 of Owlowiscious is "H".
-	101 of Owlowiscious is "e".
-	108 of Owlowiscious is "l".
-	32 of Owlowiscious is " ".
-	87 of Owlowiscious is "W".
-	111 of Owlowiscious is "o".
-	114 of Owlowiscious is "r".
-	100 of Owlowiscious is "d".
-
     Did you know that Applejack is the number 1? (Input Pointer)
     Did you know that Fluttershy is many numbers? (Memory Blocks)
     Did you know that Pinkie Pie is the number 1? (Memory Pointer)
@@ -80,7 +69,7 @@ I learned how to interpret brainfuck.
             Pinkie Pie of Fluttershy got one less.
         Otherwise if Rainbow Dash is equal to '.' then,
 			Did you know that Tank is the number Pinkie Pie of Fluttershy?
-			I quickly said Tank of Owlowiscious.
+			I quickly said how to convert ascii using Tank.
         Otherwise if Rainbow Dash is equal to ',' then,
             Did you know that Spike is the letter nothing?
             I asked Spike: "Give me a letter! ".
@@ -112,5 +101,115 @@ Today I learned how to start interpreting brainfuck.
     That's what I would do.
 
 That's all about how to start interpreting brainfuck.
+
+Today I learned how to convert ascii using the number Trixie to get a word.
+	If Trixie is 0, Then you get "". That's what I would do.
+	If Trixie is 10, Then you get "\n". That's what I would do.
+
+	If Trixie is 32, Then you get " ". That's what I would do.
+	If Trixie is 33, Then you get "!". That's what I would do.
+	If Trixie is 34, Then you get "\"". That's what I would do.
+	If Trixie is 35, Then you get "#". That's what I would do.
+	If Trixie is 36, Then you get "$". That's what I would do.
+	If Trixie is 37, Then you get "%". That's what I would do.
+	If Trixie is 38, Then you get "&". That's what I would do.
+	If Trixie is 39, Then you get "'". That's what I would do.
+	If Trixie is 40, Then you get "(". That's what I would do.
+	If Trixie is 41, Then you get ")". That's what I would do.
+	If Trixie is 42, Then you get "*". That's what I would do.
+	If Trixie is 43, Then you get "+". That's what I would do.
+	If Trixie is 44, Then you get ",". That's what I would do.
+	If Trixie is 45, Then you get "-". That's what I would do.
+	If Trixie is 46, Then you get ".". That's what I would do.
+	If Trixie is 47, Then you get "/". That's what I would do.
+
+	If Trixie is 48, Then you get "0". That's what I would do.
+	If Trixie is 49, Then you get "1". That's what I would do.
+	If Trixie is 50, Then you get "2". That's what I would do.
+	If Trixie is 51, Then you get "3". That's what I would do.
+	If Trixie is 52, Then you get "4". That's what I would do.
+	If Trixie is 53, Then you get "5". That's what I would do.
+	If Trixie is 54, Then you get "6". That's what I would do.
+	If Trixie is 55, Then you get "7". That's what I would do.
+	If Trixie is 56, Then you get "8". That's what I would do.
+	If Trixie is 57, Then you get "9". That's what I would do.
+
+	If Trixie is 58, Then you get ":". That's what I would do.
+	If Trixie is 59, Then you get ";". That's what I would do.
+	If Trixie is 60, Then you get "<". That's what I would do.
+	If Trixie is 61, Then you get "=". That's what I would do.
+	If Trixie is 62, Then you get ">". That's what I would do.
+	If Trixie is 63, Then you get "?". That's what I would do.
+	If Trixie is 64, Then you get "@". That's what I would do.
+
+	If Trixie is 65, Then you get "A". That's what I would do.
+	If Trixie is 66, Then you get "B". That's what I would do.
+	If Trixie is 67, Then you get "C". That's what I would do.
+	If Trixie is 68, Then you get "D". That's what I would do.
+	If Trixie is 69, Then you get "E". That's what I would do.
+	If Trixie is 70, Then you get "F". That's what I would do.
+	If Trixie is 71, Then you get "G". That's what I would do.
+	If Trixie is 72, Then you get "H". That's what I would do.
+	If Trixie is 73, Then you get "I". That's what I would do.
+	If Trixie is 74, Then you get "J". That's what I would do.
+	If Trixie is 75, Then you get "K". That's what I would do.
+	If Trixie is 76, Then you get "L". That's what I would do.
+	If Trixie is 77, Then you get "M". That's what I would do.
+	If Trixie is 78, Then you get "N". That's what I would do.
+	If Trixie is 79, Then you get "O". That's what I would do.
+	If Trixie is 80, Then you get "P". That's what I would do.
+	If Trixie is 81, Then you get "Q". That's what I would do.
+	If Trixie is 82, Then you get "R". That's what I would do.
+	If Trixie is 83, Then you get "S". That's what I would do.
+	If Trixie is 84, Then you get "T". That's what I would do.
+	If Trixie is 85, Then you get "U". That's what I would do.
+	If Trixie is 86, Then you get "V". That's what I would do.
+	If Trixie is 87, Then you get "W". That's what I would do.
+	If Trixie is 88, Then you get "X". That's what I would do.
+	If Trixie is 89, Then you get "Y". That's what I would do.
+	If Trixie is 90, Then you get "Z". That's what I would do.
+
+	If Trixie is 91, Then you get "[". That's what I would do.
+	If Trixie is 92, Then you get "\\". That's what I would do.
+	If Trixie is 93, Then you get "]". That's what I would do.
+	If Trixie is 94, Then you get "^". That's what I would do.
+	If Trixie is 95, Then you get "_". That's what I would do.
+	If Trixie is 96, Then you get "`". That's what I would do.
+
+	If Trixie is 97, Then you get "a". That's what I would do.
+	If Trixie is 98, Then you get "b". That's what I would do.
+	If Trixie is 99, Then you get "c". That's what I would do.
+	If Trixie is 100, Then you get "d". That's what I would do.
+	If Trixie is 101, Then you get "e". That's what I would do.
+	If Trixie is 102, Then you get "f". That's what I would do.
+	If Trixie is 103, Then you get "g". That's what I would do.
+	If Trixie is 104, Then you get "h". That's what I would do.
+	If Trixie is 105, Then you get "i". That's what I would do.
+	If Trixie is 106, Then you get "j". That's what I would do.
+	If Trixie is 107, Then you get "k". That's what I would do.
+	If Trixie is 108, Then you get "l". That's what I would do.
+	If Trixie is 109, Then you get "m". That's what I would do.
+	If Trixie is 110, Then you get "n". That's what I would do.
+	If Trixie is 111, Then you get "o". That's what I would do.
+	If Trixie is 112, Then you get "p". That's what I would do.
+	If Trixie is 113, Then you get "q". That's what I would do.
+	If Trixie is 114, Then you get "r". That's what I would do.
+	If Trixie is 115, Then you get "s". That's what I would do.
+	If Trixie is 116, Then you get "t". That's what I would do.
+	If Trixie is 117, Then you get "u". That's what I would do.
+	If Trixie is 118, Then you get "v". That's what I would do.
+	If Trixie is 119, Then you get "w". That's what I would do.
+	If Trixie is 120, Then you get "x". That's what I would do.
+	If Trixie is 121, Then you get "y". That's what I would do.
+	If Trixie is 122, Then you get "z". That's what I would do.
+
+	If Trixie is 123, Then you get "{". That's what I would do.
+	If Trixie is 124, Then you get "|". That's what I would do.
+	If Trixie is 125, Then you get "}". That's what I would do.
+
+	I said "Whoops! I don't know the ASCII code: " plus Trixie plus "!".
+
+	Then you get "�".
+That's all about how to convert ascii.
 
 Your faithful student, Jaezmien Naejara.
