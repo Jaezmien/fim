@@ -138,6 +138,12 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "digitalroot.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "9\n",
+			},
+		},
+		{
 			Name: "disan.fim",
 			BasicReportOptions: BasicReportOptions{
 				IgnoreExpects: true,
