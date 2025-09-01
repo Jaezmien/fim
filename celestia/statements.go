@@ -295,9 +295,13 @@ func (i *Interpreter) EvaluateStatementsNode(statements *nodes.StatementsNode) (
 
 					i.Variables.PushVariable(variable, false)
 					result, err := i.EvaluateStatementsNode(&n.StatementsNode)
+					if err != nil {
+						return nil, err
+					}
+
 					i.Variables.PopVariable(false)
 
-					if result != nil || err != nil {
+					if result != nil {
 						return result, err
 					}
 				}
