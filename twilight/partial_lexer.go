@@ -191,6 +191,8 @@ func checkCharacterTokens(tokens *queue.Queue[*token.Token]) int {
 
 	mergeAmount := -1
 
+	// FIXME: This doesn't handle Unicode characters well (e.g. �)
+
 	if tokens.Len() >= 4 {
 		if tokens.Peek(1).Value.Value == EscapeToken &&
 			len(tokens.Peek(2).Value.Value) == 1 &&
