@@ -1,0 +1,89 @@
+Dear Princess Celestia: Sieve of Eratosthenes!
+
+I learned how to find the primes using the number n to get many numbers.
+
+	Did you know that primes has many numbers?
+	If n is no greater than 2 then,
+		Then you get primes!
+	That's what I would do.
+
+	Did you know that t has many numbers?
+	For every number k from 2 to n...
+		k of t is 1.
+	That's what I did.
+
+	Did you know that sqrt limit is the number how to calculate square root approximations using n?
+
+	Did you know that i is the number 2?
+	As long as i had no more than sqrt limit,
+		If i of t is equal to 1 then,
+			Did you know that j is the number i times i?
+			As long as j had no more than n,
+				j of t is 0.
+				j became j plus i.
+			That's what I did.
+		That's what I would do.
+		i got one more.
+	That's what I did.
+
+	For every number k from 2 to n...
+		If k of t is equal to 1 then,
+			Did you know that prime index is the number the length regarding an array using primes?
+			prime index got one more.
+			prime index of primes is k.
+		That's what I would do.
+	That's what I did.
+
+	Then you get primes!
+
+That's all about how to find the primes.
+
+Today I learned how to run a program!
+
+	Did you know that primes is the numbers how to find the primes using the number 20.
+
+    For every number p in primes...
+        I said p.
+    That's what I did.
+
+That's all about how to run a program!
+
+I learned the length regarding an array using the numbers Owlowiscious to get a number.
+	Did you know that Tank is a number?
+
+	For every number x in Owlowiscious...
+		Tank got one more.
+	That's what I did.
+
+	Then you get Tank!
+That's all about the length regarding an array.
+
+I learned how to calculate square root approximations using the number Owlowiscious to get a number.
+
+	If Owlowiscious had no more than 0,
+		Then you get 0!
+	Otherwise,
+
+		( Result )
+		Did you know that Angel is the number Owlowiscious?
+		( Temporary )
+		Did you know that Boulder is the number 1?
+		( Error )
+		Did you know that Spike is the number 0.0001?
+
+		As long as Angel minus Boulder had more than Spike...
+			Angel became Angel plus Boulder.
+			Angel became Angel divided by 2.
+
+			Boulder became Owlowiscious divided by Angel.
+		That's what I did.
+
+		Then you get Angel!
+
+	That's what I would do.
+
+That's all about how to calculate square root approximations.
+
+Your faithful student, Jaezmien Naejara.
+
+P.S. https://rosettacode.org/wiki/Sieve_of_Eratosthenes#Lua

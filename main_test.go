@@ -159,6 +159,12 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "eratosthenes.fim",
+			BasicReportOptions: BasicReportOptions{
+				Expects: "2\n3\n5\n7\n11\n13\n17\n19\n",
+			},
+		},
+		{
 			Name: "factorial.fim",
 			BasicReportOptions: BasicReportOptions{
 				Expects: "6\n24\n120\n720\n",
