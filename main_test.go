@@ -222,6 +222,15 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "squareroot.fim",
+			BasicReportOptions: BasicReportOptions{
+				Prompt: func(prompt string) (string, error) {
+					return "50", nil
+				},
+				Expects: "7.071067984011346\n",
+			},
+		},
+		{
 			Name: "string_index.fim",
 			BasicReportOptions: BasicReportOptions{
 				Expects: "T\nw\n",
