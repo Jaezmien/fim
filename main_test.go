@@ -116,7 +116,7 @@ func TestReports(t *testing.T) {
 		{
 			Name: "brainfuck.fim",
 			BasicReportOptions: BasicReportOptions{
-				Expects: "Hello World",
+				Expects: "Hello World!",
 			},
 		},
 		{
