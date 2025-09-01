@@ -102,7 +102,7 @@ Today I learned how to start interpreting brainfuck.
 
 That's all about how to start interpreting brainfuck.
 
-Today I learned how to convert ascii using the number Trixie to get a word.
+I learned how to convert ascii using the number Trixie to get a word.
 	If Trixie is 0, Then you get "". That's what I would do.
 	If Trixie is 10, Then you get "\n". That's what I would do.
 
