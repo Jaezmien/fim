@@ -85,7 +85,7 @@ func main() {
 	}
 
 	if *prettyFlag {
-		fmt.Printf("┌─ fim (v0.0.0-alpha)\n")
+		fmt.Printf("┌─ fim (%s)\n", BuildVersion)
 		fmt.Printf("├─ Report Name: %s\n", interpreter.ReportTitle())
 		fmt.Printf("└─ Report Author: %s\n", interpreter.ReportAuthor())
 	}
