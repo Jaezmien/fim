@@ -735,11 +735,12 @@ func TestFunctions(t *testing.T) {
 	t.Run("should handle multiple values", func(t *testing.T) {
 		source :=
 			`Dear Princess Celestia: Returns!
-			I learned how to give a text using the word x, the word y!
-			I said x plus " " plus y.
+			I learned how to give a text using the word x, the word y to get a word!
+			Then you get x plus " " plus y.
 			That's all about how to give a text.
 			Today I learned how to run a function!
 			I remembered how to give a text using the word "Hello", "World".
+			I said how to give a text using the word "Hello", "World".
 			That's all about how to run a function.
 			Your faithful student, Twilight Sparkle.
 			`
