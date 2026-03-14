@@ -1,5 +1,5 @@
 FILENAME=fim
-VERSION=v1.1.0
+VERSION=v1.1.1
 
 LDFLAGS=-ldflags "-X main.BuildVersion=$(VERSION)"
 
