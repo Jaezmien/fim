@@ -14,12 +14,20 @@ import (
 	"git.jaezmien.com/Jaezmien/fim/twilight"
 )
 
+var BuildVersion = "unknown"
+
 func main() {
 	prettyFlag := flag.Bool("pretty", false, "Prettify output")
 	tokenDisplayFlag := flag.Bool("tokens", false, "Display tokens")
-	flag.Parse()
+	versionFlag := flag.Bool("version", false, "Show the current version")
 
+	flag.Parse()
 	args := flag.Args()
+
+	if *versionFlag {
+		fmt.Println(BuildVersion)
+		return
+	}
 
 	if len(args) == 0 {
 		return
