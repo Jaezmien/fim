@@ -40,20 +40,20 @@ func TestBinaryExpression(t *testing.T) {
 
 		assert.IsType(t, &BinaryExpressionNode{}, binaryExpression, "Expected BinaryExpressionNode")
 		assert.Equal(t, BINARYTYPE_ARITHMETIC, binaryExpression.BinaryType, "Expected operator to be Arithmetic")
-		assert.Equal(t, BINARYOPERATOR_ADD, binaryExpression.Operator, "Expected operator to be Add")
-		assert.IsType(t, &LiteralNode{}, binaryExpression.Left, "Expected left node to be LiteralNode")
-		assert.IsType(t, &BinaryExpressionNode{}, binaryExpression.Right, "Expected right node to be BinaryExpresionNode")
-		assert.Equal(t, 1.0, binaryExpression.Left.(*LiteralNode).GetValueNumber(), "Expected left node value to be 1")
+		assert.Equal(t, BINARYOPERATOR_SUB, binaryExpression.Operator, "Expected operator to be Minus")
+		assert.IsType(t, &BinaryExpressionNode{}, binaryExpression.Left, "Expected left node to be BinaryExpresionNode")
+		assert.IsType(t, &LiteralNode{}, binaryExpression.Right, "Expected right node to be LiteralNode")
+		assert.Equal(t, 3.0, binaryExpression.Right.(*LiteralNode).GetValueNumber(), "Expected left node value to be 1")
 
-		rightNode := binaryExpression.Right.(*BinaryExpressionNode)
+		rightNode := binaryExpression.Left.(*BinaryExpressionNode)
 
 		assert.IsType(t, &BinaryExpressionNode{}, rightNode, "Expected BinaryExpressionNode")
 		assert.Equal(t, BINARYTYPE_ARITHMETIC, rightNode.BinaryType, "Expected operator to be Arithmetic")
-		assert.Equal(t, BINARYOPERATOR_SUB, rightNode.Operator, "Expected operator to be Subtract")
+		assert.Equal(t, BINARYOPERATOR_ADD, rightNode.Operator, "Expected operator to be Add")
 		assert.IsType(t, &LiteralNode{}, rightNode.Left, "Expected left node to be LiteralNode")
 		assert.IsType(t, &LiteralNode{}, rightNode.Right, "Expected right node to be LiteralNode")
-		assert.Equal(t, 2.0, rightNode.Left.(*LiteralNode).GetValueNumber(), "Expected left node value to be 2")
-		assert.Equal(t, 3.0, rightNode.Right.(*LiteralNode).GetValueNumber(), "Expected right node value to be 3")
+		assert.Equal(t, 1.0, rightNode.Left.(*LiteralNode).GetValueNumber(), "Expected left node value to be 2")
+		assert.Equal(t, 2.0, rightNode.Right.(*LiteralNode).GetValueNumber(), "Expected right node value to be 3")
 	})
 
 	t.Run("should handle relationals", func(t *testing.T) {
