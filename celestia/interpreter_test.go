@@ -136,6 +136,31 @@ func TestReport(t *testing.T) {
 	assert.Equal(t, "Hello World\n", string(data))
 }
 
+func TestArithmetic(t *testing.T) {
+	t.Run("should add numbers", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arithmetic!
+			Today I learned how to run code!
+			I said 1 plus 1.
+			That's all about how to run code.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "2\n"})
+	})
+	t.Run("should respect pemdas 1", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Arithmetic!
+			Today I learned how to run code!
+			I said 2 times 2 plus 1.
+			That's all about how to run code.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "5\n"})
+	})
+}
+
 func TestCases(t *testing.T) {
 	t.Run("should accept empty lines", func(t *testing.T) {
 		source :=

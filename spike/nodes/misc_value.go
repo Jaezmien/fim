@@ -292,18 +292,8 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 			binaryType BinaryExpressionType
 		}{
 			{
-				tokenType:  token.TokenType_OperatorModInfix,
-				operator:   BINARYOPERATOR_MOD,
-				binaryType: BINARYTYPE_ARITHMETIC,
-			},
-			{
-				tokenType:  token.TokenType_OperatorMulInfix,
-				operator:   BINARYOPERATOR_MUL,
-				binaryType: BINARYTYPE_ARITHMETIC,
-			},
-			{
-				tokenType:  token.TokenType_OperatorDivInfix,
-				operator:   BINARYOPERATOR_DIV,
+				tokenType:  token.TokenType_OperatorSubInfix,
+				operator:   BINARYOPERATOR_SUB,
 				binaryType: BINARYTYPE_ARITHMETIC,
 			},
 			{
@@ -312,8 +302,18 @@ func CreateValueNode(tokens []*token.Token, options CreateValueNodeOptions) (Dyn
 				binaryType: BINARYTYPE_ARITHMETIC,
 			},
 			{
-				tokenType:  token.TokenType_OperatorSubInfix,
-				operator:   BINARYOPERATOR_SUB,
+				tokenType:  token.TokenType_OperatorDivInfix,
+				operator:   BINARYOPERATOR_DIV,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
+			{
+				tokenType:  token.TokenType_OperatorMulInfix,
+				operator:   BINARYOPERATOR_MUL,
+				binaryType: BINARYTYPE_ARITHMETIC,
+			},
+			{
+				tokenType:  token.TokenType_OperatorModInfix,
+				operator:   BINARYOPERATOR_MOD,
 				binaryType: BINARYTYPE_ARITHMETIC,
 			},
 		}
