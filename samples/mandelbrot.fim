@@ -1,0 +1,124 @@
+Dear Princess Celestia: Mandelbrot!
+
+Did you know that Twilight Sparkle is always the number 100? (Canvas Width)
+Did you know that Spike is always the number 50? (Canvas Height)
+
+Did you know that Princess Luna is always the number 500? (Max Iterations)
+
+Did you know that Cheerilee is always the number    -1.10? (Mandelbrot Min X)
+Did you know that Flash Sentry is always the number  2.10? (Mandelbrot Max X)
+Did you know that Lyra Heartstrings is always the number -1.30? (Mandelbrot Min Y)
+Did you know that Sweetie Drops is always the number      1.30? (Mandelbrot Max Y)
+
+I learned how to range numeric values using
+	the number Applebloom (value),
+	the number Sweetie Belle (Omin),
+	the number Scootaloo (Omax),
+	the number Diamond Tiara (Nmin),
+	the number Silver Spoon (Nmax) to get a number.
+
+	P.S. (Nmax-Nmin) * (value-Omin)/(Omax-Omin) + Nmin
+	Did you know that Flurry Heart is a number?
+	Did you know that Babs Seed is a number?
+	Did you know that Pipsqueak is a number?
+
+	( Map value between Omin and Omax )
+	Babs Seed became Applebloom minus Sweetie Belle.
+	Pipsqueak became Scootaloo minus Sweetie Belle.
+	Flurry Heart became Babs Seed divided by Pipsqueak.
+
+	( Map new avlue between 0 and Nmax-Nmin )
+	Babs Seed became Silver Spoon minus Diamond Tiara.
+	Flurry Heart became Flurry Heart times Babs Seed.
+
+	( Offset new value to Nmin )
+	Flurry Heart became Flurry Heart plus Diamond Tiara.
+
+	Then you get Flurry Heart!
+That's all about how to range numeric values.
+
+I learned how to calculate mandelbrot using
+	the number Applejack (X),
+	the number Rainbow Dash (Y) to get a number (Iteration).
+
+	Did you know that Trixie is the number 1? (Iteration)
+
+	Applejack became
+		how to range numeric values using Applejack,
+			1, Twilight Sparkle, Cheerilee, Flash Sentry. (x0)
+	Rainbow Dash became
+		how to range numeric values using Rainbow Dash,
+			1, Spike, Lyra Heartstrings, Sweetie Drops. (y0)
+
+	Did you know that Vinyl Scratch is the number 0.0? (x)
+	Did you know that Octavia is the number 0.0? (y)
+
+	( x*x + y*y ≤ 4 AND iteration < max_iteration )
+	As long as 
+		Vinyl Scratch times Vinyl Scratch plus
+			Octavia times Octavia is less than 4
+		and Trixie is less than 100,
+
+		Did you know that Starlight Glimmer is a number? (xtemp)
+
+		( Luckily these are all straightforward math, so we don't need a temporary variable. )
+
+		( xtemp := x*x - y*y + x0 )
+		Starlight Glimmer became
+			Vinyl Scratch times Vinyl Scratch minus
+			Octavia times Octavia plus Applejack.
+		( y := 2*x*y + y0 )
+		Octavia became
+			2 times Vinyl Scratch times Octavia plus
+			Rainbow Dash.
+		( x := xtemp )
+		Vinyl Scratch became Starlight Glimmer.
+
+		Trixie got one more.
+	That's what I did.
+
+	P.S. I said Applejack plus "x" plus Rainbow Dash plus ">" plus Trixie plus " (" plus Vinyl Scratch plus "," plus Octavia plus ")".
+
+	Then you get Trixie!
+That's all about how to calculate mandelbrot.
+
+I learned how to find a color using the number Coco Pommel to get a word.
+	As long as Coco Pommel had no less than 10,
+		Coco Pommel became Coco Pommel minus 10.
+	That's what I did.
+
+	If Coco Pommel is equal to 1 then, Then you get "."! That's what I would do.
+	If Coco Pommel is equal to 2 then, Then you get ":"! That's what I would do.
+	If Coco Pommel is equal to 3 then, Then you get "-"! That's what I would do.
+	If Coco Pommel is equal to 4 then, Then you get "="! That's what I would do.
+	If Coco Pommel is equal to 5 then, Then you get "+"! That's what I would do.
+	If Coco Pommel is equal to 6 then, Then you get "*"! That's what I would do.
+	If Coco Pommel is equal to 7 then, Then you get "#"! That's what I would do.
+	If Coco Pommel is equal to 8 then, Then you get "%"! That's what I would do.
+	If Coco Pommel is equal to 9 then, Then you get "@"! That's what I would do.
+
+	Then you get " ".
+That's all about how to find a color.
+
+Today I learned how to make a mandelbrot set.
+	For every number Rainbow Dash (y) from 1 to Spike...
+		For every number Applejack (x) from 1 to Twilight Sparkle...
+
+			Did you know that Trixie is the number
+				how to calculate mandelbrot using Applejack, Rainbow Dash?
+
+			Did you know that Owlowiscious is the word
+				how to find a color using Trixie?
+
+			I quickly said Owlowiscious.
+
+		That's what I did.
+
+		I quickly said '\n'.
+	That's what I did.
+That's all about how to make a mandelbrot set.
+
+Your faithful student, Jaezmien Naejara.
+
+P.S. https://en.wikipedia.org/wiki/Plotting_algorithms_for_the_Mandelbrot_set
+P.S.S. https://rosettacode.org/wiki/Mandelbrot_set#Lua

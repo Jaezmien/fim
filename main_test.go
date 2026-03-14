@@ -204,6 +204,12 @@ func TestReports(t *testing.T) {
 			},
 		},
 		{
+			Name: "mandelbrot.fim",
+			BasicReportOptions: BasicReportOptions{
+				IgnoreExpects: true,
+			},
+		},
+		{
 			Name: "mississippis.fim",
 			BasicReportOptions: BasicReportOptions{
 				IgnoreExpects: true,
