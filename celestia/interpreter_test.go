@@ -539,6 +539,24 @@ func TestModify(t *testing.T) {
 
 		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "true\n"})
 	})
+	t.Run("should set the value from function return", func(t *testing.T) {
+		source :=
+			`Dear Princess Celestia: Function Return!
+			I learned how to concatenate using the word x, the word y to get a word!
+			Then you get x plus " " plus y.
+			That's all about how to concatenate.
+			Today I learned how to set values!
+			Did you know that Spike is a word?
+			Spike became how to concatenate using "hello world".
+			I said Spike!
+			Spike became how to concatenate using "hello", "world".
+			I said Spike!
+			That's all about how to set values.
+			Your faithful student, Twilight Sparkle.
+			`
+
+		ExecuteBasicReport(t, source, BasicReportOptions{Expects: "hello world \nhello world\n"})
+	})
 }
 
 func TestUnary(t *testing.T) {
