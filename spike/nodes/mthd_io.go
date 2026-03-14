@@ -25,14 +25,7 @@ func ParsePrintNode(ast *ast.AST) (*PrintNode, error) {
 	}
 	printNode.NewLine = startToken.Type == token.TokenType_PrintNewline
 
-	var valueTokens []*token.Token
-	if ast.ContainsWithStop(token.TokenType_FunctionParameter, token.TokenType_EndOfFile, token.TokenType_Punctuation) {
-		valueTokens, err = ast.ConsumeUntilFuncMatch(func(t *token.Token) bool {
-			return t.Type == token.TokenType_Punctuation && t.Value != ","
-		}, token.TokenType_Punctuation.Message("Could not find %s"))
-	} else {
-		valueTokens, err = ast.ConsumeUntilTokenMatch(token.TokenType_Punctuation, token.TokenType_Punctuation.Message("Could not find %s"))
-	}
+	valueTokens, err := ConsumeUntilPunctuation(ast, false)
 	if err != nil {
 		return nil, err
 	}
