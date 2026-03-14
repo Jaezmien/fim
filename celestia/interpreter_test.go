@@ -384,7 +384,7 @@ func TestDeclaration(t *testing.T) {
 	})
 	t.Run("should create local variable", func(t *testing.T) {
 		source :=
-			`Dear Princess Celestia: Globals!
+			`Dear Princess Celestia: Locals!
 			Today I learned how to print a value!
 			Did you know that Spike is the number 1?
 			I said Spike!
